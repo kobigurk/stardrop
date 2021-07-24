@@ -14,7 +14,6 @@ app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-
 contract_addr = ""
 
 # need to call node
@@ -26,7 +25,7 @@ def deploy_contract():
     compilation = subprocess.run(['starknet-compile', 'contract.cairo',
                                   '--output=contract_compiled.json', '--abi=contract_abi.json'], stdout=subprocess.PIPE)
     if compilation.returncode != 0:
-        return compilation.returncode
+        return compilation.returncode, 201
     print("Compilation done.")
 
     print("Deploying...")
@@ -43,7 +42,7 @@ def initialize():
     init = subprocess.run(['starknet',  'invoke', '--address', contract_addr,
                           '--abi', 'contract_abi.json', '--function', 'initialize', '--inputs', serv_pub_key, 1000, 2])
     if init.returncode != 0:
-        return init.returncode
+        return init.returncode, 201
     print("Init done")
 
 
@@ -68,30 +67,30 @@ def generate_keys():
 def end_commit_phase():
     (r, s) = end_commitment_phase(serv_priv_key)
     ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                         'contract_abi.json', '--function', 'end_commitment_phase', '--inputs', r, s])
+                          'contract_abi.json', '--function', 'end_commitment_phase', '--inputs', r, s])
     if (ret.returncode != 0):
-        print('end_commit_phase subprocess ERROR')
+        return 'end_commit_phase subprocess ERROR', 201
     return 0
 
 
 @ app.route('/api/submit_key', methods=['GET'])
 def submit_key():
     ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json', '--function', 'submit_key', '--inputs',
-                         '28469747262438600929583958993641894517832245605321003390747401131020657118256333964139562473037251260147734829915142291167198440858938698896566523731692215085667023695658054610128415429789324'])
+                          '28469747262438600929583958993641894517832245605321003390747401131020657118256333964139562473037251260147734829915142291167198440858938698896566523731692215085667023695658054610128415429789324'])
     if (ret.returncode != 0):
-        print('submit_key subprocess ERROR')
+        return 'submit_key subprocess ERROR', 201
     return 0
 
 
 @ app.route('/api/request_token', methods=['POST'])
 def request_token():
     if 'address' not in request.args:
-        return "Error: no address provided"
+        return "Error: no address provided", 201
 
     address = request.args['address']
 
     if db.try_vote(address) == False:
-        return "Error: already voted or not in POH"
+        return "Error: already voted or not in POH", 202
 
     (priv, pub) = generate_keypair()
     (blinded_request, blinded_factor) = blind(pub)
