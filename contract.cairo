@@ -99,7 +99,7 @@ func submit_key{
 end
 
 @external
-func end_commitment_phase{
+func end_voting_phase{
         storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*,
         range_check_ptr}(sig_r : felt, sig_s : felt):
     let (current_phase) = phase.read()
@@ -210,6 +210,7 @@ func cast_vote{
     assert paid_commitment = 0
     paid.write(user, 1)
 
+    assert vote * (1 - vote) == 0
     if vote == 1:
         let (num_yes) = yea.read()
         yea.write(num_yes + 1)
