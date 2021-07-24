@@ -1,4 +1,5 @@
 from re import sub
+import db
 from unblind import unblind
 import flask
 from generate_keypair import generate_keypair
@@ -17,7 +18,7 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 contract_addr = ""
 
 # need to call node
-
+db.makeDB()
 
 def deploy_contract():
     print("Compiling...")
@@ -43,9 +44,6 @@ def deploy_contract():
 # remove this, use official fn
 
 
-def try_vote(address: str) -> bool:
-    return True
-
 
 @ app.route('/', methods=['GET'])
 def home():
@@ -65,7 +63,7 @@ def request_token():
 
     address = request.args['address']
 
-    if try_vote(address) == False:
+    if db.try_vote(address) == False:
         return "Error: already voted or not in POH"
 
     (priv, pub) = generate_keypair()
