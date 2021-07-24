@@ -15,3 +15,4 @@ def commit(private_key, token):
     print(f'Public key: {public_key}')
     print(f'Token: {token}')
     print(f'Signature: {(r, s)}')
+    return (public_key, token, r, s)
