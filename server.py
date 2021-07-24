@@ -56,11 +56,17 @@ def generate_keys():
     return jsonify([{'private_key': priv, 'public_key': pub}])
 @ app.route('/api/end_commit_phase', methods=['GET'])
 def end_commit_phase() :
-    ret = subprocess.run(['starknet', 'invoke', '--address' ,contract_addr, '--abi', 'contract_abi.json', '--function', 'end_commitment_phase','--inputs', '1572514341211381639146744466808246693800547744347028176296700256447030933678', '1978481093464076802357781694214950813691007442586456313662641217350746463161'])
+    ret = subprocess.run(['starknet', 'invoke', '--address' ,contract_addr, '--abi', 'contract_abi.json', '--function', 'end_commitment_phase','--inputs', '15725143412113816391467444668082466938005477443470281762967002564470309336781978481093464076802357781694214950813691007442586456313662641217350746463161'])
     if (ret.returncode != 0) :
         print('end_commit_phase subprocess ERROR')
     return 0
 
+@ app.route('/api/submit_key', methods=['GET'])
+def submit_key() :
+    ret = subprocess.run(['starknet', 'invoke', '--address' ,contract_addr, '--abi', 'contract_abi.json', '--function', 'submit_key','--inputs', '28469747262438600929583958993641894517832245605321003390747401131020657118256333964139562473037251260147734829915142291167198440858938698896566523731692215085667023695658054610128415429789324'])
+    if (ret.returncode != 0) :
+        print('submit_key subprocess ERROR')
+    return 0
 @ app.route('/api/request_token', methods=['POST'])
 def request_token():
     if 'address' not in request.args:
