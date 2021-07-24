@@ -48,10 +48,4 @@ function sendRResult() {
     axios.get('http://192.168.106.112:5000/api/generate_keys');
 }
 
-const GenerateVotingAddress = () => {
-    return (
-      <button onClick={}>Genereate voting address</button>
-    )
-}
-
 export default CommitInterface;
