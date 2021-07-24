@@ -8,7 +8,7 @@ def makeDB () :
             for k in range(len(data)) :
                 w.writerow([data[k].lower()])
 
-def tryvote(adress) :
+def try_vote(adress) :
     members = '[\'' + adress.lower() + '\']'
     ret = False
     lines =  list()
