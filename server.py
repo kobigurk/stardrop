@@ -54,7 +54,12 @@ def home():
 def generate_keys():
     (priv, pub) = generate_keypair()
     return jsonify([{'private_key': priv, 'public_key': pub}])
-
+@ app.route('/api/end_commit_phase', methods=['GET'])
+def end_commit_phase() :
+    ret = subprocess.run(['starknet', 'invoke', '--address' ,contract_addr, '--abi', 'contract_abi.json', '--function', 'end_commitment_phase','--inputs', '1572514341211381639146744466808246693800547744347028176296700256447030933678', '1978481093464076802357781694214950813691007442586456313662641217350746463161'])
+    if (ret.returncode != 0) :
+        print('end_commit_phase subprocess ERROR')
+    return 0
 
 @ app.route('/api/request_token', methods=['POST'])
 def request_token():
