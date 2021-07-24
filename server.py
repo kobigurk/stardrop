@@ -22,11 +22,6 @@ contract_addr = ""
 db.makeDB()
 (serv_priv_key, serv_pub_key) = generate_keypair()
 
-@ app.route('/api/generate_keys', methods=['GET'])
-def generate_keys():
-    (priv, pub) = generate_keypair()
-    return jsonify([{'private_key': priv, 'public_key': pub}])
-
 
 def deploy_contract():
     print("Compiling...")
@@ -44,7 +39,6 @@ def deploy_contract():
     contract_addr = out.split('\n')[1][18:18+64]
     print(contract_addr)
 
-# call set_database()
 
 def initialize():
     print("Init...")
@@ -54,30 +48,30 @@ def initialize():
         return init.returncode, 201
     print("Init done")
 
+
 @ app.route('/', methods=['GET'])
 def home():
     return "<h1>Wassu wassu wassu wassu wassu wassu wassuuuuuuuuupppppp!!!</h1>"
 
 
-@ app.route('/api/request_token', methods=['POST'])
-def request_token():
-    if 'address' not in request.args:
-        return "Error: no address provided", 201
-
-    address = request.args['address']
-
-    if db.try_vote(address) == False:
-        return "Error: already voted or not in POH", 202
-
-    (priv, pub) = generate_keypair()
-    (blinded_request, blinded_factor) = blind(pub)
-    
+@ app.route('/api/sign_blinded_request', methods=['POST'])
+def sign_blinded_request():
+    print(request.form)
+    if 'blinded_request' not in request.form:
+        return 'Error: no blinded request provided', 201
+    blinded_request = int(request.form['blinded_request'])
+    print("type")
+    print(type(blinded_request))
+    print(blinded_request)
+    print("--\n\n\n")
     (blinded_token, c, r) = sign_token(serv_priv_key, blinded_request)
+    return ({'blinded_token': blinded_token, 'c': c, 'r': r})
 
-    commit_token = unblind(blinded_token, blinded_factor,
-                           serv_pub_key, blinded_request, c, r)
 
-    return jsonify([{'commit_token': commit_token}])
+@ app.route('/api/get_serv_public_key', methods=['GET'])
+def get_serv_public_key():
+    return ({'public_key': serv_pub_key})
+
 
 @ app.route('/api/end_commit_phase', methods=['POST'])
 def end_commit_phase():
@@ -88,13 +82,16 @@ def end_commit_phase():
         return 'end_commit_phase subprocess ERROR', 201
     return 0
 
+
 @ app.route('/api/submit_key', methods=['GET'])
 def key_submission():
-    (p_key ,r, s)  = submit_key(serv_priv_key)
-    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json', '--function', 'submit_key', '--inputs', p_key, r, s])
+    (p_key, r, s) = submit_key(serv_priv_key)
+    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
+                         'contract_abi.json', '--function', 'submit_key', '--inputs', p_key, r, s])
     if (ret.returncode != 0):
-        return 'submit_key subprocess ERROR' , 201
+        return 'submit_key subprocess ERROR', 201
     return 0
+
 
 @ app.route('/api/claim_drop', methods=['GET'])
 def claiming_drop():
@@ -104,11 +101,13 @@ def claiming_drop():
         return "Error: no token provided", 201
     usr_public_key = request.args['public_key']
     token = request.args['token']
-    (unknown_pblic_key ,token_y, bin)  = claim_drop(serv_priv_key, usr_public_key, token)
-    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json', '--function', 'submit_key', '--inputs', unknown_pblic_key, token_y, bin])
+    (unknown_pblic_key, token_y, bin) = claim_drop(
+        serv_priv_key, usr_public_key, token)
+    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
+                         'contract_abi.json', '--function', 'submit_key', '--inputs', unknown_pblic_key, token_y, bin])
     if (ret.returncode != 0):
         return 'claim_drop subprocess ERROR', 201
     return 0
 
 
-app.run(host="192.168.106.112")
+app.run(host="192.168.0.44")
