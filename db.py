@@ -1,14 +1,12 @@
 import json , csv
-from collections import namedtuple
-from os import close
 
 def makeDB () :
     with open('humanList.json',) as readFile :
+        data = json.load(readFile)
         with open('VotersLeft.csv', 'w') as writeFile :
             w = csv.writer(writeFile)
-            data = json.load(readFile)
             for k in range(len(data)) :
-                w.writerow([data[k]])
+                w.writerow([data[k].lower()])
 
 def tryvote(adress) :
     members = '[\'' + adress.lower() + '\']'
