@@ -13,6 +13,7 @@ padding: 30px 90px;
 border-radius: 15px;
 outline: 0;
 cursor: pointer;
+margin: 20px 0px;
 
 `
 const ButtonNon = styled.button`
@@ -21,6 +22,7 @@ color: white;
 padding: 30px 90px;
 border-radius: 15px;
 cursor: pointer;
+margin: 20px 0px;
 `
 const ButtonSubmit = styled.button`
 background-color: blue;
@@ -28,7 +30,7 @@ color: white;
 padding: 30px 90px;
 border-radius: 15px;
 cursor: pointer;
-margin: 50px 0px;
+margin: 0px 0px;
 `
 const types = ['OUI', 'NON'];
 
@@ -49,22 +51,10 @@ function VoteInterface() {
     <div className="App">
       <header className="App-header">
         SHOULD CARLOS MATOS PRESIDE THE ETHEREUM FONDATION ?
-        {/* <img src={logo} className="App-logo" alt="logo" /> */}
-        <p>
-          {/* Edit <code>src/App.js</code> and save to reload. */}
-        </p>
-        {/* <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a> */}
-          <ButtonSubmit onClick={clickMe}>
+        <ToggleGroup/>
+        <ButtonSubmit onClick={clickMe}>
           SUBMIT
         </ButtonSubmit>
-        <ToggleGroup/>
       </header>
     </div>
   );
