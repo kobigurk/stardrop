@@ -46,7 +46,7 @@ def deploy_contract():
 
 
 # call set_database()
-(serv_pub_key, serv_priv_key) = generate_keypair()
+(serv_priv_key, serv_pub_key) = generate_keypair()
 
 
 # remove this, use official fn
@@ -82,9 +82,9 @@ def request_token(address):
     (blinded_token, c, r) = sign_token(serv_priv_key, blinded_request)
 
     commit_token = unblind(blinded_token, blinded_factor,
-                           pub, blinded_request, c, r)
+                           serv_pub_key, blinded_request, c, r)
 
-    return (jsonify[{'commit_token': commit_token}])
+    return jsonify([{'commit_token': commit_token}])
 
 
 request_token("0x123")
