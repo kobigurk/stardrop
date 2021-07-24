@@ -1,11 +1,11 @@
 const ethers = require('ethers');
 
-module.exports = async function sign_blinded_request(blinded_request) {
+module.exports = async function sign_message(message) {
   let provider;
   let rawSignature;
 
-  window.ethereum.enable().then((provider = new ethers.providers.Web3Provider(window.ethereum)));
-  const signer = provider.getSigner();
+  // window.ethereum.enable().then((provider = new ethers.providers.Web3Provider(window.ethereum)));
+  // const signer = provider.getSigner();
 
   provider = ethers.providers.getDefaultProvider(
     'goerli',
@@ -13,7 +13,7 @@ module.exports = async function sign_blinded_request(blinded_request) {
   );
   const signer = new ethers.Wallet("0x9e78bc7d736ed6f39bc1623e09d62ada9abcd7bc7e71735395b9d4cab91fcd36", provider);
 
-  rawSignature = await signer.signMessage(blinded_request);
+  rawSignature = await signer.signMessage(message);
 
   return rawSignature;
 };

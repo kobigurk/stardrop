@@ -1,16 +1,31 @@
 const ethers = require('ethers');
 
-module.exports = async function sign_blinded_request(rawSignature, blinded_request) {
-  let provider;
+async function main() {
+    const rawSignature = process.argv[2];
+    const blinded_request = process.argv[3];
+    const address_suppose_tobe = process.argv[4];
+    let provider;
 
-  window.ethereum.enable().then((provider = new ethers.providers.Web3Provider(window.ethereum)));
+//   window.ethereum.enable().then((provider = new ethers.providers.Web3Provider(window.ethereum)));
 
-//   provider = ethers.providers.getDefaultProvider(
-//     'goerli',
-//     '2DWV9SDT3WK71GRR1YYWJRF1XIAPY1NKG6'
-//   );
+  provider = ethers.providers.getDefaultProvider(
+    'goerli',
+    '2DWV9SDT3WK71GRR1YYWJRF1XIAPY1NKG6'
+  );
 
   const signerAddress = ethers.utils.verifyMessage(blinded_request, rawSignature);
 
-  return signerAddress;
+  if (address_suppose_tobe.toString() == signerAddress.toString()) {
+    console.log(0);
+  }
+  else {
+    console.log(1);
+  }
 };
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
