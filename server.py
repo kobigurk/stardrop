@@ -1,3 +1,4 @@
+from claim_drop import claim_drop
 from re import sub
 import db
 from unblind import unblind
@@ -9,6 +10,7 @@ from flask import request, jsonify
 import subprocess
 from flask_cors import CORS
 from end_commitment_phase import end_commitment_phase
+from submit_key import submit_key
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -75,13 +77,20 @@ def end_commit_phase():
 
 
 @ app.route('/api/submit_key', methods=['GET'])
-def submit_key():
-    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json', '--function', 'submit_key', '--inputs',
-                         '28469747262438600929583958993641894517832245605321003390747401131020657118256333964139562473037251260147734829915142291167198440858938698896566523731692215085667023695658054610128415429789324'])
+def key_submission():
+    (p_key ,r, s)  = submit_key(serv_priv_key)
+    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json', '--function', 'submit_key', '--inputs', p_key, r, s])
     if (ret.returncode != 0):
         print('submit_key subprocess ERROR')
     return 0
 
+@ app.route('/api/claim_drop', methods=['GET'])
+def claiming_drop():
+    (pblic_key ,token_y, bin)  = claim_drop(serv_priv_key)
+    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json', '--function', 'submit_key', '--inputs', pblic_key, token_y, bin])
+    if (ret.returncode != 0):
+        print('claim_drop subprocess ERROR')
+    return 0
 
 @ app.route('/api/request_token', methods=['POST'])
 def request_token():

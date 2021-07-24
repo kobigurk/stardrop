@@ -12,3 +12,4 @@ def submit_key(private_key):
 
     print(f'Key: {private_key}')
     print(f'Signature: {(r, s)}')
+    return (private_key, r, s)
