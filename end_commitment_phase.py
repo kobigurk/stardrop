@@ -11,3 +11,4 @@ def end_commitment_phase(private_key):
     (r, s) = sign(msg_hash=1, priv_key=private_key)
 
     print(f'Signature: {(r, s)}')
+    return (r, s)
