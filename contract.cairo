@@ -15,7 +15,8 @@ from starkware.cairo.common.alloc import alloc
 #   * 0 - coordinator initializes
 #   * 1 - users send drop commitments and coordinator disables sending
 #   * 2 - coordinator submits key
-#   * 3 - users claims drops
+#   * 3 - users cast votes
+#   * 4 - voting period ends
 
 @storage_var
 func coordinator() -> (res : felt):
@@ -26,7 +27,11 @@ func phase() -> (res : felt):
 end
 
 @storage_var
-func payout() -> (res : felt):
+func yae() -> (res : felt):
+end
+
+@storage_var
+func nay() -> (res : felt):
 end
 
 @storage_var
@@ -38,14 +43,6 @@ func voprf_key() -> (res : felt):
 end
 
 @storage_var
-func pool_balance() -> (res : felt):
-end
-
-@storage_var
-func user_balance(user : felt) -> (res : felt):
-end
-
-@storage_var
 func paid(user : felt) -> (res : felt):
 end
 
@@ -54,20 +51,18 @@ func voprf_key_bits(bit : felt) -> (res : felt):
 end
 
 @external
-func initialize{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        user : felt, balance : felt, payout_for_users : felt):
+func initialize{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, range_check_ptr}(user : felt):
     let (current_phase) = phase.read()
     assert current_phase = 0
     phase.write(1)
     coordinator.write(user)
-    pool_balance.write(balance)
-    payout.write(payout_for_users)
     return ()
 end
 
 @external
-func commit{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*, range_check_ptr}(
-        user : felt, commitment : felt, sig_r : felt, sig_s : felt):
+func commit{
+        storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*,
+        range_check_ptr}(user : felt, commitment : felt, sig_r : felt, sig_s : felt):
     let (current_phase) = phase.read()
     assert current_phase = 1
     verify_ecdsa_signature(
@@ -78,8 +73,8 @@ end
 
 @external
 func end_commitment_phase{
-        storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*, range_check_ptr}(
-        sig_r : felt, sig_s : felt):
+        storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*,
+        range_check_ptr}(sig_r : felt, sig_s : felt):
     let (current_phase) = phase.read()
     assert current_phase = 1
     let (the_coordinator) = coordinator.read()
@@ -90,8 +85,9 @@ func end_commitment_phase{
 end
 
 @external
-func submit_key{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*, range_check_ptr}(
-        key : felt, sig_r : felt, sig_s : felt):
+func submit_key{
+        storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*,
+        range_check_ptr}(key : felt, sig_r : felt, sig_s : felt):
     let (current_phase) = phase.read()
     assert current_phase = 2
     let (the_coordinator) = coordinator.read()
@@ -102,31 +98,45 @@ func submit_key{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr :
     return ()
 end
 
+@external
+func end_commitment_phase{
+        storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*,
+        range_check_ptr}(sig_r : felt, sig_s : felt):
+    let (current_phase) = phase.read()
+    assert current_phase = 3
+    let (the_coordinator) = coordinator.read()
+    verify_ecdsa_signature(
+        message=current_phase, public_key=the_coordinator, signature_r=sig_r, signature_s=sig_s)
+    phase.write(4)
+    return ()
+end
 
-func double_and_add_2_128(arr: felt*, index: felt) -> (res : felt):
+func double_and_add_2_128(arr : felt*, index : felt) -> (res : felt):
     if index == 128:
         return (0)
     else:
         assert arr[index] * (1 - arr[index]) = 0
         let (res) = double_and_add_2_128(arr, index + 1)
-        return (arr[index] + 2*res)
+        return (arr[index] + 2 * res)
     end
 end
 
 func double_ec(x_in, y_in) -> (x_out : felt, y_out : felt):
-    let lambda = (3*x_in*x_in+1)/(2*y_in)
-    let x = lambda*lambda - 2*x_in
-    let y = lambda*(x_in - x) - y_in
-    return (x,y)
+    let lambda = (3 * x_in * x_in + 1) / (2 * y_in)
+    let x = lambda * lambda - 2 * x_in
+    let y = lambda * (x_in - x) - y_in
+    return (x, y)
 end
 
-func double_and_add_ec(x_in: felt, y_in: felt, x_base: felt, y_base: felt, infinity_in: felt, arr: felt*, index: felt) -> (res : felt):
+func double_and_add_ec(
+        x_in : felt, y_in : felt, x_base : felt, y_base : felt, infinity_in : felt, arr : felt*,
+        index : felt) -> (res : felt):
     alloc_locals
     local x
     local y
     local infinity
     if arr[index] == 1:
-       if x_base == x_in:
+        if x_base == x_in:
             if y_base == y_in:
                 infinity = 0
                 let (x_ret, y_ret) = double_ec(x_in, y_in)
@@ -144,9 +154,9 @@ func double_and_add_ec(x_in: felt, y_in: felt, x_base: felt, y_base: felt, infin
                 y = y_base
             else:
                 infinity = 0
-                local lambda = (y_base-y_in)/(x_base-x_in)
-                local x_tmp = lambda*lambda - x_in - x_base
-                local y_tmp = lambda*(x_in - x_tmp) - y_in
+                local lambda = (y_base - y_in) / (x_base - x_in)
+                local x_tmp = lambda * lambda - x_in - x_base
+                local y_tmp = lambda * (x_in - x_tmp) - y_in
                 x = x_tmp
                 y = y_tmp
             end
@@ -158,7 +168,7 @@ func double_and_add_ec(x_in: felt, y_in: felt, x_base: felt, y_base: felt, infin
     end
     if index == 0:
         return (x)
-    else: 
+    else:
         local x_double
         local y_double
         if infinity == 0:
@@ -174,19 +184,17 @@ func double_and_add_ec(x_in: felt, y_in: felt, x_base: felt, y_base: felt, infin
 end
 
 @external
-func claim_drop{
+func cast_vote{
         storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, range_check_ptr,
         ecdsa_ptr : SignatureBuiltin*}(
-        user : felt,
-        t_hash_y: felt,
-        a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19,
-        a20, a21, a22, a23, a24, a25, a26, a27, a28, a29, a30, a31, a32, a33, a34, a35, a36, a37,
-        a38, a39, a40, a41, a42, a43, a44, a45, a46, a47, a48, a49, a50, a51, a52, a53, a54, a55,
-        a56, a57, a58, a59, a60, a61, a62, a63, a64, a65, a66, a67, a68, a69, a70, a71, a72, a73,
-        a74, a75, a76, a77, a78, a79, a80, a81, a82, a83, a84, a85, a86, a87, a88, a89, a90, a91,
-        a92, a93, a94, a95, a96, a97, a98, a99, a100, a101, a102, a103, a104, a105, a106, a107,
-        a108, a109, a110, a111, a112, a113, a114, a115, a116, a117, a118, a119, a120, a121, a122,
-        a123, a124, a125, a126, a127):
+        user : felt, vote : felt, t_hash_y : felt, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10,
+        a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27, a28,
+        a29, a30, a31, a32, a33, a34, a35, a36, a37, a38, a39, a40, a41, a42, a43, a44, a45, a46,
+        a47, a48, a49, a50, a51, a52, a53, a54, a55, a56, a57, a58, a59, a60, a61, a62, a63, a64,
+        a65, a66, a67, a68, a69, a70, a71, a72, a73, a74, a75, a76, a77, a78, a79, a80, a81, a82,
+        a83, a84, a85, a86, a87, a88, a89, a90, a91, a92, a93, a94, a95, a96, a97, a98, a99, a100,
+        a101, a102, a103, a104, a105, a106, a107, a108, a109, a110, a111, a112, a113, a114, a115,
+        a116, a117, a118, a119, a120, a121, a122, a123, a124, a125, a126, a127):
     alloc_locals
 
     let (current_phase) = phase.read()
@@ -202,15 +210,20 @@ func claim_drop{
     assert paid_commitment = 0
     paid.write(user, 1)
 
-    let (payout_for_users) = payout.read()
-    user_balance.write(user, payout_for_users)
+    if vote == 1:
+        let (num_yes) = yea.read()
+        yea.write(num_yes + 1)
+    else:
+        if vote == 0:
+            let (num_no) = nay.read()
+            nay.write(num_no + 1)
+        end
+    end
 
-    let (current_pool_balance) = pool_balance.read()
-    pool_balance.write(current_pool_balance - payout_for_users)
     local t_hash = t_hash
 
-    local storage_ptr: Storage* = storage_ptr
-    local pedersen_ptr: HashBuiltin* = pedersen_ptr
+    local storage_ptr : Storage* = storage_ptr
+    local pedersen_ptr : HashBuiltin* = pedersen_ptr
     local range_check_ptr = range_check_ptr
 
     let (local key_bits : felt*) = alloc()
@@ -351,19 +364,18 @@ func claim_drop{
 end
 
 @view
-func get_balance{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, range_check_ptr}(user : felt) -> (res : felt):
-    let (res) = user_balance.read(user)
-    return (res)
+func get_result{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (
+        num_yes : felt, num_no : felt):
+    let (current_phase) = phase.read()
+    assert current_phase = 4
+    let (num_yes) = yae.read()
+    let (num_no) = nay.read()
+    return (num_yes, num_no)
 end
 
 @view
-func get_phase{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (res : felt):
+func get_phase{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (
+        res : felt):
     let (res) = phase.read()
-    return (res)
-end
-
-@view
-func get_pool_balance{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (res : felt):
-    let (res) = pool_balance.read()
     return (res)
 end
