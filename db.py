@@ -3,15 +3,15 @@ from collections import namedtuple
 from os import close
 
 def makeDB () :
-    imp = open('humanList.json',)
-    data = json.load(imp)
-    w = csv.writer(open('VotersLeft.csv', 'w'))
-    for k in range(len(data)) :
-        w.writerow([data[k]])
-    imp.close()
+    with open('humanList.json',) as readFile :
+        with open('VotersLeft.csv', 'w') as writeFile :
+            w = csv.writer(writeFile)
+            data = json.load(readFile)
+            for k in range(len(data)) :
+                w.writerow([data[k]])
 
 def tryvote(adress) :
-    members = '[\'' + adress + '\']'
+    members = '[\'' + adress.lower() + '\']'
     ret = False
     lines =  list()
     with open('VotersLeft.csv', 'r') as readFile:
@@ -25,6 +25,4 @@ def tryvote(adress) :
         with open('VotersLeft.csv', 'w') as writeFile:
             writer = csv.writer(writeFile)
             writer.writerows(lines)
-            writeFile.close()
-    readFile.close()
     return ret
