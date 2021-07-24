@@ -7,6 +7,7 @@ from blind import blind
 from flask import request, jsonify
 import subprocess
 from flask_cors import CORS
+import re
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -20,36 +21,28 @@ contract_addr = ""
 
 def deploy_contract():
     print("Compiling...")
-    compilation = subprocess.Popen(['starknet-compile', 'contract.cairo',
-                                    '--output=contract_compiled.json', '--abi=contract_abi.json'])
-    compilation.communicate()
+    compilation = subprocess.run(['starknet-compile', 'contract.cairo',
+                                  '--output=contract_compiled.json', '--abi=contract_abi.json'], stdout=subprocess.PIPE)
+    print(compilation.stdout.decode('utf-8'))
     if compilation.returncode != 0:
         return compilation.returncode
     print("Compilation done.")
 
     print("Deploying...")
-    deployment = subprocess.Popen(
-        ['starknet', 'deploy', '--contract', 'contract_compiled.json', '--network', 'alpha'])
-    (stdout, stderr) = deployment.communicate()
-    stdout, stderr
+    deployment = subprocess.run(
+        ['starknet', 'deploy', '--contract', 'contract_compiled.json', '--network', 'alpha'], stdout=subprocess.PIPE)
     print("Deployment done.")
-    out = stdout.decode('utf-8')
-    print(out)
-
-
-# CONTRACT_ADDR =$(starknet-compile contract.cairo
-#                  - -output=contract_compiled.json
-#                  - -abi=contract_abi.json & & starknet deploy - -contract contract_compiled.json - -network alpha
-
-    # | grep address | awk '{print $3}' | tr - d \\.)
-# deploy_contract()
+    out = deployment.stdout.decode('utf-8')
+    contract_addr = out.split('\n')[1][18:18+64]
+    print(contract_addr)
 
 
 # call set_database()
 (serv_priv_key, serv_pub_key) = generate_keypair()
 
-
 # remove this, use official fn
+
+
 def try_vote(address: str) -> bool:
     return True
 
@@ -65,13 +58,12 @@ def generate_keys():
     return jsonify([{'private_key': priv, 'public_key': pub}])
 
 
-# @ app.route('/api/request_token', methods=['POST'])
-def request_token(address):
-    print("Request tokens")
-#     if 'address' not in request.args:
-    # return "Error: no address provided"
+@ app.route('/api/request_token', methods=['POST'])
+def request_token():
+    if 'address' not in request.args:
+        return "Error: no address provided"
 
-#     address = request.args['address']
+    address = request.args['address']
 
     if try_vote(address) == False:
         return "Error: already voted or not in POH"
@@ -85,9 +77,6 @@ def request_token(address):
                            serv_pub_key, blinded_request, c, r)
 
     return jsonify([{'commit_token': commit_token}])
-
-
-request_token("0x123")
 
 
 @ app.route('/api/commit', methods=['POST'])
