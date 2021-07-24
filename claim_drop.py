@@ -7,11 +7,12 @@ from starkware.crypto.signature.math_utils import (
 
 
 def claim_drop(private_key, key, token):
-    # private_key = int(sys.argv[1])
     public_key = private_to_stark_key(private_key)
-    # key = int(sys.argv[2])
     key_arr = list('{0:0128b}'.format(key))[::-1]
-    # token = int(sys.argv[3])
     token_y = get_y_coordinate(token)
-
     print(*[public_key, token_y, *key_arr], sep=' ')
+    str_arr = str(key_arr).replace("[", "")
+    str_arr = str_arr.replace("]", "")
+    str_arr = str_arr.replace("\'", "")
+    str_arr = str_arr.replace(",", "")
+    return(public_key, token_y, str_arr)

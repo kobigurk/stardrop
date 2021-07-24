@@ -39,6 +39,8 @@ def deploy_contract():
     contract_addr = out.split('\n')[1][18:18+64]
     print(contract_addr)
 
+# call set_database()
+(serv_priv_key, serv_pub_key) = generate_keypair()
 
 def initialize():
     print("Init...")
@@ -49,8 +51,6 @@ def initialize():
     print("Init done")
 
 
-# call set_database()
-(serv_priv_key, serv_pub_key) = generate_keypair()
 
 # remove this, use official fn
 
@@ -64,33 +64,6 @@ def home():
 def generate_keys():
     (priv, pub) = generate_keypair()
     return jsonify([{'private_key': priv, 'public_key': pub}])
-
-
-@ app.route('/api/end_commit_phase', methods=['POST'])
-def end_commit_phase():
-    (r, s) = end_commitment_phase(serv_priv_key)
-    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                         'contract_abi.json', '--function', 'end_commitment_phase', '--inputs', r, s])
-    if (ret.returncode != 0):
-        print('end_commit_phase subprocess ERROR')
-    return 0
-
-
-@ app.route('/api/submit_key', methods=['GET'])
-def key_submission():
-    (p_key ,r, s)  = submit_key(serv_priv_key)
-    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json', '--function', 'submit_key', '--inputs', p_key, r, s])
-    if (ret.returncode != 0):
-        print('submit_key subprocess ERROR')
-    return 0
-
-@ app.route('/api/claim_drop', methods=['GET'])
-def claiming_drop():
-    (pblic_key ,token_y, bin)  = claim_drop(serv_priv_key)
-    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json', '--function', 'submit_key', '--inputs', pblic_key, token_y, bin])
-    if (ret.returncode != 0):
-        print('claim_drop subprocess ERROR')
-    return 0
 
 @ app.route('/api/request_token', methods=['POST'])
 def request_token():
@@ -112,10 +85,32 @@ def request_token():
 
     return jsonify([{'commit_token': commit_token}])
 
+@ app.route('/api/end_commit_phase', methods=['POST'])
+def end_commit_phase():
+    (r, s) = end_commitment_phase(serv_priv_key)
+    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
+                         'contract_abi.json', '--function', 'end_commitment_phase', '--inputs', r, s])
+    if (ret.returncode != 0):
+        print('end_commit_phase subprocess ERROR')
+    return 0
 
-@ app.route('/api/commit', methods=['POST'])
-def commit():
-    return 'hi'
+
+@ app.route('/api/submit_key', methods=['GET'])
+def key_submission():
+    (p_key ,r, s)  = submit_key(serv_priv_key)
+    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json', '--function', 'submit_key', '--inputs', p_key, r, s])
+    if (ret.returncode != 0):
+        print('submit_key subprocess ERROR')
+    return 0
+
+##################NEED TO PUT THE userpublic_key###############################
+@ app.route('/api/claim_drop', methods=['GET'])
+def claiming_drop():
+    (unknown_pblic_key ,token_y, bin)  = claim_drop(serv_priv_key, usr_public_key, commi_token)
+    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json', '--function', 'submit_key', '--inputs', unknown_pblic_key, token_y, bin])
+    if (ret.returncode != 0):
+        print('claim_drop subprocess ERROR')
+    return 0
 
 
 app.run(host="192.168.106.112")
