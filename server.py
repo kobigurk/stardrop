@@ -20,11 +20,11 @@ contract_addr = ""
 # need to call node
 db.makeDB()
 
+
 def deploy_contract():
     print("Compiling...")
     compilation = subprocess.run(['starknet-compile', 'contract.cairo',
                                   '--output=contract_compiled.json', '--abi=contract_abi.json'], stdout=subprocess.PIPE)
-    print(compilation.stdout.decode('utf-8'))
     if compilation.returncode != 0:
         return compilation.returncode
     print("Compilation done.")
@@ -38,11 +38,19 @@ def deploy_contract():
     print(contract_addr)
 
 
+def initialize():
+    print("Init...")
+    init = subprocess.run(['starknet',  'invoke', '--address', contract_addr,
+                          '--abi', 'contract_abi.json', '--function', 'initialize', '--inputs', serv_pub_key, 1000, 2])
+    if init.returncode != 0:
+	    return init.returncode
+    print("Init done")
+
+
 # call set_database()
 (serv_priv_key, serv_pub_key) = generate_keypair()
 
 # remove this, use official fn
-
 
 
 @ app.route('/', methods=['GET'])
@@ -54,12 +62,16 @@ def home():
 def generate_keys():
     (priv, pub) = generate_keypair()
     return jsonify([{'private_key': priv, 'public_key': pub}])
+
+
 @ app.route('/api/end_commit_phase', methods=['GET'])
-def end_commit_phase() :
-    ret = subprocess.run(['starknet', 'invoke', '--address' ,contract_addr, '--abi', 'contract_abi.json', '--function', 'end_commitment_phase','--inputs', '1572514341211381639146744466808246693800547744347028176296700256447030933678', '1978481093464076802357781694214950813691007442586456313662641217350746463161'])
-    if (ret.returncode != 0) :
+def end_commit_phase():
+    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json', '--function', 'end_commitment_phase', '--inputs',
+                         '1572514341211381639146744466808246693800547744347028176296700256447030933678', '1978481093464076802357781694214950813691007442586456313662641217350746463161'])
+    if (ret.returncode != 0):
         print('end_commit_phase subprocess ERROR')
     return 0
+
 
 @ app.route('/api/request_token', methods=['POST'])
 def request_token():
