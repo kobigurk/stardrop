@@ -4,7 +4,15 @@ import SendInterface from './SendInterface';
 import VoteInterface from './VoteInterface';
 
 const styles = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     backgroundColor: 'blue',
+    maxWidth: "400px",
+    width: "50%",
+    height: "50%",
+    borderRadius: "20px",
 }
 
 function Container(props) {

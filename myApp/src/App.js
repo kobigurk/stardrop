@@ -5,7 +5,7 @@ import Container from './Container'
 import {useState} from 'react' 
 
 const styles = {
-    backgroundColor:'blue'
+    backgroundCoddlor:'blue',
 }
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
 
     return (
         <div>
-        <PhaseHeader/>
+        <PhaseHeader />
         <Container headerIndex={headerIndex} setHeaderIndex={setHeaderIndex}/>
         </div>
     );
