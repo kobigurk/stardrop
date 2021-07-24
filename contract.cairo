@@ -6,7 +6,7 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.hash import hash2
 from starkware.cairo.common.math import assert_lt_felt
-from starkware.starknet.core.storage.storage import Storage
+from starkware.starknet.common.storage import Storage
 from starkware.cairo.common.cairo_builtins import SignatureBuiltin
 from starkware.cairo.common.signature import verify_ecdsa_signature
 from starkware.cairo.common.alloc import alloc
@@ -54,7 +54,7 @@ func voprf_key_bits(bit : felt) -> (res : felt):
 end
 
 @external
-func initialize{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*}(
+func initialize{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
         user : felt, balance : felt, payout_for_users : felt):
     let (current_phase) = phase.read()
     assert current_phase = 0
@@ -66,7 +66,7 @@ func initialize{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*}(
 end
 
 @external
-func commit{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*}(
+func commit{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*, range_check_ptr}(
         user : felt, commitment : felt, sig_r : felt, sig_s : felt):
     let (current_phase) = phase.read()
     assert current_phase = 1
@@ -78,7 +78,7 @@ end
 
 @external
 func end_commitment_phase{
-        storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*}(
+        storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*, range_check_ptr}(
         sig_r : felt, sig_s : felt):
     let (current_phase) = phase.read()
     assert current_phase = 1
@@ -90,7 +90,7 @@ func end_commitment_phase{
 end
 
 @external
-func submit_key{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*}(
+func submit_key{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, ecdsa_ptr : SignatureBuiltin*, range_check_ptr}(
         key : felt, sig_r : felt, sig_s : felt):
     let (current_phase) = phase.read()
     assert current_phase = 2
@@ -211,6 +211,7 @@ func claim_drop{
 
     local storage_ptr: Storage* = storage_ptr
     local pedersen_ptr: HashBuiltin* = pedersen_ptr
+    local range_check_ptr = range_check_ptr
 
     let (local key_bits : felt*) = alloc()
     key_bits[0] = a0
@@ -350,19 +351,19 @@ func claim_drop{
 end
 
 @view
-func get_balance{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*}(user : felt) -> (res : felt):
+func get_balance{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, range_check_ptr}(user : felt) -> (res : felt):
     let (res) = user_balance.read(user)
     return (res)
 end
 
 @view
-func get_phase{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*}() -> (res : felt):
+func get_phase{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (res : felt):
     let (res) = phase.read()
     return (res)
 end
 
 @view
-func get_pool_balance{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*}() -> (res : felt):
+func get_pool_balance{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (res : felt):
     let (res) = pool_balance.read()
     return (res)
 end

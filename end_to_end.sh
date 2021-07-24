@@ -1,5 +1,6 @@
 #!/bin/bash -e
 
+export STARKNET_NETWORK=alpha
 ADDR=$(starknet-compile contract.cairo \
     --output=contract_compiled.json \
     --abi=contract_abi.json && starknet deploy --contract contract_compiled.json | grep address | awk '{print $3}' | tr -d \\.)
