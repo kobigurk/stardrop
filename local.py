@@ -7,6 +7,7 @@ import db
 import requests
 import flask
 from flask_cors import CORS
+from shared import LIVE_DEMO
 import subprocess
 
 SERV_URL = "http://192.168.106.112:5000"
@@ -20,7 +21,9 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 @ app.route('/api/generate_keys', methods=['GET'])
 def generate_keys():
     (priv, pub) = generate_keypair()
-    return jsonify([{'private_key': priv, 'public_key': pub}])
+    print("Generated pub: {}\nGenerated priv: {}".format(pub, priv))
+    print("str: ", str(pub), str(priv))
+    return jsonify([{'private_key': str(priv), 'public_key': str(pub)}])
 
 
 # Utility function that calls a node script to verify if the `signature` is indeed `message` signed by `poh_address`.
@@ -46,6 +49,7 @@ def get_contract_address():
 @ app.route('/api/generate_commit_token', methods=['POST'])
 def generate_commit_token():
     data = request.get_json()
+    print(data)
     if 'poh_address' not in data:
         return "Error: no address provided", 201
     if 'signature' not in data:
@@ -80,17 +84,19 @@ def generate_commit_token():
 
     commit_token = unblind(blinded_token, blinded_factor,
                            serv_pub_key, blinded_request, c, r)
+    print("commit token: ", commit_token)
 
-    return jsonify([{'commit_token': commit_token}])
+    return jsonify([{'commit_token': str(commit_token)}])
 
 
 @ app.route('/api/get_result', methods=['GET'])
 def get_result():
     contract_addr = get_contract_address()
-    res = subprocess.run(['starknet',  'call', '--address', contract_addr,
-                          '--abi', 'contract_abi.json', '--function', 'get_result'])
-    if res.returncode != 0:
-        return "Error executing starknet call: exited with {}".format(res.returncode), 201
+    if LIVE_DEMO:
+        res = subprocess.run(['starknet',  'call', '--address', contract_addr,
+                              '--abi', 'contract_abi.json', '--function', 'get_result'])
+        if res.returncode != 0:
+            return "Error executing starknet call: exited with {}".format(res.returncode), 201
     return True
 
 
@@ -100,4 +106,5 @@ def home():
     return "<h1>My local server</h1>"
 
 
-app.run(host="0.0.0.0", port=int(4242))
+print("Starting local")
+app.run(host="0.0.0.0", port=int(4242), use_reloader=False)
