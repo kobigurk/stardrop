@@ -41,6 +41,7 @@
   );
 }
 .btn-grad2 {
+  font-family: "Trebuchet MS";
   margin: 10px;
   padding: 15px 45px;
   text-align: center;
@@ -83,6 +84,12 @@
   align-items: center;
 }
 
+.header-text {
+  background: lightsteelblue;
+  border-radius: 20px;
+  width: 20%;
+}
+
 .connect-button {
   background-image: linear-gradient(
     to right,
@@ -92,6 +99,7 @@
   );
 }
 .connect-button {
+  font-family: "Trebuchet MS";
   position: absolute;
   top: 0px;
   right: 10px;
