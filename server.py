@@ -93,20 +93,20 @@ def key_submission():
     return 0
 
 
-@ app.route('/api/claim_drop', methods=['GET'])
+@ app.route('/api/claim_drop', methods=['POST'])
 def claiming_drop():
-    if 'public_key' not in request.args:
+    if 'public_key' not in request.form:
         return "Error: no public key provided", 201
-    if 'token' not in request.args:
-        return "Error: no token provided", 201
-    usr_public_key = request.args['public_key']
-    token = request.args['token']
+    if 'token' not in request.form:
+        return "Error: no token provided", 202
+    usr_public_key = request.form['public_key']
+    token = request.form['token']
     (unknown_pblic_key, token_y, bin) = claim_drop(
         serv_priv_key, usr_public_key, token)
     ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
                          'contract_abi.json', '--function', 'submit_key', '--inputs', unknown_pblic_key, token_y, bin])
     if (ret.returncode != 0):
-        return 'claim_drop subprocess ERROR', 201
+        return 'claim_drop subprocess ERROR', 203
     return 0
 
 
