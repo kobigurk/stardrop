@@ -1,33 +1,37 @@
 import {useState} from "react"
+import {pubKey, privKey, callGenerateKeys } from './API.js'
 
 const axios = require('axios');
 let rResult = 42;
+let areKeysGenerated = false;
 
-function CommitInterface() {
+const GenerateKeys = (props) => {
     return (
-        <div>
-            <h1>Prove you're human:</h1>
-            <AddressInput/>
-        </div>
+      <button onClick={() => {
+        callGenerateKeys();
+        props.setAreKeysGenerated(true);
+      }}>GenerateKeys</button>
     )
-};
+  
+}
 
-const AddressInput = () => {
+const CommitToken = () => {
     const [inputValue, setInputValue] = useState('default value');
     const [errorMessage, setErrorMessage] = useState('');
 
-    function onAddressSubmit (event) {
-      axios.post('http://192.168.106.112:5000/api/request_token?address=0xDD2b3f1d3a4f08622a25a3f75284fC01ad0c5CcA')
+    function generateCommitToken () {
+      axios.get('http://192.168.0.44:4242/api/generate_commit_token', {}, { params: {
+        
+      }})
           .then((response) => {
               console.log(response);
               if (response.status != 200) 
-                setErrorMessage("POH address not found");
+                setErrorMessage("ERROR");
               rResult = response.data[0].commit_token.sdf;
           })
           .catch((error) => {
-              setErrorMessage("POH address not found");
+              setErrorMessage("catch ERROR");
           })
-      event.preventDefault();
     }
 
     function saveValue(event) {
@@ -36,16 +40,18 @@ const AddressInput = () => {
     }
 
     return (
-      <form onSubmit={onAddressSubmit}>
-        <p>{errorMessage}</p>
-        <input onChange={saveValue} placeholder="Enter address" />
-        <button type="submit">Submit</button>
-      </form>
+        <button onClick={generateCommitToken}>Generate commit token</button>
     );
   }
 
-function sendRResult() {
-    axios.get('http://192.168.106.112:5000/api/generate_keys');
-}
-
-export default CommitInterface;
+export default function CommitInterface() {
+  const [areKeysGenerated, setAreKeysGenerated] = useState(false)
+    return (
+        <div>
+            <h1>bonsoir</h1>
+            {areKeysGenerated ?
+            <CommitToken/> :
+            <GenerateKeys setAreKeysGenerated={setAreKeysGenerated}/>}
+        </div>
+    )
+};
