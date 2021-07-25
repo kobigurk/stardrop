@@ -22,7 +22,7 @@ const GenerateKeys = (props) => {
       <button className={'btn-grad2'} onClick={() => {
         callGenerateKeys();
         props.setAreKeysGenerated(true);
-      }}>GenerateKeys</button>
+      }}>Generate Keys</button>
     </div>
   )
 

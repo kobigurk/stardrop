@@ -94,12 +94,8 @@ const types = ['OUI', 'NON'];
 function ToggleGroup() {
   const [active, setActive]= useState(types[0]);
   return <div>
-    <ButtonOui onClick={() => callVote('Yes')}>
-      YES
-    </ButtonOui>
-    <ButtonNon onClick={() => callVote('No')}>
-      NO
-    </ButtonNon>
+    <button className={'btn-grad2'} onClick={ () => callVote('Yes')}>YES</button>
+    <button className={'btn-grad2'} onClick={ () => callVote('No')}>NO</button>
     <button onClick={callEndVotingPhase}>END VOTING PHASE</button>
     <button onClick={callResultat}>CALL RESULTAT</button>
   </div>
@@ -109,7 +105,7 @@ function VoteInterface() {
   return (
     <div className="App">
       <header className="App-header">
-        SHOULD CARLOS MATOS PRESIDE THE ETHEREUM FONDATION ?
+        SHOULD CARLOS MATOS PRESIDE THE ETHEREUM FOUNDATION ?
         <ToggleGroup/>
       </header>
     </div>
@@ -117,4 +113,3 @@ function VoteInterface() {
 }
 
 export default VoteInterface;
-
