@@ -19,7 +19,7 @@ export function get_var() {
   return { rawSignature, pohAddress }
 }
 
-async function sign_message() {
+async function sign_message(callBack) {
 
   const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
   await provider.send('eth_requestAccounts', []);
@@ -31,6 +31,7 @@ async function sign_message() {
 
 
   console.log(rawSignature, pohAddress)
+  callBack();
 };
 
 function App() {
@@ -43,8 +44,8 @@ function App() {
       <PhaseHeader />
       <Container headerIndex={headerIndex} setHeaderIndex={setHeaderIndex} isConnected={isConnected} setIsConnected={setIsConnected} />
       <button className={'connect-button'} onClick={() => {
-        sign_message();
-        setIsConnected(true);
+        sign_message(() => { setIsConnected(true) });
+        // setIsConnected(true);
       }}>
         CONNECT
       </button>
