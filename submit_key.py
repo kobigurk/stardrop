@@ -10,4 +10,4 @@ def submit_key(private_key):
     (r, s) = sign(msg_hash=private_key, priv_key=private_key)
     print(f'Key: {private_key}')
     print(f'Signature: {(r, s)}')
-    return (private_key, r, s)
+    return (r, s)

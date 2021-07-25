@@ -4,14 +4,6 @@
             {
                 "name": "user",
                 "type": "felt"
-            },
-            {
-                "name": "balance",
-                "type": "felt"
-            },
-            {
-                "name": "payout_for_users",
-                "type": "felt"
             }
         ],
         "name": "initialize",
@@ -78,7 +70,26 @@
     {
         "inputs": [
             {
+                "name": "sig_r",
+                "type": "felt"
+            },
+            {
+                "name": "sig_s",
+                "type": "felt"
+            }
+        ],
+        "name": "end_voting_phase",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "name": "user",
+                "type": "felt"
+            },
+            {
+                "name": "vote",
                 "type": "felt"
             },
             {
@@ -598,21 +609,20 @@
                 "type": "felt"
             }
         ],
-        "name": "claim_drop",
+        "name": "cast_vote",
         "outputs": [],
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "name": "user",
-                "type": "felt"
-            }
-        ],
-        "name": "get_balance",
+        "inputs": [],
+        "name": "get_result",
         "outputs": [
             {
-                "name": "res",
+                "name": "num_yes",
+                "type": "felt"
+            },
+            {
+                "name": "num_no",
                 "type": "felt"
             }
         ],
@@ -622,18 +632,6 @@
     {
         "inputs": [],
         "name": "get_phase",
-        "outputs": [
-            {
-                "name": "res",
-                "type": "felt"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "get_pool_balance",
         "outputs": [
             {
                 "name": "res",
