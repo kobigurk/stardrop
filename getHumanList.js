@@ -14,7 +14,7 @@ async function main() {
         let query = '{submissions(first: 1000, where: {id_gt:"' + id + '"}){id creationTime submissionTime status registered name vouchees{id} requests{evidence{sender URI}}}}';
         let response = await axios.post("https://api.thegraph.com/subgraphs/name/kleros/proof-of-humanity-mainnet", { query: query })
             .then((res) => {
-                console.log(res.data.data);
+                // console.log(res.data.data);
                 return res;
             })
             .catch((error) => {
@@ -37,7 +37,9 @@ async function main() {
     graphData = { "data": data };
 
     data.submissions.forEach((human) => {
-        humanList.push(human.id)
+        if (human.registered) {
+            humanList.push(human.id)
+        }
     });
 
     fs.writeFileSync("./humanList.json", JSON.stringify(humanList));
