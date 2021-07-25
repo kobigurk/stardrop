@@ -1,4 +1,4 @@
-import './App.css';
+import './myStyles.css';
 import react, { useState } from "react";
 import styled from 'styled-components'
 import { get_pub_key } from './API'
