@@ -7,13 +7,12 @@ const axios = require('axios');
 let pubKey;
 
 
-
 function callEndVotingPhase(resultat) {
   const commitToken = get_commit_token();
   pubKey = get_pub_key();
   axios({
       method: 'post',
-      url: 'http://192.168.43.218:5000/api/end_voting_phase',
+      url: 'http://192.168.106.112:5000/api/end_voting_phase',
       data: {
         message: "vitalik<3"
       }
@@ -30,9 +29,11 @@ function callEndVotingPhase(resultat) {
 function callResultat(resultat) {
   axios({
       method: 'get',
-      url: 'http://192.168.43.218:4242/api/get_result'
+      url: 'http://192.168.106.112:4242/api/get_result'
     }).then((response) => {
           console.log(response);
+          console.log(response.yes)
+          console.log(response.no)
           if (response.status != 200) 
           console.log("ERROR");
             // setErrorMessage("ERROR");
@@ -53,14 +54,16 @@ function callVote(resultat) {
   }
   axios({
       method: 'post',
-      url: 'http://192.168.43.218:5000/api/vote',
+      url: 'http://192.168.106.112:5000/api/vote',
       data: {
         vote : resultat,
         commit_token : commitToken
       }
     }).then((response) => {
           console.log(response);
-          if (response.status != 200) 
+          alert("Number of yes : ", response.yes);
+          alert("Number of no : ", response.no);
+          if (response.status != 200)
           console.log("ERROR");
             // setErrorMessage("ERROR");
       })
