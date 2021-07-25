@@ -205,6 +205,7 @@ func cast_vote{
     local commitment = commitment
     let (t_hash) = hash2{hash_ptr=pedersen_ptr}(user, 0)
     assert t_hash_y * t_hash_y = t_hash * t_hash * t_hash + t_hash + 3141592653589793238462643383279502884197169399375105820974944592307816406665
+    local t_hash = t_hash
 
     let (paid_commitment) = paid.read(user)
     assert paid_commitment = 0
@@ -216,14 +217,25 @@ func cast_vote{
     if vote == 1:
         let (num_yes) = ayes.read()
         ayes.write(num_yes + 1)
+        tempvar storage_ptr : Storage* = storage_ptr
+        tempvar pedersen_ptr : HashBuiltin* = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
     else:
         if vote == 0:
             let (num_no) = nays.read()
             nays.write(num_no + 1)
+            tempvar storage_ptr : Storage* = storage_ptr
+            tempvar pedersen_ptr : HashBuiltin* = pedersen_ptr
+            tempvar range_check_ptr = range_check_ptr
+        else:
+            tempvar storage_ptr : Storage* = storage_ptr
+            tempvar pedersen_ptr : HashBuiltin* = pedersen_ptr
+            tempvar range_check_ptr = range_check_ptr
         end
+        tempvar storage_ptr : Storage* = storage_ptr
+        tempvar pedersen_ptr : HashBuiltin* = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
     end
-
-    local t_hash = t_hash
 
     local storage_ptr : Storage* = storage_ptr
     local pedersen_ptr : HashBuiltin* = pedersen_ptr
