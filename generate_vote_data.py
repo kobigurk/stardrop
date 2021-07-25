@@ -6,5 +6,7 @@ from starkware.crypto.signature.math_utils import (
 
 def generate_vote_data(key, token):
     serv_priv_key_bit_decomposition = list('{0:0128b}'.format(key))[::-1]
+    print(serv_priv_key_bit_decomposition)
+    print(len(serv_priv_key_bit_decomposition))
     token_y = get_y_coordinate(token)
     return (token_y, serv_priv_key_bit_decomposition)
