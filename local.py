@@ -9,7 +9,7 @@ import flask
 from flask_cors import CORS
 import subprocess
 
-SERV_URL = "http://192.168.0.44:5000"
+SERV_URL = "http://192.168.43.218:5000"
 
 
 app = flask.Flask(__name__)
