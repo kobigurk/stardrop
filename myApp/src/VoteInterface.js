@@ -3,24 +3,27 @@ import react, { useState } from "react";
 import styled from 'styled-components'
 import { pubKey } from './API'
 import { get_commit_token } from './API'
+const axios = require('axios');
  
 function clickMe() {
   alert("you click here")
 }
 
-function callVote() {
+function callVote(resultat) {
   const commitToken = get_commit_token();
-  axios.get('http://192.168.0.44:4242/api/vote', {params : {
-    address : pubKey,
-    vote : vote,
-    commitToken : commitToken}})
+  axios.post('http://192.168.0.44:4242/api/vote', {params : {
+    public_key : pubKey,
+    vote : resultat,
+    commit_token : commitToken}})
       .then((response) => {
           console.log(response);
           if (response.status != 200) 
-            setErrorMessage("ERROR");
+          console.log("ERROR");
+            // setErrorMessage("ERROR");
       })
       .catch((error) => {
-          setErrorMessage("catch ERROR");
+          // setErrorMessage("catch ERROR");
+          console.log("catch ERROR");
       })
 }
 
@@ -42,23 +45,23 @@ border-radius: 15px;
 cursor: pointer;
 margin: 20px 0px;
 `
-const ButtonSubmit = styled.button`
-background-color: blue;
-color: white;
-padding: 30px 90px;
-border-radius: 15px;
-cursor: pointer;
-margin: 0px 0px;
-`
+// const ButtonSubmit = styled.button`
+// background-color: blue;
+// color: white;
+// padding: 30px 90px;
+// border-radius: 15px;
+// cursor: pointer;
+// margin: 0px 0px;
+// `
 const types = ['OUI', 'NON'];
 
 function ToggleGroup() {
   const [active, setActive]= useState(types[0]);
   return <div>
-    <ButtonOui>
+    <ButtonOui onClick={callVote("Y")}>
       YES
     </ButtonOui>
-    <ButtonNon>
+    <ButtonNon onClick={callVote("N")}>
       NO
     </ButtonNon>
   </div>
@@ -70,9 +73,9 @@ function VoteInterface() {
       <header className="App-header">
         SHOULD CARLOS MATOS PRESIDE THE ETHEREUM FONDATION ?
         <ToggleGroup/>
-        <ButtonSubmit onClick={clickMe}>
+        {/* <ButtonSubmit onClick={clickMe}>
           SUBMIT
-        </ButtonSubmit>
+        </ButtonSubmit> */}
       </header>
     </div>
   );

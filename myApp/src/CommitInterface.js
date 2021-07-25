@@ -21,14 +21,13 @@ const GenerateKeys = (props) => {
 }
 
 function callEndCommitPhase () {
-  axios.get('http://192.168.0.44:4242/api/end_commit_phase', {params : {message: "vitalik<3"}})
+  axios.post('http://192.168.0.44:4242/api/end_commit_phase', {params : {message: "vitalik<3"}})
       .then((response) => {
           console.log(response);
-          if (response.status != 200) 
-            setErrorMessage("ERROR");
       })
       .catch((error) => {
-          setErrorMessage("catch ERROR");
+        console.log("catch ERROR");
+          // setErrorMessage("catch ERROR");
       })
 }
 
@@ -38,7 +37,7 @@ const CommitToken = () => {
 
     function generateCommitToken () {
       const {rawSignature, pohAddress} = get_var();
-      axios.get('http://192.168.0.44:4242/api/generate_commit_token', { params: {
+      axios.post('http://192.168.0.44:4242/api/generate_commit_token', { params: {
         poh_address: pohAddress,
         signature: rawSignature,
         public_key: pubKey
@@ -47,7 +46,6 @@ const CommitToken = () => {
               console.log(response);
               if (response.status != 200) 
                 setErrorMessage("ERROR");
-             rResult = response.data[0].commit_token.sdf;
           })
           .catch((error) => {
               setErrorMessage("catch ERROR");
@@ -75,7 +73,6 @@ export default function CommitInterface() {
             {areKeysGenerated ?
             <CommitToken/> :
             <GenerateKeys setAreKeysGenerated={setAreKeysGenerated}/>}
-        </div>
-        
+        </div>   
     )
 };
