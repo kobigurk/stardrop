@@ -12,11 +12,15 @@ function clickMe() {
 function callVote(resultat) {
   const commitToken = get_commit_token();
   pubKey = get_pub_key();
-  axios.post('http://192.168.0.44:4242/api/vote', {params : {
-    public_key : pubKey,
-    vote : resultat,
-    commit_token : commitToken}})
-      .then((response) => {
+  axios({
+      method: 'post',
+      url: 'http://192.168.0.44:4242/api/vote',
+      data: {
+        ppublic_key : pubKey,
+        vote : resultat,
+        commit_token : commitToken
+      }
+    }).then((response) => {
           console.log(response);
           if (response.status != 200) 
           console.log("ERROR");

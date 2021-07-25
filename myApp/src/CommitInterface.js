@@ -23,7 +23,13 @@ const GenerateKeys = (props) => {
 }
 
 function callEndCommitPhase () {
-  axios.post('http://192.168.0.44:4242/api/end_commit_phase', {params : {message: "vitalik<3"}})
+  axios({
+    method: 'post',
+    url: 'http://192.168.0.44:4242/api/end_commit_phase',
+    data: {
+      message: "vitalik<3"
+    }
+  })
       .then((response) => {
           console.log(response);
       })
