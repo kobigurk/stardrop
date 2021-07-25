@@ -28,36 +28,37 @@ def generate_keys():
 def verify_sig(signature, message, poh_address):
     verif_process = subprocess.run(
         ['node', 'signGestion/get_signer_address.js', str(signature), str(message), str(poh_address)])
-    return verif_process.returncode
+    return verif_process.returncode == 0
 
 
 @ app.route('/api/generate_commit_token', methods=['POST'])
 def generate_commit_token():
-    if 'poh_address' not in request.form:
+    data = request.get_json()
+    if 'poh_address' not in data:
         return "Error: no address provided", 201
-    if 'signature' not in request.form:
+    if 'signature' not in data:
         return "Error: no signature provided", 202
-    if 'public_key' not in request.form:
+    if 'public_key' not in data:
         return "Error: no public key provided", 203
 
-    poh_address = request.form['poh_address']
-    signature = request.form['signature']
-    public_key = request.form['public_key']
+    poh_address = data['poh_address']
+    signature = data['signature']
+    public_key = data['public_key']
 
     # Check that this the user is actually the owner of the POH address by verifying the signed message 'eip42'
     sig_is_valid = verify_sig(signature, 'eip42', poh_address)
     if not sig_is_valid:
         return "Error: invalid signature", 204
 
-   # check that user is actually in the POH and has not already generated a commit token
-    if db.try_vote(poh_address) == False:
-        return "Error: already voted or not in POH", 205
+    # check that user is actually in the POH and has not already generated a commit token
+    # if db.try_vote(poh_address) == False:
+    #     return "Error: already voted or not in POH", 205
 
-    (blinded_request, blinded_factor) = blind(public_key)
+    (blinded_request, blinded_factor) = blind(int(public_key))
 
     req = {'blinded_request': blinded_request}
     res = requests.post(
-        SERV_URL + '/api/sign_blinded_request', data=req)
+        SERV_URL + '/api/sign_blinded_request', req)
     res_json = res.json()
     blinded_token = int(res_json['blinded_token'])
     c = int(res_json['c'])
@@ -70,6 +71,10 @@ def generate_commit_token():
                            serv_pub_key, blinded_request, c, r)
 
     return jsonify([{'commit_token': commit_token}])
+
+
+# @ app.route('/api/get_result', methods=['GET'])
+# def get_result():
 
 
 @ app.route('/', methods=['GET'])

@@ -13,8 +13,8 @@ def blind(public_key):
     t_hash = [t_hash, get_y_coordinate(t_hash)]
     blinding_factor = get_random_private_key()
     blinded_t_hash = ec_mult(blinding_factor, t_hash, ALPHA, FIELD_PRIME)[0]
-    print(f'Public key: {public_key}')
-    print(f'Request: {t_hash}')
-    print(f'Blinded request: {blinded_t_hash}')
-    print(f'Blinding factor: {blinding_factor}')
+    # print(f'Public key: {public_key}')
+    # print(f'Request: {t_hash}')
+    # print(f'Blinded request: {blinded_t_hash}')
+    # print(f'Blinding factor: {blinding_factor}')
     return (blinded_t_hash, blinding_factor)

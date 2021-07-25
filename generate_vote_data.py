@@ -5,14 +5,6 @@ from starkware.crypto.signature.math_utils import (
 
 
 def generate_vote_data(key, token):
-    key_arr = list('{0:0128b}'.format(key))[::-1]
+    serv_priv_key_bit_decomposition = list('{0:0128b}'.format(key))[::-1]
     token_y = get_y_coordinate(token)
-    # print(*[, token_y, *key_arr], sep=' ')
-    serv_priv_key_bit_decomposition = str(key_arr).replace("[", "")
-    serv_priv_key_bit_decomposition = serv_priv_key_bit_decomposition.replace(
-        "]", "")
-    serv_priv_key_bit_decomposition = serv_priv_key_bit_decomposition.replace(
-        "\'", "")
-    serv_priv_key_bit_decomposition = serv_priv_key_bit_decomposition.replace(
-        ",", "")
     return (token_y, serv_priv_key_bit_decomposition)
