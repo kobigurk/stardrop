@@ -6,6 +6,7 @@ from starkware.crypto.signature.signature import (
 
 def generate_keypair():
     private_key = get_random_private_key() % 2**128
+    # private_key = 18104164123413602705177154317257244408
     public_key = private_to_stark_key(private_key)
     # print(f'Private key: {private_key}')
     # print(f'Public key: {public_key}')
