@@ -3,15 +3,18 @@ import { callGenerateKeys } from './API.js'
 import { get_var } from './App'
 import { get_pub_key } from './API'
 import { get_priv_key } from './API'
-import { pubKey, privKey } from './API.js'
 
 const axios = require('axios');
 let areKeysGenerated = false;
 let commit_token;
+let privKey;
+let pubKey;
 
 export function get_commit_token() {
   return commit_token;
 }
+
+
 
 const GenerateKeys = (props) => {
   return (
@@ -28,7 +31,7 @@ const GenerateKeys = (props) => {
 function callEndCommitPhase() {
   axios({
     method: 'post',
-    url: 'http://192.168.0.44:5000/api/end_commit_phase',
+    url: 'http://192.168.43.218:5000/api/end_commit_phase',
     data: {
       message: "vitalik<3"
     }
@@ -49,7 +52,7 @@ function callCommit() {
   }
   axios({
     method: 'post',
-    url: 'http://192.168.0.44:4242/api/commit',
+    url: 'http://192.168.43.218:4242/api/commit',
     data: {
       commit_token: commit_token,
       private_key: privKey
@@ -68,7 +71,6 @@ const CommitToken = () => {
   const [inputValue, setInputValue] = useState('default value');
   const [errorMessage, setErrorMessage] = useState('');
 
-
   function generateCommitToken() {
     const { rawSignature, pohAddress } = get_var();
     pubKey = get_pub_key();
@@ -78,7 +80,7 @@ const CommitToken = () => {
     }
     axios({
       method: 'post',
-      url: 'http://192.168.0.44:4242/api/generate_commit_token',
+      url: 'http://192.168.43.218:4242/api/generate_commit_token',
       data: {
         poh_address: pohAddress,
         signature: rawSignature,

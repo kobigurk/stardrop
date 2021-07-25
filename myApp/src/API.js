@@ -13,7 +13,7 @@ export function get_priv_key() {
 }
 
 export function callGenerateKeys() {
-    axios.get('http://192.168.0.44:4242/api/generate_keys')
+    axios.get('http://192.168.43.218:4242/api/generate_keys')
         .then((response) => {
             if (response.status != 200)
                 return;
@@ -25,17 +25,3 @@ export function callGenerateKeys() {
         })
         .catch((err) => { console.log("ERRRRRRR"); });
 }
-
-//export const myState = new function(initialValue) {
-//    this.isConnected = initialValue;
-//
-//    this.getIsConnected = () => {
-//        return this.isConnected;
-//    }
-//
-//    this.setIsConnected = (value) => {
-//        this.isConnected = value;
-//    }
-//}
-
-// export const myState = mygetState(false);
