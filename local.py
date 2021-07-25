@@ -9,7 +9,7 @@ import flask
 from flask_cors import CORS
 import subprocess
 
-SERV_URL = "http://192.168.43.218:5000"
+SERV_URL = "http://192.168.106.112:5000"
 
 
 app = flask.Flask(__name__)
@@ -49,7 +49,7 @@ def generate_commit_token():
     if not sig_is_valid:
         return "Error: invalid signature", 204
 
-    # check that user is actually in the POH and has not already generated a commit token
+   # check that user is actually in the POH and has not already generated a commit token
     if db.try_vote(poh_address) == False:
         return "Error: already voted or not in POH", 205
 
