@@ -9,11 +9,15 @@ let areKeysGenerated = false;
 let commit_token;
 let privKey;
 let pubKey;
+let voting_token;
 
 export function get_commit_token() {
   return commit_token;
 }
 
+export function get_voting_token() {
+  return voting_token;
+}
 
 
 const GenerateKeys = (props) => {
@@ -46,7 +50,7 @@ function callEndCommitPhase() {
 
 function callCommit() {
   privKey = get_priv_key();
-  console.log("poh = ", privKey);
+  console.log("commit = ", commit_token);
   if (!commit_token || !privKey) {
     return 300;
   }
@@ -89,6 +93,9 @@ const CommitToken = () => {
     }).then((response) => {
       console.log(response.data[0].commit_token);
       commit_token = response.data[0].commit_token;
+      voting_token = response.data[0].voting_token;
+
+      console.log(voting_token)
       if (response.status != 200)
         setErrorMessage("ERROR");
     })
