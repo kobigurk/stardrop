@@ -9,6 +9,10 @@ export function get_pub_key() {
     return pubKey;
 }
 
+export function get_priv_key() {
+    return privKey;
+}
+
 export function callGenerateKeys() {
     axios.get('http://192.168.0.44:4242/api/generate_keys')
     .then((response) => {

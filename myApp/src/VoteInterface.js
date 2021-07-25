@@ -28,16 +28,9 @@ function callEndVotingPhase(resultat) {
 }
 
 function callResultat(resultat) {
-  const commitToken = get_commit_token();
-  pubKey = get_pub_key();
-  console.log(pubKey)
-  if (!resultat || !commitToken || !pubKey) {
-    console.log("pb variable vide")
-    return 300;
-  }
   axios({
       method: 'get',
-      url: 'http://192.168.0.44:5000/api/get_result'
+      url: 'http://192.168.0.44:4242/api/get_result'
     }).then((response) => {
           console.log(response);
           if (response.status != 200) 
@@ -54,7 +47,7 @@ function callVote(resultat) {
   const commitToken = get_commit_token();
   pubKey = get_pub_key();
   console.log(pubKey)
-  if (!resultat || !commitToken || !pubKey) {
+  if (!resultat || !commitToken) {
     console.log("pb variable vide")
     return 300;
   }
@@ -62,7 +55,6 @@ function callVote(resultat) {
       method: 'post',
       url: 'http://192.168.0.44:5000/api/vote',
       data: {
-        public_key : pubKey,
         vote : resultat,
         commit_token : commitToken
       }
@@ -109,7 +101,7 @@ function ToggleGroup() {
       NO
     </ButtonNon>
     <button onClick={callEndVotingPhase}>END VOTING PHASE</button>
-    <button onClick={callResultat}>END VOTING PHASE</button>
+    <button onClick={callResultat}>CALL RESULTAT</button>
   </div>
 }
 
