@@ -90,7 +90,7 @@ def generate_commit_token():
                            serv_pub_key, blinded_request, c, r)
     print("commit token: ", commit_token)
 
-    return jsonify([{'commit_token': str(commit_token), 'voting_token': voting_token}])
+    return jsonify([{'commit_token': str(commit_token), 'voting_token': str(voting_token)}])
 
 
 @ app.route('/api/commit', methods=['POST'])
