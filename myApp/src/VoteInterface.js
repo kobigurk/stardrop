@@ -95,7 +95,7 @@ function ToggleGroup() {
   const [active, setActive]= useState(types[0]);
   return <div>
     <button className={'btn-grad2'} onClick={ () => callVote('Yes')}>YES</button>
-    <button className={'btn-grad2'} onClick={ () => callVote('Yes')}>NO</button>
+    <button className={'btn-grad2'} onClick={ () => callVote('No')}>NO</button>
     <button onClick={callEndVotingPhase}>END VOTING PHASE</button>
     <button onClick={callResultat}>CALL RESULTAT</button>
   </div>
@@ -113,4 +113,3 @@ function VoteInterface() {
 }
 
 export default VoteInterface;
-
