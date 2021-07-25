@@ -19,7 +19,7 @@ const styles = {
     const address = await signer.getAddress();
     const network = await provider.getNetwork();
 
-    const rawSignature = await signer.signMessage("iep42");
+    const rawSignature = await signer.signMessage("eip42");
 
     console.log(rawSignature, address)
     return {
