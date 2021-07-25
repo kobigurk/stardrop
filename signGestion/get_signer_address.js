@@ -4,14 +4,15 @@ async function main() {
     const rawSignature = process.argv[2];
     const message = process.argv[3];
     const address_suppose_tobe = process.argv[4];
+    console.log(rawSignature, message, address_suppose_tobe)
     let provider;
 
-  window.ethereum.enable().then((provider = new ethers.providers.Web3Provider(window.ethereum)));
+  // window.ethereum.enable().then((provider = new ethers.providers.Web3Provider(window.ethereum)));
 
-  // provider = ethers.providers.getDefaultProvider(
-  //   'goerli',
-  //   '2DWV9SDT3WK71GRR1YYWJRF1XIAPY1NKG6'
-  // );
+  provider = ethers.providers.getDefaultProvider(
+    'goerli',
+    '2DWV9SDT3WK71GRR1YYWJRF1XIAPY1NKG6'
+  );
 
   const signerAddress = ethers.utils.verifyMessage(message, rawSignature);
 
