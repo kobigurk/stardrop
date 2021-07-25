@@ -41,7 +41,7 @@ function App() {
 
   return (
     <div>
-      <PhaseHeader />
+      <PhaseHeader headerIndex={headerIndex} />
       <Container headerIndex={headerIndex} setHeaderIndex={setHeaderIndex} isConnected={isConnected} setIsConnected={setIsConnected} />
       <button className={'connect-button'} onClick={() => {
         sign_message(() => { setIsConnected(true) });
