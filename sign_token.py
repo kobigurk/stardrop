@@ -7,7 +7,6 @@ from starkware.crypto.signature.math_utils import (
 
 
 def sign_token(private_key, blinded_request):
-    # private_key = int(sys.argv[1])
     public_key = private_to_stark_key(private_key)
     public_key_computed = ec_mult(private_key, EC_GEN, ALPHA, FIELD_PRIME)[0]
     print(f'public key: {public_key}')

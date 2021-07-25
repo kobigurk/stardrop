@@ -7,9 +7,7 @@ from starkware.crypto.signature.math_utils import (
 
 
 def submit_key(private_key):
-    # private_key = int(sys.argv[1])
     (r, s) = sign(msg_hash=private_key, priv_key=private_key)
-
     print(f'Key: {private_key}')
     print(f'Signature: {(r, s)}')
     return (private_key, r, s)

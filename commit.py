@@ -7,11 +7,8 @@ from starkware.crypto.signature.math_utils import (
 
 
 def commit(private_key, token):
-    # private_key = int(sys.argv[1])
     public_key = private_to_stark_key(private_key)
-    # token = int(sys.argv[2])
     (r, s) = sign(msg_hash=token, priv_key=private_key)
-
     print(f'Public key: {public_key}')
     print(f'Token: {token}')
     print(f'Signature: {(r, s)}')

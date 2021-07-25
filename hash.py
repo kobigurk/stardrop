@@ -7,6 +7,5 @@ from starkware.crypto.signature.math_utils import (
 
 
 def hash(public_key):
-    # public_key = int(sys.argv[1])
     t_hash = pedersen_hash(public_key, 0)
     print(f'Request: {t_hash}')

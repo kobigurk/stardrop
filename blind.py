@@ -5,10 +5,7 @@ from starkware.crypto.signature.signature import (
 from starkware.crypto.signature.math_utils import (
     ECPoint, div_mod, ec_add, ec_double, ec_mult, is_quad_residue, sqrt_mod)
 
-
-# returns (blinded_request, blinding_factor)
 def blind(public_key):
-    # public_key = int(sys.argv[1])
     t_hash = pedersen_hash(public_key, 0)
     t_hash = [t_hash, get_y_coordinate(t_hash)]
     blinding_factor = get_random_private_key()
