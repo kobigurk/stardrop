@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { findByLabelText } from '@testing-library/react'
+import './myStyles.css'
 
 //const styles = {
 //    borderRadius: "12px",
@@ -13,7 +14,6 @@ import { findByLabelText } from '@testing-library/react'
 const styles = {
     justifyContent: 'space-evenly',
     display: 'flex',
-    backgroundColor: 'blue',
     maxWidth: "400px",
 //    width: "50%",
     height: "20px",
@@ -22,7 +22,7 @@ const styles = {
 
 function PhaseHeader(props) {
     return (
-        <div style={styles}>
+        <div className={'header'}>
           <div>Commit</div>  
           <div>Send</div>  
           <div>Vote</div>  
@@ -31,4 +31,3 @@ function PhaseHeader(props) {
 }
 
 export default PhaseHeader
-

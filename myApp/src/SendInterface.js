@@ -5,7 +5,7 @@ function SendInterface() {
     return (
         <div>
            Send Interface 
-           <button>Reveal server private key</button>
+           <button className={'btn-grad2'}>Reveal server private key</button>
         </div>
     )
 }

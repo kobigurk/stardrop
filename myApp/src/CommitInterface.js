@@ -1,5 +1,6 @@
 import {useState} from "react"
-import {pubKey, privKey, callGenerateKeys } from './API.js'
+import {pubKey, privKey, callGenerateKeys} from './API.js'
+// import { myState } from './API'
 
 const axios = require('axios');
 let rResult = 42;
@@ -7,10 +8,10 @@ let areKeysGenerated = false;
 
 const GenerateKeys = (props) => {
     return (
-      <button onClick={() => {
+      <button className={'btn-grad2'} onClick={() => {
         callGenerateKeys();
         props.setAreKeysGenerated(true);
-      }}>GenerateKeys</button>
+      }}>Generate Keys</button>
     )
   
 }
@@ -40,18 +41,21 @@ const CommitToken = () => {
     }
 
     return (
-        <button onClick={generateCommitToken}>Generate commit token</button>
+        <button className={'btn-grad2'} onClick={generateCommitToken}>Generate commit token</button>
     );
   }
 
-export default function CommitInterface() {
+export default function CommitInterface(props) {
+  let {isConnected, setIsConnected } = props;
   const [areKeysGenerated, setAreKeysGenerated] = useState(false)
+  // console.log("FFF:", myState.getIsConnected());
     return (
         <div>
-            <h1>bonsoir</h1>
-            {areKeysGenerated ?
+            {!isConnected ? <h1>Please connect your web3 wallet</h1> :
+            areKeysGenerated ?
             <CommitToken/> :
-            <GenerateKeys setAreKeysGenerated={setAreKeysGenerated}/>}
+            <GenerateKeys setAreKeysGenerated={setAreKeysGenerated}/>
+            }
         </div>
     )
 };

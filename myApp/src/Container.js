@@ -2,6 +2,7 @@ import React from 'react'
 import CommitInterface from './CommitInterface';
 import SendInterface from './SendInterface';
 import VoteInterface from './VoteInterface';
+import './myStyles.css';
 
 const styles = {
     position: "absolute",
@@ -17,6 +18,7 @@ const styles = {
 
 function Container(props) {
     let {headerIndex, setHeaderIndex} = props;
+    let {isConnected, setIsConnected} = props;
     let which;
 
     const nextHeader = () => {
@@ -29,13 +31,13 @@ function Container(props) {
     }
 
     if (headerIndex == 0)
-        which = <CommitInterface/>
+        which = <CommitInterface isConnected={isConnected} setIsConnected={setIsConnected}/>
     else if (headerIndex == 1)
         which = <SendInterface/>
     else
         which = <VoteInterface/>
     return (
-        <div style={styles}>
+        <div className={'container'}>
             <button onClick={nextHeader}>Next header</button>
             {which}
         </div>
