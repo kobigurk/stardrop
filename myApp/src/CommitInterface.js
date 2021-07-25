@@ -20,9 +20,6 @@ const GenerateKeys = (props) => {
         callGenerateKeys();
         props.setAreKeysGenerated(true);
       }}>GenerateKeys</button>
-      <button onClick={() => {
-        callEndCommitPhase()
-      }}></button>
     </div>
   )
 
