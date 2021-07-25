@@ -136,10 +136,9 @@ def vote():
         public_key, commit_token)
     arguments = ['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json',
                  '--function', 'cast_vote', '--inputs', serv_pub_key, hint_token_y] + serv_priv_key_decomposition
-    print(arguments)
     ret = subprocess.run(arguments)
     if (ret.returncode != 0):
-        return 'vote subprocess ERROR', 203
+        return 'Vote unsuccessful', 203
     return "Vote OK"
 
 
