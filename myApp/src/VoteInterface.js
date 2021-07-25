@@ -27,6 +27,29 @@ function callEndVotingPhase(resultat) {
       })
 }
 
+function callResultat(resultat) {
+  const commitToken = get_commit_token();
+  pubKey = get_pub_key();
+  console.log(pubKey)
+  if (!resultat || !commitToken || !pubKey) {
+    console.log("pb variable vide")
+    return 300;
+  }
+  axios({
+      method: 'get',
+      url: 'http://192.168.0.44:5000/api/get_result'
+    }).then((response) => {
+          console.log(response);
+          if (response.status != 200) 
+          console.log("ERROR");
+            // setErrorMessage("ERROR");
+      })
+      .catch((error) => {
+          // setErrorMessage("catch ERROR");
+          console.log("catch ERROR");
+      })
+}
+
 function callVote(resultat) {
   const commitToken = get_commit_token();
   pubKey = get_pub_key();
@@ -86,6 +109,7 @@ function ToggleGroup() {
       NO
     </ButtonNon>
     <button onClick={callEndVotingPhase}>END VOTING PHASE</button>
+    <button onClick={callResultat}>END VOTING PHASE</button>
   </div>
 }
 
