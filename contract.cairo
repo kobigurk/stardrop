@@ -217,11 +217,24 @@ func cast_vote{
     if vote == 1:
         let (num_yes) = ayes.read()
         ayes.write(num_yes + 1)
+        tempvar storage_ptr : Storage* = storage_ptr
+        tempvar pedersen_ptr : HashBuiltin* = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
     else:
         if vote == 0:
             let (num_no) = nays.read()
             nays.write(num_no + 1)
+            tempvar storage_ptr : Storage* = storage_ptr
+            tempvar pedersen_ptr : HashBuiltin* = pedersen_ptr
+            tempvar range_check_ptr = range_check_ptr
+        else:
+            tempvar storage_ptr : Storage* = storage_ptr
+            tempvar pedersen_ptr : HashBuiltin* = pedersen_ptr
+            tempvar range_check_ptr = range_check_ptr
         end
+        tempvar storage_ptr : Storage* = storage_ptr
+        tempvar pedersen_ptr : HashBuiltin* = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
     end
 
     local storage_ptr : Storage* = storage_ptr
