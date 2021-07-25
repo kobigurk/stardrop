@@ -211,7 +211,7 @@ func cast_vote{
     paid.write(user, 1)
 
     # Make sure vote is either 0 (No) or 1 (Yes)
-    assert vote * (1 - vote) == 0
+    assert vote * (1 - vote) = 0
 
     if vote == 1:
         let (num_yes) = ayes.read()
