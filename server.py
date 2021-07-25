@@ -73,7 +73,7 @@ def initialize():
     init = subprocess.run(['starknet',  'invoke', '--address', contract_addr,
                           '--abi', 'contract_abi.json', '--function', 'initialize', '--inputs', serv_pub_key])
     if init.returncode != 0:
-        return init.returncode, 201
+        return "Error executing initalize: exited with {}".format(init.returncode), 201
     print("Init done")
 
 
@@ -99,13 +99,18 @@ def get_serv_public_key():
     return ({'public_key': serv_pub_key})
 
 
+@ app.route('/api/get_contract_address', methods=['GET'])
+def get_contract_address():
+    return ({'contract_address': contract_addr})
+
+
 # Submits the server key to the smart contract.
 def key_submission():
     (r, s) = submit_key(serv_priv_key)
-    # ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
-    #                      'contract_abi.json', '--function', 'submit_key', '--inputs', serv_priv_key, r, s])
-    # if (ret.returncode != 0):
-    #     return 'Error: submit key unsuccessful', 204
+    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
+                         'contract_abi.json', '--function', 'submit_key', '--inputs', serv_priv_key, r, s])
+    if (ret.returncode != 0):
+        return 'Error: submit key unsuccessful', 204
     return "Key submission OK"
 
 
@@ -121,10 +126,10 @@ def end_commit_phase():
         return "Nice try feds!", 202
 
     (r, s) = end_commitment_phase(serv_priv_key)
-    # ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
-    #                       'contract_abi.json', '--function', 'end_commitment_phase', '--inputs', r, s])
-    # if (ret.returncode != 0):
-    #     return 'Error: end_commit_phase unsuccessful', 203
+    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
+                          'contract_abi.json', '--function', 'end_commitment_phase', '--inputs', r, s])
+    if (ret.returncode != 0):
+        return 'Error: end_commit_phase unsuccessful', 203
 
     key_submission_result = key_submission()
 
@@ -144,11 +149,11 @@ def end_voting_phase():
         return "Nice try feds!", 202
 
     (r, s) = end_vote_phase(serv_priv_key)
-    # ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
-    #                      'contract_abi.json', '--function', 'end_voting_phase', '--inputs', r, s])
+    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
+                         'contract_abi.json', '--function', 'end_voting_phase', '--inputs', r, s])
 
-    # if (ret.returncode != 0):
-    #     return 'Error: end voting phase unsuccessful', 203
+    if (ret.returncode != 0):
+        return 'Error: end voting phase unsuccessful', 203
     return "End voting phase OK"
 
 
@@ -177,9 +182,9 @@ def vote():
         public_key, commit_token)
     arguments = ['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json',
                  '--function', 'cast_vote', '--inputs', serv_pub_key, hint_token_y] + serv_priv_key_decomposition
-    # ret = subprocess.run(arguments)
-    # if (ret.returncode != 0):
-    # return 'Vote unsuccessful', 205
+    ret = subprocess.run(arguments)
+    if (ret.returncode != 0):
+        return 'Vote unsuccessful', 205
     return "Vote OK"
 
 # deploy_contract()
