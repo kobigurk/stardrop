@@ -1,5 +1,6 @@
 import {useState} from "react"
-import {pubKey, privKey, callGenerateKeys } from './API.js'
+import {pubKey, privKey, callGenerateKeys} from './API.js'
+// import { myState } from './API'
 
 const axios = require('axios');
 let rResult = 42;
@@ -44,14 +45,17 @@ const CommitToken = () => {
     );
   }
 
-export default function CommitInterface() {
+export default function CommitInterface(props) {
+  let {isConnected, setIsConnected } = props;
   const [areKeysGenerated, setAreKeysGenerated] = useState(false)
+  // console.log("FFF:", myState.getIsConnected());
     return (
         <div>
-            <h1>Please connect your web3 wallet</h1>
-            {areKeysGenerated ?
+            {!isConnected ? <h1>Please connect your web3 wallet</h1> :
+            areKeysGenerated ?
             <CommitToken/> :
-            <GenerateKeys setAreKeysGenerated={setAreKeysGenerated}/>}
+            <GenerateKeys setAreKeysGenerated={setAreKeysGenerated}/>
+            }
         </div>
     )
 };

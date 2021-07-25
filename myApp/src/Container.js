@@ -18,6 +18,7 @@ const styles = {
 
 function Container(props) {
     let {headerIndex, setHeaderIndex} = props;
+    let {isConnected, setIsConnected} = props;
     let which;
 
     const nextHeader = () => {
@@ -30,7 +31,7 @@ function Container(props) {
     }
 
     if (headerIndex == 0)
-        which = <CommitInterface/>
+        which = <CommitInterface isConnected={isConnected} setIsConnected={setIsConnected}/>
     else if (headerIndex == 1)
         which = <SendInterface/>
     else
