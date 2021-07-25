@@ -12,15 +12,19 @@ from flask_cors import CORS
 from end_commitment_phase import end_commitment_phase
 from end_vote_phase import end_vote_phase
 from submit_key import submit_key
+from shared import COMPILE_CONTRACT, DEPLOY_CONTRACT, LIVE_DEMO, get_phase, launch_command, print_output, wait_for_phase
 import sys
 
 
+DEFAULT_CONTRACT_ADDRESS = "0x0542ae152b46ad771402d237ca8b6e217e1843d415411f4a312ceeb3be4e8d9e"
+
 # Address of the smart-contract. Empty in the beginning, set by `deploy_contract()`
-contract_addr = ""
+contract_addr = DEFAULT_CONTRACT_ADDRESS
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+
 # print("Generating human list...")
 # humanlistProcess = subprocess.run(['node', 'getHumanList.js'])
 # if humanlistProcess.returncode != 0:
@@ -29,9 +33,11 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 # print("Generated human list!")
 
 # print("Creating database")
-db.makeDB()
-print("")
+# db.makeDB()
+# print("Database successfully created")
 (serv_priv_key, serv_pub_key) = generate_keypair()
+print("Server keypair succesfully created: private: {}, public: {}".format(
+      serv_priv_key, serv_pub_key))
 
 
 def shutdown_server():
@@ -41,38 +47,53 @@ def shutdown_server():
     func()
 
 
+def compile_contract():
+    if COMPILE_CONTRACT:
+        print("Compiling...")
+        res = subprocess.run(['starknet-compile', 'contract.cairo',
+                              '--output=contract_compiled.json', '--abi=contract_abi.json'], stdout=subprocess.PIPE)
+        print_output(res)
+        if res.returncode != 0:
+            return res.returncode, 201
+        print("Compilation done.")
+
+
 def deploy_contract():
-    print("Compiling...")
-    compilation = subprocess.run(['starknet-compile', 'contract.cairo',
-                                  '--output=contract_compiled.json', '--abi=contract_abi.json'], stdout=subprocess.PIPE)
-    if compilation.returncode != 0:
-        return compilation.returncode, 201
-    print("Compilation done.")
+    global contract_addr
+    if DEPLOY_CONTRACT:
+        print("Deploying...")
+        print("-- DEPLOY --\n")
+        res = launch_command(['starknet', 'deploy', '--contract',
+                              'contract_compiled.json', '--network', 'alpha'], True)
+        if res.returncode != 0:
+            print("Error while deploying: ", res.returncode)
+            sys.exit(1)
+        print("Deployment done.")
+        out = res.stdout.decode('utf-8')
 
-    print("Deploying...")
-    deployment = subprocess.run(
-        ['starknet', 'deploy', '--contract', 'contract_compiled.json', '--network', 'alpha'], stdout=subprocess.PIPE)
-    if deployment.returncode != 0:
-        print("Error while deploying: ", deployment.returncode)
-        print(deployment.stderr.decode('utf-8'))
-        sys.exit(1)
-    print("Deployment done.")
-    out = deployment.stdout.decode('utf-8')
-
-    # Dirty hack to extract contract address from process output.
-    print(out.split('\n'))
-    print(out.split('\n')[1])
-    contract_addr = out.split('\n')[1][18:18+64]
-    print(contract_addr)
+        # Dirty hack to extract contract address from process output.
+        print(out.split('\n'))
+        print(out.split('\n')[1])
+        contract_addr = out.split('\n')[1][18:18+66]
+        print('NEW CONTRACT ADDR', contract_addr)
+    return "OK"
 
 
 def initialize():
     print("Init...")
-    init = subprocess.run(['starknet',  'invoke', '--address', contract_addr,
-                          '--abi', 'contract_abi.json', '--function', 'initialize', '--inputs', serv_pub_key])
-    if init.returncode != 0:
-        return init.returncode, 201
+    if LIVE_DEMO:
+        print('contract addr', contract_addr)
+        print('serv pub key', str(serv_pub_key))
+        print("-- INITIALIZE --\n")
+        res = launch_command(['starknet',  'invoke', '--address', contract_addr,
+                              '--abi', 'contract_abi.json', '--function', 'initialize', '--network', 'alpha', '--inputs', str(serv_pub_key)], True)
+        if res.returncode != 0:
+            return "Error executing initalize: exited with {}".format(res.returncode)
     print("Init done")
+    # curr_phase = get_phase()
+    # if curr_phase != 1:
+    #     return "Error: did not properly increment phase"
+    return "OK"
 
 
 # Easter egg
@@ -83,9 +104,11 @@ def home():
 
 @ app.route('/api/sign_blinded_request', methods=['POST'])
 def sign_blinded_request():
-    if 'blinded_request' not in request.form:
+    # Dunno why get_json() doesn't work when called from `local.py`
+    data = request.form
+    if 'blinded_request' not in data:
         return 'Error: no blinded request provided', 201
-    blinded_request = int(request.form['blinded_request'])
+    blinded_request = int(data['blinded_request'])
     (blinded_token, c, r) = sign_token(serv_priv_key, blinded_request)
     return ({'blinded_token': blinded_token, 'c': c, 'r': r})
 
@@ -95,31 +118,42 @@ def get_serv_public_key():
     return ({'public_key': serv_pub_key})
 
 
+@ app.route('/api/get_contract_address', methods=['GET'])
+def get_contract_address():
+    return ({'contract_address': contract_addr})
+
+
 # Submits the server key to the smart contract.
 def key_submission():
+    print("-- Submitting Key --")
     (r, s) = submit_key(serv_priv_key)
-    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                         'contract_abi.json', '--function', 'submit_key', '--inputs', serv_priv_key, r, s])
-    if (ret.returncode != 0):
-        return 'Error: submit key unsuccessful', 204
+    if LIVE_DEMO:
+        res = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
+                              'contract_abi.json', '--function', '--network', 'alpha', 'submit_key', '--inputs', str(serv_priv_key), str(r), str(s)], True)
+        if res.returncode != 0:
+            return 'Error: submit key unsuccessful', 204
     return "Key submission OK"
 
 
 @ app.route('/api/end_commit_phase', methods=['POST'])
 def end_commit_phase():
-    if 'message' not in request.form:
+    data = request.get_json()
+    print(data)
+    if 'message' not in data:
         return "Error: missing message!", 201
-    message = request.form['message']
+    message = data['message']
 
     # Dumb check to reduce the chance of a random guy ending the commit phase. Not secure, only used for POC presentation.
     if message != 'vitalik<3':
         return "Nice try feds!", 202
 
+    print(serv_priv_key)
     (r, s) = end_commitment_phase(serv_priv_key)
-    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                          'contract_abi.json', '--function', 'end_commitment_phase', '--inputs', r, s])
-    if (ret.returncode != 0):
-        return 'Error: end_commit_phase unsuccessful', 203
+    if (LIVE_DEMO):
+        res = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
+                              'contract_abi.json', '--function', 'end_commitment_phase', '--network', 'alpha', '--inputs', str(r), str(s)], True)
+        if (res.returncode != 0):
+            return 'Error: end_commit_phase unsuccessful', 203
 
     key_submission_result = key_submission()
 
@@ -128,36 +162,40 @@ def end_commit_phase():
 
 @ app.route('/api/end_voting_phase', methods=['POST'])
 def end_voting_phase():
-    if 'message' not in request.form:
+    data = request.get_json()
+    print(data)
+    if 'message' not in data:
         return "Error: missing message!", 201
 
-    message = request.form['message']
+    message = data['message']
 
     # Dumb check to reduce the chance of a random guy ending the commit phase. Not secure, only used for POC presentation.
     if message != 'vitalik<3':
         return "Nice try feds!", 202
 
     (r, s) = end_vote_phase(serv_priv_key)
-    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                         'contract_abi.json', '--function', 'end_voting_phase', '--inputs', r, s])
-
-    if (ret.returncode != 0):
-        return 'Error: end voting phase unsuccessful', 203
+    if LIVE_DEMO:
+        res = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
+                             'contract_abi.json', '--function', 'end_voting_phase', '--network', 'alpha', '--inputs', str(r), str(s)], True)
+        if (res.returncode != 0):
+            return 'Error: end voting phase unsuccessful', 203
     return "End voting phase OK"
 
 
 @ app.route('/api/vote', methods=['POST'])
 def vote():
-    if 'public_key' not in request.form:
-        return "Error: no public key provided", 201
-    if 'commit_token' not in request.form:
-        return "Error: no commit token provided", 202
-    if 'vote' not in request.form:
+    data = request.get_json()
+    print(data)
+    if 'public_key' not in data:
+        return "Error: no public key provided", 206
+    if 'voting_token' not in data:
+        return "Error: no voting token provided", 202
+    if 'vote' not in data:
         return "Error: no vote provided", 203
 
-    public_key = request.form['public_key']
-    commit_token = request.form['commit_token']
-    vote = request.form['vote']
+    public_key = data['public_key']
+    voting_token = data['voting_token']
+    vote = data['vote']
 
     if vote == 'Yes':
         vote = 1
@@ -167,17 +205,21 @@ def vote():
         return "Error: invalid vote {}".format(vote), 204
 
     (hint_token_y, serv_priv_key_decomposition) = generate_vote_data(
-        public_key, commit_token)
-    arguments = ['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json',
-                 '--function', 'cast_vote', '--inputs', serv_pub_key, hint_token_y] + serv_priv_key_decomposition
-    ret = subprocess.run(arguments)
-    if (ret.returncode != 0):
-        return 'Vote unsuccessful', 205
+        serv_priv_key, int(voting_token))
+    if LIVE_DEMO:
+        arguments = ['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json',
+                     '--function', 'cast_vote', '--network', 'alpha', '--inputs', str(public_key), str(vote), str(hint_token_y), *serv_priv_key_decomposition]
+        res = launch_command(arguments, True)
+        if (res.returncode != 0):
+            return 'Vote unsuccessful', 205
     return "Vote OK"
 
 
+compile_contract()
 deploy_contract()
+msg = initialize()
+if msg != "OK":
+    print(msg)
+    exit(1)
 
-initialize()
-
-app.run(host="0.0.0.0", port=int(5000))
+app.run(host="0.0.0.0", port=int(5000), use_reloader=False)
