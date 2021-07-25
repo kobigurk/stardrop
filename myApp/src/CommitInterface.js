@@ -7,10 +7,10 @@ let areKeysGenerated = false;
 
 const GenerateKeys = (props) => {
     return (
-      <button onClick={() => {
+      <button className={'btn-grad2'} onClick={() => {
         callGenerateKeys();
         props.setAreKeysGenerated(true);
-      }}>GenerateKeys</button>
+      }}>Generate Keys</button>
     )
   
 }
@@ -40,7 +40,7 @@ const CommitToken = () => {
     }
 
     return (
-        <button onClick={generateCommitToken}>Generate commit token</button>
+        <button className={'btn-grad2'} onClick={generateCommitToken}>Generate commit token</button>
     );
   }
 
@@ -48,7 +48,7 @@ export default function CommitInterface() {
   const [areKeysGenerated, setAreKeysGenerated] = useState(false)
     return (
         <div>
-            <h1>bonsoir</h1>
+            <h1>Please connect your web3 wallet</h1>
             {areKeysGenerated ?
             <CommitToken/> :
             <GenerateKeys setAreKeysGenerated={setAreKeysGenerated}/>}

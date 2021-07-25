@@ -2,6 +2,7 @@ import React from 'react'
 import CommitInterface from './CommitInterface';
 import SendInterface from './SendInterface';
 import VoteInterface from './VoteInterface';
+import './myStyles.css';
 
 const styles = {
     position: "absolute",
@@ -35,7 +36,7 @@ function Container(props) {
     else
         which = <VoteInterface/>
     return (
-        <div style={styles}>
+        <div className={'container'}>
             <button onClick={nextHeader}>Next header</button>
             {which}
         </div>

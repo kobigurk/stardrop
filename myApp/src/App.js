@@ -36,7 +36,7 @@ function App() {
         <div>
         <PhaseHeader />
         <Container headerIndex={headerIndex} setHeaderIndex={setHeaderIndex}/>
-        <button onClick={sign_message}>
+        <button className={'connect-button'} onClick={sign_message}>
           CONNECT
         </button>
         </div>
