@@ -8,9 +8,9 @@
 .btn-grad {
   background-image: linear-gradient(
     to right,
-    #ff6e7f 0%,
-    #bfe9ff 51%,
-    #ff6e7f 100%
+    #cc95c0 0%,
+    #dbd4b4 51%,
+    #cc95c0 100%
   );
 }
 .btn-grad {
@@ -23,7 +23,12 @@
   color: white;
   box-shadow: 0 0 20px #eee;
   border-radius: 10px;
-  display: block;
+  display: inline-block;
+}
+
+.vertical-button {
+  display: flex;
+  flex-direction: column;
 }
 
 .btn-grad:hover {
@@ -134,4 +139,9 @@ body {
   background-color: #8ec5fc;
   border-radius: 10px;
   padding: 5px;
+}
+
+.clicked-btn {
+  background-color: red;
+  border: black 10px;
 }

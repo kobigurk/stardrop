@@ -19,7 +19,8 @@ function callEndVotingPhase(resultat) {
     }).then((response) => {
           console.log(response);
           if (response.status != 200) 
-          console.log("ERROR");
+            console.log("ERROR");
+
       })
       .catch((error) => {
           console.log("catch ERROR");
@@ -57,7 +58,7 @@ function callVote(resultat) {
       url: 'http://192.168.106.112:5000/api/vote',
       data: {
         vote : resultat,
-        commit_token : commitToken
+        commit_token : commitToken,
       }
     }).then((response) => {
           console.log(response);
@@ -73,35 +74,16 @@ function callVote(resultat) {
       })
 }
 
-const ButtonOui = styled.button`
-background-color: green;
-color: white;
-padding: 30px 90px;
-border-radius: 15px;
-outline: 0;
-cursor: pointer;
-margin: 20px 0px;
-
-`
-const ButtonNon = styled.button`
-background-color: red;
-color: white;
-padding: 30px 90px;
-border-radius: 15px;
-cursor: pointer;
-margin: 20px 0px;
-`
-
 const types = ['OUI', 'NON'];
 
 function ToggleGroup() {
-  const [active, setActive]= useState(types[0]);
+  const [active, setActive]= useState('');
   return <div>
     <button className={'btn-grad2'} onClick={ () => callVote('Yes')}>YES</button>
     <button className={'btn-grad2'} onClick={ () => callVote('No')}>NO</button>
     <button onClick={callEndVotingPhase}>END VOTING PHASE</button>
     <button onClick={callResultat}>CALL RESULTAT</button>
-  </div>
+    </div>
 }
 
 function VoteInterface() {
