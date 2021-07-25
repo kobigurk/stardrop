@@ -1,16 +1,17 @@
 import './App.css';
 import react, { useState } from "react";
 import styled from 'styled-components'
-import { pubKey } from './API'
 import { get_commit_token } from './API'
+import { get_pub_key } from './API'
 const axios = require('axios');
- 
+let pubKey;
 function clickMe() {
   alert("you click here")
 }
 
 function callVote(resultat) {
   const commitToken = get_commit_token();
+  pubKey = get_pub_key();
   axios.post('http://192.168.0.44:4242/api/vote', {params : {
     public_key : pubKey,
     vote : resultat,
@@ -73,9 +74,6 @@ function VoteInterface() {
       <header className="App-header">
         SHOULD CARLOS MATOS PRESIDE THE ETHEREUM FONDATION ?
         <ToggleGroup/>
-        {/* <ButtonSubmit onClick={clickMe}>
-          SUBMIT
-        </ButtonSubmit> */}
       </header>
     </div>
   );

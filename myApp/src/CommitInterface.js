@@ -1,7 +1,9 @@
 import {useState} from "react"
-import {pubKey, privKey, callGenerateKeys } from './API.js'
+import { callGenerateKeys } from './API.js'
 import { get_var } from './App'
+import { get_pub_key } from './API'
 
+let pubKey;
 const axios = require('axios');
 let areKeysGenerated = false;
 
@@ -27,7 +29,6 @@ function callEndCommitPhase () {
       })
       .catch((error) => {
         console.log("catch ERROR");
-          // setErrorMessage("catch ERROR");
       })
 }
 
@@ -37,12 +38,17 @@ const CommitToken = () => {
 
     function generateCommitToken () {
       const {rawSignature, pohAddress} = get_var();
-      axios.post('http://192.168.0.44:4242/api/generate_commit_token', { params: {
-        poh_address: pohAddress,
-        signature: rawSignature,
-        public_key: pubKey
-      }})
-          .then((response) => {
+      pubKey = get_pub_key();
+      console.log("poh = ", pubKey);
+      axios({
+        method: 'post',
+        url: 'http://192.168.0.44:4242/api/generate_commit_token',
+        data: {
+          poh_address: pohAddress,
+          signature: rawSignature,
+          public_key: pubKey
+        }
+      }).then((response) => {
               console.log(response);
               if (response.status != 200) 
                 setErrorMessage("ERROR");
