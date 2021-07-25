@@ -13,13 +13,13 @@ from end_commitment_phase import end_commitment_phase
 from end_vote_phase import end_vote_phase
 from submit_key import submit_key
 
+
+# Address of the smart-contract. Empty in the beginning, set by `deploy_contract()`
+contract_addr = ""
+
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-
-contract_addr = ""
-
-# need to call node
 db.makeDB()
 (serv_priv_key, serv_pub_key) = generate_keypair()
 
@@ -46,7 +46,7 @@ def deploy_contract():
 def initialize():
     print("Init...")
     init = subprocess.run(['starknet',  'invoke', '--address', contract_addr,
-                          '--abi', 'contract_abi.json', '--function', 'initialize', '--inputs', serv_pub_key, 1000, 2])
+                          '--abi', 'contract_abi.json', '--function', 'initialize', '--inputs', serv_pub_key])
     if init.returncode != 0:
         return init.returncode, 201
     print("Init done")
@@ -141,5 +141,9 @@ def vote():
         return 'Vote unsuccessful', 203
     return "Vote OK"
 
+
+deploy_contract()
+
+initialize()
 
 app.run(host="0.0.0.0", port=int(5000))
