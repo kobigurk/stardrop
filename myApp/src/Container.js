@@ -32,8 +32,6 @@ function Container(props) {
 
     if (headerIndex == 0)
         which = <CommitInterface isConnected={isConnected} setIsConnected={setIsConnected} />
-    else if (headerIndex == 1)
-        which = <SendInterface />
     else
         which = <VoteInterface />
     return (

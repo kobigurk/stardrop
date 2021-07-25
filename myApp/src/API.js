@@ -25,17 +25,3 @@ export function callGenerateKeys() {
         })
         .catch((err) => { console.log("ERRRRRRR"); });
 }
-
-//export const myState = new function(initialValue) {
-//    this.isConnected = initialValue;
-//
-//    this.getIsConnected = () => {
-//        return this.isConnected;
-//    }
-//
-//    this.setIsConnected = (value) => {
-//        this.isConnected = value;
-//    }
-//}
-
-// export const myState = mygetState(false);
