@@ -1,4 +1,4 @@
-from claim_drop import claim_drop
+from generate_vote_data import generate_vote_data
 from re import sub
 import db
 from unblind import unblind
@@ -10,6 +10,7 @@ from flask import request, jsonify
 import subprocess
 from flask_cors import CORS
 from end_commitment_phase import end_commitment_phase
+from end_vote_phase import end_vote_phase
 from submit_key import submit_key
 
 app = flask.Flask(__name__)
@@ -36,6 +37,8 @@ def deploy_contract():
         ['starknet', 'deploy', '--contract', 'contract_compiled.json', '--network', 'alpha'], stdout=subprocess.PIPE)
     print("Deployment done.")
     out = deployment.stdout.decode('utf-8')
+
+    # Dirty hack to extract contract address from process output.
     contract_addr = out.split('\n')[1][18:18+64]
     print(contract_addr)
 
@@ -49,6 +52,7 @@ def initialize():
     print("Init done")
 
 
+# Easter egg
 @ app.route('/', methods=['GET'])
 def home():
     return "<h1>Wassu wassu wassu wassu wassu wassu wassuuuuuuuuupppppp!!!</h1>"
@@ -56,14 +60,9 @@ def home():
 
 @ app.route('/api/sign_blinded_request', methods=['POST'])
 def sign_blinded_request():
-    print(request.form)
     if 'blinded_request' not in request.form:
         return 'Error: no blinded request provided', 201
     blinded_request = int(request.form['blinded_request'])
-    print("type")
-    print(type(blinded_request))
-    print(blinded_request)
-    print("--\n\n\n")
     (blinded_token, c, r) = sign_token(serv_priv_key, blinded_request)
     return ({'blinded_token': blinded_token, 'c': c, 'r': r})
 
@@ -73,24 +72,55 @@ def get_serv_public_key():
     return ({'public_key': serv_pub_key})
 
 
+# Submits the server key to the smart contract.
+def key_submission():
+    (r, s) = submit_key(serv_priv_key)
+    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
+                         'contract_abi.json', '--function', 'submit_key', '--inputs', serv_priv_key, r, s])
+    if (ret.returncode != 0):
+        return 'Error: submit key unsuccessful', 204
+    return "Key submission OK"
+
+
 @ app.route('/api/end_commit_phase', methods=['POST'])
 def end_commit_phase():
+    if 'message' not in request.form:
+        return "Error: missing message!", 201
+    message = request.form['message']
+
+    # Dumb check to reduce the chance of a random guy ending the commit phase. Not secure, only used for POC presentation.
+    if message != 'vitalik<3':
+        return "Nice try feds!", 202
+
     (r, s) = end_commitment_phase(serv_priv_key)
     ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
                           'contract_abi.json', '--function', 'end_commitment_phase', '--inputs', r, s])
     if (ret.returncode != 0):
-        return 'end_commit_phase subprocess ERROR', 201
-    return 0
+        return 'Error: end_commit_phase unsuccessful', 203
+
+    key_submission_result = key_submission()
+
+    return key_submission_result
 
 
-@ app.route('/api/submit_key', methods=['GET'])
-def key_submission():
-    (p_key, r, s) = submit_key(serv_priv_key)
+@ app.route('/api/end_voting_phase', methods=['POST'])
+def end_voting_phase():
+    if 'message' not in request.form:
+        return "Error: missing message!", 201
+
+    message = request.form['message']
+
+    # Dumb check to reduce the chance of a random guy ending the commit phase. Not secure, only used for POC presentation.
+    if message != 'vitalik<3':
+        return "Nice try feds!", 202
+
+    (r, s) = end_vote_phase(serv_priv_key)
     ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                         'contract_abi.json', '--function', 'submit_key', '--inputs', p_key, r, s])
+                         'contract_abi.json', '--function', 'end_voting_phase', '--inputs', r, s])
+
     if (ret.returncode != 0):
-        return 'submit_key subprocess ERROR', 201
-    return 0
+        return 'Error: end voting phase unsuccessful', 203
+    return "End voting phase OK"
 
 
 @ app.route('/api/vote', methods=['POST'])
@@ -99,15 +129,18 @@ def vote():
         return "Error: no public key provided", 201
     if 'commit_token' not in request.form:
         return "Error: no commit token provided", 202
-    usr_public_key = request.form['public_key']
-    token = request.form['commit_token']
-    (unknown_pblic_key, token_y, bin) = claim_drop(
-        serv_priv_key, usr_public_key, token)
-    ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                         'contract_abi.json', '--function', 'cast_vote', '--inputs', unknown_pblic_key, token_y, bin])
+    public_key = request.form['public_key']
+    commit_token = request.form['commit_token']
+
+    (hint_token_y, serv_priv_key_decomposition) = generate_vote_data(
+        public_key, commit_token)
+    arguments = ['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json',
+                 '--function', 'cast_vote', '--inputs', serv_pub_key, hint_token_y] + serv_priv_key_decomposition
+    print(arguments)
+    ret = subprocess.run(arguments)
     if (ret.returncode != 0):
         return 'vote subprocess ERROR', 203
-    return 0
+    return "Vote OK"
 
 
-app.run(host="192.168.0.44")
+app.run(host="0.0.0.0", port=int(5000))

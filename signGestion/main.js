@@ -1,7 +1,7 @@
 const sign_message = require('./sign_message');
 
 async function main() {
-    const blinded_request = "lol";
+    const blinded_request = "eip42";
     const rawSignature = await sign_message(blinded_request);
 
      console.log(rawSignature);
