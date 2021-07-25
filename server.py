@@ -189,12 +189,12 @@ def vote():
     if 'public_key' not in data:
         return "Error: no public key provided", 206
     if 'voting_token' not in data:
-        return "Error: no commit token provided", 202
+        return "Error: no voting token provided", 202
     if 'vote' not in data:
         return "Error: no vote provided", 203
 
     public_key = data['public_key']
-    voting_token = data['commit_token']
+    voting_token = data['voting_token']
     vote = data['vote']
 
     if vote == 'Yes':
