@@ -7,6 +7,7 @@ import db
 import requests
 import flask
 from flask_cors import CORS
+import subprocess
 
 SERV_URL = "http://192.168.0.44:5000"
 
@@ -22,25 +23,35 @@ def generate_keys():
     return jsonify([{'private_key': priv, 'public_key': pub}])
 
 
+def verify_sig(signature, message, poh_address):
+    verif_process = subprocess.run(
+        ['node', 'signGestion/get_signer_address.js', str(signature), str(message), str(poh_address)])
+    return verif_process.returncode
+
+
 @ app.route('/api/generate_commit_token', methods=['POST'])
 def generate_commit_token():
     if 'poh_address' not in request.form:
         return "Error: no address provided", 201
     if 'signature' not in request.form:
         return "Error: no signature provided", 202
+    if 'public_key' not in request.form:
+        return "Error: no public key provided", 203
 
     poh_address = request.form['poh_address']
-    print(type(poh_address))
     signature = request.form['signature']
+    public_key = request.form['public_key']
 
-    # check here with node
+    # check that this the user is actually the own of the POH address by verifying the signed message 'lol'
+    sig_is_valid = verify_sig(signature, 'lol', poh_address)
+    if not sig_is_valid:
+        return "Error: invalid signature", 204
 
+    # check that user is actually in the POH and has not already generated a commit token
     if db.try_vote(poh_address) == False:
-        return "Error: already voted or not in POH", 202
+        return "Error: already voted or not in POH", 205
 
-    (_priv, pub) = generate_keypair()
-
-    (blinded_request, blinded_factor) = blind(pub)
+    (blinded_request, blinded_factor) = blind(public_key)
 
     req = {'blinded_request': blinded_request}
     res = requests.post(
