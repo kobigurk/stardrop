@@ -17,4 +17,4 @@ def blind(public_key):
     # print(f'Request: {t_hash}')
     # print(f'Blinded request: {blinded_t_hash}')
     # print(f'Blinding factor: {blinding_factor}')
-    return (blinded_t_hash, blinding_factor)
+    return (t_hash, blinded_t_hash, blinding_factor)

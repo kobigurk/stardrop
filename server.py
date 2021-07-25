@@ -188,13 +188,13 @@ def vote():
     print(data)
     if 'public_key' not in data:
         return "Error: no public key provided", 206
-    if 'commit_token' not in data:
+    if 'voting_token' not in data:
         return "Error: no commit token provided", 202
     if 'vote' not in data:
         return "Error: no vote provided", 203
 
     public_key = data['public_key']
-    commit_token = data['commit_token']
+    voting_token = data['commit_token']
     vote = data['vote']
 
     if vote == 'Yes':
@@ -205,7 +205,7 @@ def vote():
         return "Error: invalid vote {}".format(vote), 204
 
     (hint_token_y, serv_priv_key_decomposition) = generate_vote_data(
-        serv_priv_key, int(commit_token))
+        serv_priv_key, int(voting_token))
     if LIVE_DEMO:
         arguments = ['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json',
                      '--function', 'cast_vote', '--network', 'alpha', '--inputs', str(public_key), str(vote), str(hint_token_y), *serv_priv_key_decomposition]

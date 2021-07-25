@@ -74,7 +74,7 @@ def generate_commit_token():
     if CHECK_POH and db.try_vote(poh_address) == False:
         return "Error: already voted or not in POH", 205
 
-    (blinded_request, blinded_factor) = blind(int(public_key))
+    (voting_token, blinded_request, blinded_factor) = blind(int(public_key))
 
     req = {'blinded_request': blinded_request}
     res = requests.post(
@@ -90,7 +90,7 @@ def generate_commit_token():
                            serv_pub_key, blinded_request, c, r)
     print("commit token: ", commit_token)
 
-    return jsonify([{'commit_token': str(commit_token)}])
+    return jsonify([{'commit_token': str(commit_token), 'voting_token': voting_token}])
 
 
 @ app.route('/api/commit', methods=['POST'])
