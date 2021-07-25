@@ -205,7 +205,6 @@ func cast_vote{
     local commitment = commitment
     let (local t_hash) = hash2{hash_ptr=pedersen_ptr}(user, 0)
     assert t_hash_y * t_hash_y = t_hash * t_hash * t_hash + t_hash + 3141592653589793238462643383279502884197169399375105820974944592307816406665
-    local t_hash = t_hash
 
     let (paid_commitment) = paid.read(user)
     assert paid_commitment = 0

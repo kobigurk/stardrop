@@ -8,7 +8,7 @@ import requests
 # whether to actually call and deploy starknet
 LIVE_DEMO = True
 DEPLOY_CONTRACT = True
-COMPILE_CONTRACT = False
+COMPILE_CONTRACT = True
 CHECK_POH = False
 LOGGING = True
 

@@ -89,8 +89,6 @@ def initialize():
                               '--abi', 'contract_abi.json', '--function', 'initialize', '--network', 'alpha', '--inputs', str(serv_pub_key)], True)
         if res.returncode != 0:
             return "Error executing initalize: exited with {}".format(res.returncode)
-        # if not wait_for_phase(1, contract_addr):
-            # return "Error while waiting for phase 1", 206
     print("Init done")
     # curr_phase = get_phase()
     # if curr_phase != 1:
@@ -134,8 +132,6 @@ def key_submission():
                               'contract_abi.json', '--function', '--network', 'alpha', 'submit_key', '--inputs', str(serv_priv_key), str(r), str(s)], True)
         if res.returncode != 0:
             return 'Error: submit key unsuccessful', 204
-        if not wait_for_phase(3, contract_addr):
-            return 'Error: incorrect phase for submit key', 205
     return "Key submission OK"
 
 
@@ -158,8 +154,6 @@ def end_commit_phase():
                               'contract_abi.json', '--function', 'end_commitment_phase', '--network', 'alpha', '--inputs', str(r), str(s)], True)
         if (res.returncode != 0):
             return 'Error: end_commit_phase unsuccessful', 203
-        if not wait_for_phase(2, contract_addr):
-            return 'Error: could not wait for phase', 204
 
     key_submission_result = key_submission()
 
@@ -185,8 +179,6 @@ def end_voting_phase():
                              'contract_abi.json', '--function', 'end_voting_phase', '--network', 'alpha', '--inputs', str(r), str(s)], True)
         if (res.returncode != 0):
             return 'Error: end voting phase unsuccessful', 203
-        if not wait_for_phase(4, contract_addr):
-            return "Error: incorrect phase after voting phase"
     return "End voting phase OK"
 
 
@@ -194,11 +186,14 @@ def end_voting_phase():
 def vote():
     data = request.get_json()
     print(data)
+    if 'public_key' not in data:
+        return "Error: no public key provided", 206
     if 'commit_token' not in data:
         return "Error: no commit token provided", 202
     if 'vote' not in data:
         return "Error: no vote provided", 203
 
+    public_key = data['public_key']
     commit_token = data['commit_token']
     vote = data['vote']
 
@@ -213,7 +208,7 @@ def vote():
         serv_priv_key, int(commit_token))
     if LIVE_DEMO:
         arguments = ['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json',
-                     '--function', 'cast_vote', '--network', 'alpha', '--inputs', str(serv_pub_key), str(vote), str(hint_token_y), *serv_priv_key_decomposition]
+                     '--function', 'cast_vote', '--network', 'alpha', '--inputs', str(public_key), str(vote), str(hint_token_y), *serv_priv_key_decomposition]
         res = launch_command(arguments, True)
         if (res.returncode != 0):
             return 'Vote unsuccessful', 205
