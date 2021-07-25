@@ -4,11 +4,6 @@ import { get_var } from './App'
 let pubKey, privKey;
 
 const axios = require('axios');
-let commitToken;
-
-export function get_commit_token() {
-    return commitToken;
-}
 
 export function get_pub_key() {
     return pubKey;

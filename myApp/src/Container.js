@@ -22,7 +22,7 @@ function Container(props) {
     const nextHeader = () => {
         let index = headerIndex;
         index++;
-        if (index > 2)
+        if (index > 1)
             index = 0;
         console.log(index);
         setHeaderIndex(index);
@@ -30,8 +30,6 @@ function Container(props) {
 
     if (headerIndex == 0)
         which = <CommitInterface/>
-    else if (headerIndex == 1)
-        which = <SendInterface/>
     else
         which = <VoteInterface/>
     return (

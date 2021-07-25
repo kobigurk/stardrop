@@ -6,6 +6,11 @@ import { get_pub_key } from './API'
 let pubKey;
 const axios = require('axios');
 let areKeysGenerated = false;
+let commit_token;
+
+export function get_commit_token() {
+  return commit_token;
+}
 
 const GenerateKeys = (props) => {
     return (
@@ -25,7 +30,7 @@ const GenerateKeys = (props) => {
 function callEndCommitPhase () {
   axios({
     method: 'post',
-    url: 'http://192.168.0.44:4242/api/end_commit_phase',
+    url: 'http://192.168.0.44:5000/api/end_commit_phase',
     data: {
       message: "vitalik<3"
     }
@@ -46,6 +51,9 @@ const CommitToken = () => {
       const {rawSignature, pohAddress} = get_var();
       pubKey = get_pub_key();
       console.log("poh = ", pubKey);
+      if (!rawSignature || !pohAddress || !pubKey) {
+        return 300;
+      }
       axios({
         method: 'post',
         url: 'http://192.168.0.44:4242/api/generate_commit_token',
@@ -55,7 +63,8 @@ const CommitToken = () => {
           public_key: pubKey
         }
       }).then((response) => {
-              console.log(response);
+              console.log(response.data[0].commit_token);
+              commit_token = response.data[0].commit_token;
               if (response.status != 200) 
                 setErrorMessage("ERROR");
           })
