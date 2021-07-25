@@ -23,6 +23,8 @@ def generate_keys():
     return jsonify([{'private_key': priv, 'public_key': pub}])
 
 
+# Utility function that calls a node script to verify if the `signature` is indeed `message` signed by `poh_address`.
+# Used to basically verify that the user is indeed the owner of poh_address.
 def verify_sig(signature, message, poh_address):
     verif_process = subprocess.run(
         ['node', 'signGestion/get_signer_address.js', str(signature), str(message), str(poh_address)])
@@ -42,8 +44,8 @@ def generate_commit_token():
     signature = request.form['signature']
     public_key = request.form['public_key']
 
-    # check that this the user is actually the own of the POH address by verifying the signed message 'lol'
-    sig_is_valid = verify_sig(signature, 'lol', poh_address)
+    # Check that this the user is actually the owner of the POH address by verifying the signed message 'eip42'
+    sig_is_valid = verify_sig(signature, 'eip42', poh_address)
     if not sig_is_valid:
         return "Error: invalid signature", 204
 
@@ -68,3 +70,12 @@ def generate_commit_token():
                            serv_pub_key, blinded_request, c, r)
 
     return jsonify([{'commit_token': commit_token}])
+
+
+@ app.route('/', methods=['GET'])
+# Easter egg
+def home():
+    return "<h1>My local server</h1>"
+
+
+app.run(host="0.0.0.0", port=int(4242))
