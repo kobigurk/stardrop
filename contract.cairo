@@ -27,11 +27,11 @@ func phase() -> (res : felt):
 end
 
 @storage_var
-func yae() -> (res : felt):
+func ayes() -> (res : felt):
 end
 
 @storage_var
-func nay() -> (res : felt):
+func nays() -> (res : felt):
 end
 
 @storage_var
@@ -210,14 +210,16 @@ func cast_vote{
     assert paid_commitment = 0
     paid.write(user, 1)
 
+    # Make sure vote is either 0 (No) or 1 (Yes)
     assert vote * (1 - vote) == 0
+
     if vote == 1:
-        let (num_yes) = yea.read()
-        yea.write(num_yes + 1)
+        let (num_yes) = ayes.read()
+        ayes.write(num_yes + 1)
     else:
         if vote == 0:
-            let (num_no) = nay.read()
-            nay.write(num_no + 1)
+            let (num_no) = nays.read()
+            nays.write(num_no + 1)
         end
     end
 
@@ -369,8 +371,8 @@ func get_result{storage_ptr : Storage*, pedersen_ptr : HashBuiltin*, range_check
         num_yes : felt, num_no : felt):
     let (current_phase) = phase.read()
     assert current_phase = 4
-    let (num_yes) = yae.read()
-    let (num_no) = nay.read()
+    let (num_yes) = ayes.read()
+    let (num_no) = nays.read()
     return (num_yes, num_no)
 end
 
