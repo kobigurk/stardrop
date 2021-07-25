@@ -3,12 +3,17 @@ import VoteInterface from './VoteInterface'
 import PhaseHeader from './PhaseHeader'
 import Container from './Container'
 import {useState} from 'react' 
-import detectEthereumProvider from '@metamask/detect-provider'
-import {rawSignature, pohAddress} from './API'
 const ethers = require('ethers')
+
+let pohAddress;
+let rawSignature;
 
 const styles = {
     backgroundCoddlor:'blue',
+}
+
+export function get_var() {
+  return {rawSignature, pohAddress};
 }
 
  async function sign_message() {

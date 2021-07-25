@@ -1,11 +1,12 @@
 import { data } from 'browserslist';
+import { get_var } from './App'
 
 export let pubKey, privKey;
-export let rawSignature, pohAddress = null;
 
 const axios = require('axios');
 
 export function callGenerateCommitToken() {
+    const {rawSignature, pohAddress} = get_var();
     axios.post('http://192.168.0.44:4242/api/generate_commit_token', {
         poh_address: pohAddress,
         signature: rawSignature,
@@ -15,10 +16,7 @@ export function callGenerateCommitToken() {
         if (response.status != 200)
             return;
         console.log(response)
-        privKey = response.data[0].private_key;
-        pubKey = response.data[0].public_key;
-        console.log('call generate pubkey', pubKey);
-        console.log('call generate privkeys', privKey);
+        // response.data[0]
     })
     .catch((err) => {console.log("ERRRRRRR");});
 }

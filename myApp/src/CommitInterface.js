@@ -1,5 +1,6 @@
 import {useState} from "react"
 import {pubKey, privKey, callGenerateKeys } from './API.js'
+import { get_var } from './App'
 
 const axios = require('axios');
 //let rResult = 42;
@@ -20,7 +21,11 @@ const CommitToken = () => {
     const [errorMessage, setErrorMessage] = useState('');
 
     function generateCommitToken () {
-      axios.get('http://192.168.0.44:4242/api/generate_commit_token', {}, { params: {
+      const {rawSignature, pohAddress} = get_var();
+      axios.get('http://192.168.0.44:4242/api/generate_commit_token', { params: {
+        poh_address: pohAddress,
+        signature: rawSignature,
+        public_key: pubKey
       }})
           .then((response) => {
               console.log(response);
