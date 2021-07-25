@@ -12,6 +12,7 @@ from flask_cors import CORS
 from end_commitment_phase import end_commitment_phase
 from end_vote_phase import end_vote_phase
 from submit_key import submit_key
+import sys
 
 
 # Address of the smart-contract. Empty in the beginning, set by `deploy_contract()`
@@ -20,8 +21,24 @@ contract_addr = ""
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+# print("Generating human list...")
+# humanlistProcess = subprocess.run(['node', 'getHumanList.js'])
+# if humanlistProcess.returncode != 0:
+# print("Failed to generate human list. Exiting")
+# sys.exit(1)
+# print("Generated human list!")
+
+# print("Creating database")
 db.makeDB()
+print("")
 (serv_priv_key, serv_pub_key) = generate_keypair()
+
+
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
 
 
 def deploy_contract():
@@ -35,10 +52,16 @@ def deploy_contract():
     print("Deploying...")
     deployment = subprocess.run(
         ['starknet', 'deploy', '--contract', 'contract_compiled.json', '--network', 'alpha'], stdout=subprocess.PIPE)
+    if deployment.returncode != 0:
+        print("Error while deploying: ", deployment.returncode)
+        print(deployment.stderr.decode('utf-8'))
+        sys.exit(1)
     print("Deployment done.")
     out = deployment.stdout.decode('utf-8')
 
     # Dirty hack to extract contract address from process output.
+    print(out.split('\n'))
+    print(out.split('\n')[1])
     contract_addr = out.split('\n')[1][18:18+64]
     print(contract_addr)
 
@@ -129,8 +152,19 @@ def vote():
         return "Error: no public key provided", 201
     if 'commit_token' not in request.form:
         return "Error: no commit token provided", 202
+    if 'vote' not in request.form:
+        return "Error: no vote provided", 203
+
     public_key = request.form['public_key']
     commit_token = request.form['commit_token']
+    vote = request.form['vote']
+
+    if vote == 'Yes':
+        vote = 1
+    elif vote == "No":
+        vote = 0
+    else:
+        return "Error: invalid vote {}".format(vote), 204
 
     (hint_token_y, serv_priv_key_decomposition) = generate_vote_data(
         public_key, commit_token)
@@ -138,7 +172,7 @@ def vote():
                  '--function', 'cast_vote', '--inputs', serv_pub_key, hint_token_y] + serv_priv_key_decomposition
     ret = subprocess.run(arguments)
     if (ret.returncode != 0):
-        return 'Vote unsuccessful', 203
+        return 'Vote unsuccessful', 205
     return "Vote OK"
 
 
