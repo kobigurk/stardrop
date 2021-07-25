@@ -31,6 +31,18 @@ def verify_sig(signature, message, poh_address):
     return verif_process.returncode == 0
 
 
+def get_serv_pub_key():
+    pub_key_req = requests.get(SERV_URL + '/api/get_serv_public_key')
+    serv_pub_key = int(pub_key_req.json()['public_key'])
+    return serv_pub_key
+
+
+def get_contract_address():
+    contract_address_req = requests.get(SERV_URL + '/api/get_contract_address')
+    contract_address = int(contract_address_req.json()['contract_address'])
+    return contract_address
+
+
 @ app.route('/api/generate_commit_token', methods=['POST'])
 def generate_commit_token():
     data = request.get_json()
@@ -64,8 +76,7 @@ def generate_commit_token():
     c = int(res_json['c'])
     r = int(res_json['r'])
 
-    pub_key_req = requests.get(SERV_URL + '/api/get_serv_public_key')
-    serv_pub_key = int(pub_key_req.json()['public_key'])
+    serv_pub_key = get_serv_pub_key()
 
     commit_token = unblind(blinded_token, blinded_factor,
                            serv_pub_key, blinded_request, c, r)
@@ -73,8 +84,14 @@ def generate_commit_token():
     return jsonify([{'commit_token': commit_token}])
 
 
-# @ app.route('/api/get_result', methods=['GET'])
-# def get_result():
+@ app.route('/api/get_result', methods=['GET'])
+def get_result():
+    contract_addr = get_contract_address()
+    res = subprocess.run(['starknet',  'call', '--address', contract_addr,
+                          '--abi', 'contract_abi.json', '--function', 'get_result'])
+    if res.returncode != 0:
+        return "Error executing starknet call: exited with {}".format(res.returncode), 201
+    return True
 
 
 @ app.route('/', methods=['GET'])
