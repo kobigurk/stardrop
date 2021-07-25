@@ -42,6 +42,7 @@ def get_phase(contract_address):
 
 
 def wait_for_phase(expected_phase, contract_address):
+    return
     for i in range(60):
         phase = get_phase(contract_address)
         if phase == expected_phase:
@@ -72,9 +73,9 @@ def wait_until_included(tx_id, level='Pending'):
         if "tx_failure_reason" in json_res:
             print("\n\n---TX FAILED---\n\n")
             return False
-        elif level == 'ACCEPTED':
-            if json_res['tx_status'] == 'ACCEPTED_ON_CHAIN':
-                return True
+        # elif level == 'ACCEPTED':
+        #     if json_res['tx_status'] == 'ACCEPTED_ON_CHAIN':
+            # return True
         elif json_res['tx_status'] == 'PENDING' or json_res['tx_status'] == 'ACCEPTED_ON_CHAIN':
             return True
         print("Waiting for tx {}... time elapsed: {}s".format(tx_id, i * 5))
@@ -95,9 +96,9 @@ def launch_command(args, should_wait_until_included):
         # tx_id not found
         if tx_id == -1:
             return subproc
-        if args[1] == 'deploy':
-            if wait_until_included(tx_id, 'ACCEPTED') == False:
-                return False
-        elif wait_until_included(tx_id, 'PENDING') == False:
+        # if args[1] == 'deploy':
+        #     if wait_until_included(tx_id, 'PENDING') == False:
+            # return False
+        if wait_until_included(tx_id, 'PENDING') == False:
             return False
     return subproc

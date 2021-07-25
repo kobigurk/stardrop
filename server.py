@@ -74,7 +74,7 @@ def deploy_contract():
         # Dirty hack to extract contract address from process output.
         print(out.split('\n'))
         print(out.split('\n')[1])
-        contract_addr = out.split('\n')[1][18:18+64]
+        contract_addr = out.split('\n')[1][18:18+66]
         print('NEW CONTRACT ADDR', contract_addr)
     return "OK"
 
