@@ -37,7 +37,9 @@ async function main() {
     graphData = { "data": data };
 
     data.submissions.forEach((human) => {
-        humanList.push(human.id)
+        if (human.registered) {
+            humanList.push(human.id)
+        }
     });
 
     fs.writeFileSync("./humanList.json", JSON.stringify(humanList));

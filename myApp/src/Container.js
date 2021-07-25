@@ -17,25 +17,25 @@ const styles = {
 }
 
 function Container(props) {
-    let {headerIndex, setHeaderIndex} = props;
-    let {isConnected, setIsConnected} = props;
+    let { headerIndex, setHeaderIndex } = props;
+    let { isConnected, setIsConnected } = props;
     let which;
 
     const nextHeader = () => {
         let index = headerIndex;
         index++;
-        if (index > 2)
+        if (index > 1)
             index = 0;
         console.log(index);
         setHeaderIndex(index);
     }
 
     if (headerIndex == 0)
-        which = <CommitInterface isConnected={isConnected} setIsConnected={setIsConnected}/>
+        which = <CommitInterface isConnected={isConnected} setIsConnected={setIsConnected} />
     else if (headerIndex == 1)
-        which = <SendInterface/>
+        which = <SendInterface />
     else
-        which = <VoteInterface/>
+        which = <VoteInterface />
     return (
         <div className={'container'}>
             <button onClick={nextHeader}>Next header</button>
