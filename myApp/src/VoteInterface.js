@@ -3,9 +3,10 @@ import react, { useState } from "react";
 import styled from 'styled-components'
 import { get_pub_key } from './API'
 import { get_commit_token } from './CommitInterface'
+import { get_voting_token } from './CommitInterface'
 const axios = require('axios');
 let pubKey;
-
+let voting_token;
 
 function callEndVotingPhase(resultat) {
   const commitToken = get_commit_token();
@@ -32,8 +33,8 @@ function callResultat(resultat) {
       url: 'http://192.168.106.112:4242/api/get_result'
     }).then((response) => {
           console.log(response);
-          console.log(response.yes)
-          console.log(response.no)
+          console.log(response.num_yes)
+          console.log(response.num_no)
           if (response.status != 200) 
           console.log("ERROR");
             // setErrorMessage("ERROR");
@@ -47,8 +48,9 @@ function callResultat(resultat) {
 function callVote(resultat) {
   const commitToken = get_commit_token();
   pubKey = get_pub_key();
+  voting_token = get_voting_token();
   console.log(pubKey)
-  if (!resultat || !commitToken) {
+  if (!resultat || !voting_token || !pubKey) {
     console.log("pb variable vide")
     return 300;
   }
@@ -57,12 +59,11 @@ function callVote(resultat) {
       url: 'http://192.168.106.112:5000/api/vote',
       data: {
         vote : resultat,
-        commit_token : commitToken
+        voting_token : voting_token,
+        public_key : pubKey
       }
     }).then((response) => {
           console.log(response);
-          alert("Number of yes : ", response.yes);
-          alert("Number of no : ", response.no);
           if (response.status != 200)
           console.log("ERROR");
             // setErrorMessage("ERROR");
