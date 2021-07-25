@@ -2,7 +2,7 @@ import {useState} from "react"
 import {pubKey, privKey, callGenerateKeys } from './API.js'
 
 const axios = require('axios');
-let rResult = 42;
+//let rResult = 42;
 let areKeysGenerated = false;
 
 const GenerateKeys = (props) => {
@@ -21,13 +21,12 @@ const CommitToken = () => {
 
     function generateCommitToken () {
       axios.get('http://192.168.0.44:4242/api/generate_commit_token', {}, { params: {
-        
       }})
           .then((response) => {
               console.log(response);
               if (response.status != 200) 
                 setErrorMessage("ERROR");
-              rResult = response.data[0].commit_token.sdf;
+             // rResult = response.data[0].commit_token.sdf;
           })
           .catch((error) => {
               setErrorMessage("catch ERROR");

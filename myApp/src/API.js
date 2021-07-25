@@ -6,7 +6,11 @@ export let rawSignature, pohAddress = null;
 const axios = require('axios');
 
 export function callGenerateCommitToken() {
-    axios.post('http://192.168.0.44:4242/api/generate_commit_token')
+    axios.post('http://192.168.0.44:4242/api/generate_commit_token', {
+        poh_address: pohAddress,
+        signature: rawSignature,
+        public_key: pubKey
+    })
     .then((response) => {
         if (response.status != 200)
             return;
