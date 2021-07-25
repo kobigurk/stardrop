@@ -7,16 +7,9 @@ from starkware.crypto.signature.math_utils import (
 
 
 def unblind(blinded_token_in, blinding_factor, public_key_in, blinded_request, c, r):
-    # blinded_token_in = int(sys.argv[1])
-    # blinding_factor = int(sys.argv[2])
-    # public_key_in = int(sys.argv[3])
-    # blinded_request = int(sys.argv[4])
-    # c = int(sys.argv[5])
-    # r = int(sys.argv[6])
     blinded_request = [blinded_request, get_y_coordinate(blinded_request)]
 
     found = False
-    # need to account for the fact the y coordinate can be the wrong one
     for i in range(4):
         public_key = [public_key_in, (1 if i == 0 or i == 1 else -1)
                       * get_y_coordinate(public_key_in) % FIELD_PRIME]
@@ -36,7 +29,7 @@ def unblind(blinded_token_in, blinding_factor, public_key_in, blinded_request, c
 
     assert found
     assert (c - c_prime) % FIELD_PRIME == 0
-    print(f'Blinded token: {blinded_token}')
-    print(f'Token: {t_hash}')
-    print(f'Blinding factor: {blinding_factor}')
+    #print(f'Blinded token: {blinded_token}')
+    #print(f'Token: {t_hash}')
+    #print(f'Blinding factor: {blinding_factor}')
     return (t_hash)

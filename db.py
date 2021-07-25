@@ -1,7 +1,6 @@
 import json
 import csv
 
-
 def makeDB():
     with open('humanList.json',) as readFile:
         data = json.load(readFile)

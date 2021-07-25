@@ -3,9 +3,7 @@ from starkware.crypto.signature.signature import (
 from starkware.crypto.signature.math_utils import (
     ECPoint, div_mod, ec_add, ec_double, ec_mult, is_quad_residue, sqrt_mod)
 
-
 def end_commitment_phase(private_key):
     (r, s) = sign(msg_hash=1, priv_key=private_key)
-
-    print(f'Signature: {(r, s)}')
+    #print(f'Signature: {(r, s)}')
     return (r, s)
