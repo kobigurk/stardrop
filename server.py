@@ -93,20 +93,20 @@ def key_submission():
     return 0
 
 
-@ app.route('/api/claim_drop', methods=['POST'])
-def claiming_drop():
+@ app.route('/api/vote', methods=['POST'])
+def vote():
     if 'public_key' not in request.form:
         return "Error: no public key provided", 201
-    if 'token' not in request.form:
-        return "Error: no token provided", 202
+    if 'commit_token' not in request.form:
+        return "Error: no commit token provided", 202
     usr_public_key = request.form['public_key']
-    token = request.form['token']
+    token = request.form['commit_token']
     (unknown_pblic_key, token_y, bin) = claim_drop(
         serv_priv_key, usr_public_key, token)
     ret = subprocess.run(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                         'contract_abi.json', '--function', 'submit_key', '--inputs', unknown_pblic_key, token_y, bin])
+                         'contract_abi.json', '--function', 'cast_vote', '--inputs', unknown_pblic_key, token_y, bin])
     if (ret.returncode != 0):
-        return 'claim_drop subprocess ERROR', 203
+        return 'vote subprocess ERROR', 203
     return 0
 
 
