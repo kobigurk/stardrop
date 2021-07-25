@@ -90,7 +90,7 @@ export default function CommitInterface() {
   const [areKeysGenerated, setAreKeysGenerated] = useState(false)
     return (
         <div>
-            <h1>bonsoir</h1>
+            <h1>Wassu wassu wassu wassuuuuupppppp!!!</h1>
             {areKeysGenerated ?
             <CommitToken/> :
             <GenerateKeys setAreKeysGenerated={setAreKeysGenerated}/>}
