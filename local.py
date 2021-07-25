@@ -8,7 +8,7 @@ import db
 import requests
 import flask
 from flask_cors import CORS
-from shared import LIVE_DEMO, CHECK_POH, print_output, launch_command
+from shared import LIVE_DEMO, CHECK_POH, print_output, launch_command, SERV_URL, get_contract_address
 import subprocess
 
 SERV_URL = "http://192.168.106.112:5000"
@@ -30,8 +30,9 @@ def generate_keys():
 # Utility function that calls a node script to verify if the `signature` is indeed `message` signed by `poh_address`.
 # Used to basically verify that the user is indeed the owner of poh_address.
 def verify_sig(signature, message, poh_address):
+    print("-- VERIFY SIG --\n")
     verif_process = launch_command(
-        ['node', 'signGestion/get_signer_address.js', str(signature), str(message), str(poh_address)])
+        ['node', 'signGestion/get_signer_address.js', str(signature), str(message), str(poh_address)], False)
     return verif_process.returncode == 0
 
 
@@ -108,8 +109,9 @@ def commit_to_token():
     contract_addr = get_contract_address()
 
     if LIVE_DEMO:
+        print("-- COMMIT --\n")
         res = launch_command(['starknet',  'invoke', '--address', contract_addr,
-                              '--abi', 'contract_abi.json', '--network', 'alpha', '--function', 'commit', '--inputs', str(public_key), str(commit_token), str(r), str(s)])
+                              '--abi', 'contract_abi.json', '--network', 'alpha', '--function', 'commit', '--inputs', str(public_key), str(commit_token), str(r), str(s)], True)
         print_output(res)
         if res.returncode != 0:
             print(res.stderr.decode('utf-8'))
@@ -121,11 +123,14 @@ def commit_to_token():
 def get_result():
     if LIVE_DEMO:
         contract_addr = get_contract_address()
+        print("-- GET RESULT --\n")
         res = launch_command(['starknet',  'call', '--address', contract_addr,
-                              '--abi', 'contract_abi.json', '--network', 'alpha', '--function', 'get_result'])
+                              '--abi', 'contract_abi.json', '--network', 'alpha', '--function', 'get_result'], False)
+        # parse output please
         if res.returncode != 0:
             return "Error executing starknet call: exited with {}".format(res.returncode), 201
-    return "OK"
+        (num_yes, num_no) = res.stdout.decode('utf-8').split(' ')
+    return jsonify([{'num_yes': num_yes, 'num_no': num_no}])
 
 
 @ app.route('/', methods=['GET'])
