@@ -4,6 +4,11 @@ import { get_var } from './App'
 export let pubKey, privKey;
 
 const axios = require('axios');
+let commitToken;
+
+export function get_commit_token() {
+    return commitToken;
+}
 
 export function callGenerateCommitToken() {
     const {rawSignature, pohAddress} = get_var();
@@ -16,7 +21,7 @@ export function callGenerateCommitToken() {
         if (response.status != 200)
             return;
         console.log(response)
-        // response.data[0]
+        commitToken = response.data[0].commitToken
     })
     .catch((err) => {console.log("ERRRRRRR");});
 }

@@ -1,9 +1,27 @@
 import './App.css';
 import react, { useState } from "react";
 import styled from 'styled-components'
-
+import { pubKey } from './API'
+import { get_commit_token } from './API'
+ 
 function clickMe() {
   alert("you click here")
+}
+
+function callVote() {
+  const commitToken = get_commit_token();
+  axios.get('http://192.168.0.44:4242/api/vote', {params : {
+    address : pubKey,
+    vote : vote,
+    commitToken : commitToken}})
+      .then((response) => {
+          console.log(response);
+          if (response.status != 200) 
+            setErrorMessage("ERROR");
+      })
+      .catch((error) => {
+          setErrorMessage("catch ERROR");
+      })
 }
 
 const ButtonOui = styled.button`
