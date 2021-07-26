@@ -10,7 +10,7 @@ function callEndVotingPhase(resultat) {
   pubKey = get_pub_key();
   axios({
     method: "post",
-    url: "http://192.17.0.2:5000/api/end_voting_phase",
+    url: "http://192.17.0.3:5000/api/end_voting_phase",
     data: {
       message: "vitalik<3",
     },
@@ -53,7 +53,7 @@ function callVote(resultat) {
   }
   axios({
     method: "post",
-    url: "http://192.17.0.2:5000/api/vote",
+    url: "http://192.17.0.3:5000/api/vote",
     data: {
       vote: resultat,
       voting_token: voting_token,

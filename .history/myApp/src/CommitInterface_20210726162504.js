@@ -37,7 +37,7 @@ const GenerateKeys = (props) => {
 function callEndCommitPhase() {
   axios({
     method: "post",
-    url: "http://192.17.0.2:5000/api/end_commit_phase",
+    url: "http://192.17.0.3:5000/api/end_commit_phase",
     data: {
       message: "vitalik<3",
     },
