@@ -27,10 +27,11 @@ async function sign_message(callBack) {
 function App() {
   const [headerIndex, setHeaderIndex] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
-  const [phaseInfo, setPhaseInfo] = useState(null);
+  // const [phaseInfo, setPhaseInfo] = useState(null);
+  let phaseInfo = getCurrentState();
 
   console.log('LOADING APP');
-  if (phaseInfo == null) setPhaseInfo(getCurrentState());
+  // if (phaseInfo === null) setPhaseInfo(getCurrentState());
 
   return (
     <div>

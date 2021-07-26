@@ -34,5 +34,6 @@ export function getCurrentState() {
         .then((response) => {
             console.log(response);
         })
+    return (null);
     //TODO
 }

@@ -15,7 +15,7 @@ function Container({ headerIndex, setHeaderIndex, isConnected }) {
             index = 0;
         console.log(index);
         setHeaderIndex(index);
-        getCurrentState();
+        // getCurrentState();
     }
 
     if (headerIndex === 0)
