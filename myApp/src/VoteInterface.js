@@ -1,4 +1,4 @@
-import './myStyles.css';
+import './myStyles.scss';
 import { get_pub_key } from './API'
 import { get_voting_token } from './CommitInterface'
 const axios = require('axios');

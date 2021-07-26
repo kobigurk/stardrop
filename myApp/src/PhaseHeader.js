@@ -1,11 +1,22 @@
 import React from 'react'
-import './myStyles.css'
+import './PhaseHeader.scss'
+
+function PhaseName({ index, currentIndex, children }) {
+    return <div
+        className={currentIndex === index ? 'selected-header' : ''}>
+        {children}
+    </div>
+}
 
 function PhaseHeader({ headerIndex }) {
     return (
         <div className={'header'}>
-            <div className={headerIndex === 0 ? 'selected-header' : ''}>Commit Phase</div>
-            <div className={headerIndex === 1 ? 'selected-header' : ''}>Vote Phase</div>
+            <PhaseName index={0} currentIndex={headerIndex}>
+                Commit Phase
+            </PhaseName>
+            <PhaseName index={1} currentIndex={headerIndex}>
+                Vote Phase
+            </PhaseName>
         </div >
     )
 }

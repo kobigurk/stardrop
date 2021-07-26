@@ -1,7 +1,7 @@
 import React from 'react'
 import CommitInterface from './CommitInterface';
 import VoteInterface from './VoteInterface';
-import './myStyles.css';
+import './myStyles.scss';
 
 function Container({ headerIndex, setHeaderIndex, isConnected }) {
     // let { headerIndex, setHeaderIndex } = props;
