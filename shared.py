@@ -6,13 +6,13 @@ import json
 import requests
 
 # whether to actually call and deploy starknet
-LIVE_DEMO = True
+INTERACT_WITH_STARKNET = True
 DEPLOY_CONTRACT = True
 COMPILE_CONTRACT = True
 CHECK_POH = False
 LOGGING = True
 
-SERV_URL = "http://192.168.0.44:5000"
+SERVER_URL = "http://192.168.106.112:5000"
 
 
 def print_output(subproc):
@@ -24,7 +24,8 @@ def print_output(subproc):
 
 
 def get_contract_address():
-    contract_address_req = requests.get(SERV_URL + '/api/get_contract_address')
+    contract_address_req = requests.get(
+        SERVER_URL + '/api/get_contract_address')
     req_json = contract_address_req.json()
     print(req_json)
     contract_address = req_json['contract_address']
@@ -32,7 +33,7 @@ def get_contract_address():
 
 
 def get_phase(contract_address):
-    if LIVE_DEMO:
+    if INTERACT_WITH_STARKNET:
         res = launch_command(['starknet',  'call', '--address', contract_address,
                               '--abi', 'contract_abi.json', '--network', 'alpha', '--function', 'get_phase'], False)
         if res.returncode != 0:

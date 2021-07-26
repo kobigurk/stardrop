@@ -11,47 +11,28 @@ import subprocess
 from flask_cors import CORS
 from end_commitment_phase import end_commitment_phase
 from end_vote_phase import end_vote_phase
-from submit_key import submit_key
-from shared import COMPILE_CONTRACT, DEPLOY_CONTRACT, LIVE_DEMO, get_phase, launch_command, print_output, wait_for_phase
+from submit_key import sign_private_key, submit_key
+from shared import CHECK_POH, COMPILE_CONTRACT, DEPLOY_CONTRACT, INTERACT_WITH_STARKNET, get_phase, launch_command, print_output, wait_for_phase
 import sys
 
-
-DEFAULT_CONTRACT_ADDRESS = "0x0542ae152b46ad771402d237ca8b6e217e1843d415411f4a312ceeb3be4e8d9e"
-
-# Address of the smart-contract. Empty in the beginning, set by `deploy_contract()`
-contract_addr = DEFAULT_CONTRACT_ADDRESS
+# Address of the smart-contract. `None` in the beginning, set by `deploy_contract()`
+contract_addr = None
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# print("Generating human list...")
-# humanlistProcess = subprocess.run(['node', 'getHumanList.js'])
-# if humanlistProcess.returncode != 0:
-# print("Failed to generate human list. Exiting")
-# sys.exit(1)
-# print("Generated human list!")
-
-# print("Creating database")
-# db.makeDB()
-# print("Database successfully created")
 (serv_priv_key, serv_pub_key) = generate_keypair()
+
 print("Server keypair succesfully created: private: {}, public: {}".format(
       serv_priv_key, serv_pub_key))
-
-
-def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server')
-    func()
 
 
 def compile_contract():
     if COMPILE_CONTRACT:
         print("Compiling...")
-        res = subprocess.run(['starknet-compile', 'contract.cairo',
-                              '--output=contract_compiled.json', '--abi=contract_abi.json'], stdout=subprocess.PIPE)
+        res = launch_command(['starknet-compile', 'contract.cairo',
+                              '--output=contract_compiled.json', '--abi=contract_abi.json'], False)
         print_output(res)
         if res.returncode != 0:
             return res.returncode, 201
@@ -61,38 +42,34 @@ def compile_contract():
 def deploy_contract():
     global contract_addr
     if DEPLOY_CONTRACT:
-        print("Deploying...")
         print("-- DEPLOY --\n")
         res = launch_command(['starknet', 'deploy', '--contract',
                               'contract_compiled.json', '--network', 'alpha'], True)
         if res.returncode != 0:
             print("Error while deploying: ", res.returncode)
             sys.exit(1)
-        print("Deployment done.")
         out = res.stdout.decode('utf-8')
 
         # Dirty hack to extract contract address from process output.
         print(out.split('\n'))
         print(out.split('\n')[1])
         contract_addr = out.split('\n')[1][18:18+66]
+
         print('NEW CONTRACT ADDR', contract_addr)
     return "OK"
 
 
 def initialize():
-    print("Init...")
-    if LIVE_DEMO:
+    if INTERACT_WITH_STARKNET:
         print('contract addr', contract_addr)
         print('serv pub key', str(serv_pub_key))
         print("-- INITIALIZE --\n")
+
         res = launch_command(['starknet',  'invoke', '--address', contract_addr,
                               '--abi', 'contract_abi.json', '--function', 'initialize', '--network', 'alpha', '--inputs', str(serv_pub_key)], True)
+
         if res.returncode != 0:
             return "Error executing initalize: exited with {}".format(res.returncode)
-    print("Init done")
-    # curr_phase = get_phase()
-    # if curr_phase != 1:
-    #     return "Error: did not properly increment phase"
     return "OK"
 
 
@@ -145,11 +122,14 @@ def get_contract_address():
     return ({'contract_address': contract_addr})
 
 
-# Submits the server key to the smart contract.
+# Submits the server private key to the smart contract.
 def key_submission():
     print("-- Submitting Key --")
-    (r, s) = submit_key(serv_priv_key)
-    if LIVE_DEMO:
+
+    # Have the server sign its own private key.
+    (r, s) = sign_private_key(serv_priv_key)
+
+    if INTERACT_WITH_STARKNET:
         res = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
                               'contract_abi.json', '--function', '--network', 'alpha', 'submit_key', '--inputs', str(serv_priv_key), str(r), str(s)], True)
         if res.returncode != 0:
@@ -161,6 +141,7 @@ def key_submission():
 def end_commit_phase():
     data = request.get_json()
     print(data)
+
     if 'message' not in data:
         return "Error: missing message!", 201
     message = data['message']
@@ -169,9 +150,9 @@ def end_commit_phase():
     if message != 'vitalik<3':
         return "Nice try feds!", 202
 
-    print(serv_priv_key)
     (r, s) = end_commitment_phase(serv_priv_key)
-    if (LIVE_DEMO):
+
+    if (INTERACT_WITH_STARKNET):
         res = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
                               'contract_abi.json', '--function', 'end_commitment_phase', '--network', 'alpha', '--inputs', str(r), str(s)], True)
         if (res.returncode != 0):
@@ -196,7 +177,8 @@ def end_voting_phase():
         return "Nice try feds!", 202
 
     (r, s) = end_vote_phase(serv_priv_key)
-    if LIVE_DEMO:
+
+    if INTERACT_WITH_STARKNET:
         res = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
                              'contract_abi.json', '--function', 'end_voting_phase', '--network', 'alpha', '--inputs', str(r), str(s)], True)
         if (res.returncode != 0):
@@ -228,7 +210,7 @@ def vote():
 
     (hint_token_y, serv_priv_key_decomposition) = generate_vote_data(
         serv_priv_key, int(voting_token))
-    if LIVE_DEMO:
+    if INTERACT_WITH_STARKNET:
         arguments = ['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract_abi.json',
                      '--function', 'cast_vote', '--network', 'alpha', '--inputs', str(public_key), str(vote), str(hint_token_y), *serv_priv_key_decomposition]
         res = launch_command(arguments, True)
@@ -237,9 +219,24 @@ def vote():
     return "Vote OK"
 
 
+def generate_human_list():
+    if CHECK_POH:
+        print("Generating human list...")
+        humanlistProcess = subprocess.run(['node', 'getHumanList.js'])
+        if humanlistProcess.returncode != 0:
+            print("Failed to generate human list. Exiting")
+            sys.exit(1)
+        print("Generated human list!")
+        print("Creating database")
+        db.makeDB()
+        print("Database successfully created")
+
+
+generate_human_list()
 compile_contract()
 deploy_contract()
 msg = initialize()
+
 if msg != "OK":
     print(msg)
     exit(1)
