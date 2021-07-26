@@ -2,7 +2,7 @@ from generate_vote_data import generate_vote_data
 import db
 import flask
 from sign_token import sign_token
-from flask import request
+from flask import request, jsonify
 import subprocess
 from flask_cors import CORS
 from end_commitment_phase import end_commitment_phase
@@ -10,19 +10,42 @@ from end_vote_phase import end_vote_phase
 from submit_key import sign_private_key
 from generate_keypair import generate_keypair
 from utils import CHECK_POH, COMPILE_CONTRACT, DEPLOY_CONTRACT, INTERACT_WITH_STARKNET, launch_command, print_output
-import sys
+import threading
+import time
+import datetime
+import random
+from datetime import timedelta, timezone
+
+
+DEPLOYING_CONTRACT = 0
+INITIALIZING_CONTRACT = 1
+COMMIT_PHASE = 2
+ENDING_COMMIT_PHASE = 3
+SERVER_KEY_REVEAL = 4
+VOTING_PHASE = 5
+END_VOTING_PHASE = 6
+
+VOTING_PHASE_LENGTH = 45
+COMMIT_PHASE_LENGTH = 25
+
+QUESTIONS = ['Should Carlos Matos be elected President of the United States?', 'Will you vote Yes?', 'Will you vote No?',
+             'Is Dogecoin going to flip Ethereum?', 'Is Ethereum going to flip Bitcoin?', 'Are you Satoshi Nakamoto?']
 
 # Address of the smart-contract. `None` in the beginning, set by `deploy_contract()`
 contract_addr = None
+serv_pub_key = None
+serv_priv_key = None
+state = None
+question = random.choice(QUESTIONS)
+total_yes = None
+total_no = None
+started_time = datetime.datetime.utcnow().timestamp()
+previous_results = {'total_yes': total_yes,
+                    'total_no': total_no, 'question': None}
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-
-(serv_priv_key, serv_pub_key) = generate_keypair()
-
-print("Server keypair succesfully created: private: {}, public: {}".format(
-      serv_priv_key, serv_pub_key))
 
 
 def compile_contract():
@@ -39,7 +62,7 @@ def compile_contract():
 
 def deploy_contract():
     global contract_addr
-    if DEPLOY_CONTRACT:
+    if INTERACT_WITH_STARKNET and DEPLOY_CONTRACT:
         print("-- DEPLOY --\n")
         res = launch_command(['starknet', 'deploy', '--contract',
                               'contract/contract_compiled.json', '--network', 'alpha'], True)
@@ -73,7 +96,7 @@ def initialize():
 @ app.route('/', methods=['GET'])
 # Easter egg
 def home():
-    return "<h1>Wassu wassu wassu wassu wassu wassu wassuuuuuuuuupppppp!!!</h1>"
+    return "<h1>This is the voting server. It signs your commit_token, and then submits its key to smart-contract once the commit phase is done.h1>"
 
 
 def verify_sig(signature: str, message: str, poh_address: str) -> bool:
@@ -119,7 +142,6 @@ def get_contract_address():
     return ({'contract_address': contract_addr})
 
 
-# Submits the server private key to the smart contract.
 def key_submission():
     print("-- Submitting Key --")
 
@@ -134,19 +156,8 @@ def key_submission():
     return "Key submission OK"
 
 
-@ app.route('/api/end_commit_phase', methods=['POST'])
 def end_commit_phase():
-    data = request.get_json()
-    print(data)
-
-    if 'message' not in data:
-        return "Error: missing message!", 201
-    message = data['message']
-
-    # Dumb check to reduce the chance of a random guy ending the commit phase. Not secure, only used for POC presentation.
-    if message != 'vitalik<3':
-        return "Nice try feds!", 202
-
+    print("-- Ending Commit Phase --")
     (r, s) = end_commitment_phase(serv_priv_key)
 
     if (INTERACT_WITH_STARKNET):
@@ -154,25 +165,11 @@ def end_commit_phase():
                               'contract/contract_abi.json', '--function', 'end_commitment_phase', '--network', 'alpha', '--inputs', str(r), str(s)], True)
         if (res.returncode != 0):
             return 'Error: end_commit_phase unsuccessful', 203
-
-    key_submission_result = key_submission()
-
-    return key_submission_result
+    return "OK"
 
 
-@ app.route('/api/end_voting_phase', methods=['POST'])
 def end_voting_phase():
-    data = request.get_json()
-    print(data)
-    if 'message' not in data:
-        return "Error: missing message!", 201
-
-    message = data['message']
-
-    # Dumb check to reduce the chance of a random guy ending the commit phase. Not secure, only used for POC presentation.
-    if message != 'vitalik<3':
-        return "Nice try feds!", 202
-
+    print("-- End Voting Phase --")
     (r, s) = end_vote_phase(serv_priv_key)
 
     if INTERACT_WITH_STARKNET:
@@ -230,6 +227,38 @@ def generate_human_list():
     return "OK"
 
 
+@ app.route('/api/get_state', methods=['GET'])
+def get_state():
+
+    if state == COMMIT_PHASE:
+        time_of_callback = started_time + COMMIT_PHASE_LENGTH + 1
+    elif state == VOTING_PHASE:
+        time_of_callback = started_time + VOTING_PHASE_LENGTH + 1
+    else:
+        current_time = datetime.datetime.utcnow().timestamp()
+        if current_time <= started_time + 10:
+            time_of_callback = started_time + 5
+        else:
+            time_of_callback = current_time + 5
+
+    return jsonify([{'phase': state, 'time_of_callback': time_of_callback, 'previous_results': previous_results, 'question': question}])
+
+
+def update_results():
+    global total_yes
+    global total_no
+
+    if INTERACT_WITH_STARKNET:
+        print("-- GET RESULT --\n")
+        res = launch_command(['starknet',  'call', '--address', contract_addr,
+                              '--abi', 'contract/contract_abi.json', '--network', 'alpha', '--function', 'get_result'], False)
+        if res.returncode != 0:
+            return "Error executing starknet call: exited with {}".format(res.returncode), 201
+        (total_yes, total_no) = res.stdout.decode('utf-8').split(' ')
+        total_yes = int(total_yes)
+        total_no = int(total_no)
+
+
 result = generate_human_list()
 if result != "OK":
     print(result)
@@ -241,15 +270,52 @@ if result != "OK":
     exit(1)
 
 
-result = deploy_contract()
-if result != "OK":
-    print(result)
-    exit(1)
+threading.Thread(target=app.run, kwargs={
+    'host': "0.0.0.0", 'port': int(5000), 'use_reloader': False}).start()
 
+while (42):
+    (serv_priv_key, serv_pub_key) = generate_keypair()
+    print("Server keypair succesfully created: private: {}, public: {}".format(
+        serv_priv_key, serv_pub_key))
 
-msg = initialize()
-if msg != "OK":
-    print(msg)
-    exit(1)
+    state = DEPLOYING_CONTRACT
+    started_time = datetime.datetime.utcnow().timestamp()
+    result = deploy_contract()
+    if result != "OK":
+        print(result)
+        exit(1)
 
-app.run(host="0.0.0.0", port=int(5000), use_reloader=False)
+    state = INITIALIZING_CONTRACT
+    started_time = datetime.datetime.utcnow().timestamp()
+    msg = initialize()
+    if msg != "OK":
+        print(msg)
+        exit(1)
+
+    state = COMMIT_PHASE
+    started_time = datetime.datetime.utcnow().timestamp()
+    print("-- COMMIT PHASE --")
+    time.sleep(COMMIT_PHASE_LENGTH)
+
+    state = ENDING_COMMIT_PHASE
+    started_time = datetime.datetime.utcnow().timestamp()
+    end_commit_phase()
+
+    state = SERVER_KEY_REVEAL
+    started_time = datetime.datetime.utcnow().timestamp()
+    key_submission()
+
+    state = VOTING_PHASE
+    started_time = datetime.datetime.utcnow().timestamp()
+    print("-- Voting Phase --")
+    time.sleep(VOTING_PHASE_LENGTH)
+
+    state = END_VOTING_PHASE
+    end_voting_phase()
+    update_results()
+
+    previous_results.update(
+        {'total_no': total_no, 'total_yes': total_yes, 'question': question})
+    question = random.choice(QUESTIONS)
+
+    state = DEPLOYING_CONTRACT

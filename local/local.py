@@ -120,20 +120,6 @@ def commit_to_token():
     return "OK"
 
 
-@ app.route('/api/get_result', methods=['GET'])
-def get_result():
-    if INTERACT_WITH_STARKNET:
-        contract_addr = get_contract_address()
-        print("-- GET RESULT --\n")
-        res = launch_command(['starknet',  'call', '--address', contract_addr,
-                              '--abi', 'contract/contract_abi.json', '--network', 'alpha', '--function', 'get_result'], False)
-        # parse output please
-        if res.returncode != 0:
-            return "Error executing starknet call: exited with {}".format(res.returncode), 201
-        (num_yes, num_no) = res.stdout.decode('utf-8').split(' ')
-    return jsonify([{'num_yes': num_yes, 'num_no': num_no}])
-
-
 @ app.route('/', methods=['GET'])
 # Easter egg
 def home():
