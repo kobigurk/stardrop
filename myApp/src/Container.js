@@ -4,9 +4,7 @@ import VoteInterface from './VoteInterface';
 import './myStyles.scss';
 
 function Container({ headerIndex, setHeaderIndex, isConnected }) {
-    // let { headerIndex, setHeaderIndex } = props;
-    // let { isConnected } = props;
-    let which;
+    let currentInterface;
 
     const nextHeader = () => {
         let index = headerIndex;
@@ -18,13 +16,13 @@ function Container({ headerIndex, setHeaderIndex, isConnected }) {
     }
 
     if (headerIndex === 0)
-        which = <CommitInterface isConnected={isConnected} />
+        currentInterface = <CommitInterface isConnected={isConnected} />
     else
-        which = <VoteInterface />
+        currentInterface = <VoteInterface />
     return (
         <div className={'container'}>
             <button onClick={nextHeader}>Next header</button>
-            {which}
+            {currentInterface}
         </div>
     )
 };

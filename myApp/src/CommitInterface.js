@@ -3,6 +3,7 @@ import { callGenerateKeys } from './API.js'
 import { get_var } from './App'
 import { get_pub_key } from './API'
 import { get_priv_key } from './API'
+import { STARK_SERVER } from "./constants.js"
 
 const axios = require('axios');
 let commit_token;
@@ -32,7 +33,7 @@ const GenerateKeys = (props) => {
 function callEndCommitPhase() {
   axios({
     method: 'post',
-    url: 'http://172.17.0.03:5000/api/end_commit_phase',
+    url: `${STARK_SERVER}/api/end_commit_phase`,
     data: {
       message: "vitalik<3"
     }
@@ -53,7 +54,7 @@ function callCommit() {
   }
   axios({
     method: 'post',
-    url: 'http://172.17.0.03:4242/api/commit',
+    url: `${STARK_SERVER}/api/commit`,
     data: {
       commit_token: commit_token,
       private_key: privKey
@@ -80,7 +81,7 @@ const CommitToken = () => {
     }
     axios({
       method: 'post',
-      url: 'http://172.17.0.03:4242/api/generate_commit_token',
+      url: `${STARK_SERVER}/api/generate_commit_token`,
       data: {
         poh_address: pohAddress,
         signature: rawSignature,

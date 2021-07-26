@@ -1,6 +1,7 @@
 import './myStyles.scss';
 import { get_pub_key } from './API'
 import { get_voting_token } from './CommitInterface'
+import { LOCAL_SERVER, STARK_SERVER } from './constants';
 const axios = require('axios');
 let pubKey;
 let voting_token;
@@ -9,7 +10,7 @@ function callEndVotingPhase(resultat) {
   pubKey = get_pub_key();
   axios({
     method: 'post',
-    url: 'http://172.17.0.03:5000/api/end_voting_phase',
+    url: `${STARK_SERVER}/api/end_voting_phase`,
     data: {
       message: "vitalik<3"
     }
@@ -26,7 +27,7 @@ function callEndVotingPhase(resultat) {
 function callResultat(resultat) {
   axios({
     method: 'get',
-    url: 'http://172.17.0.03:4242/api/get_result'
+    url: `${LOCAL_SERVER}/api/get_result`
   }).then((response) => {
     console.log(response);
     console.log(response.num_yes)
@@ -51,7 +52,7 @@ function callVote(resultat) {
   }
   axios({
     method: 'post',
-    url: 'http://172.17.0.03:5000/api/vote',
+    url: `${STARK_SERVER}/api/vote`,
     data: {
       vote: resultat,
       voting_token: voting_token,

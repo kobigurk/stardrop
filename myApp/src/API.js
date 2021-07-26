@@ -1,3 +1,4 @@
+import { LOCAL_SERVER, STARK_SERVER } from "./constants"
 const axios = require('axios');
 
 export let pubKey, privKey;
@@ -12,7 +13,7 @@ export function get_priv_key() {
 
 export function callGenerateKeys() {
     console.log('callGenerateKeys just clicked');
-    axios.get('http://172.17.0.03:4242/api/generate_keys')
+    axios.get(`${LOCAL_SERVER}/api/generate_keys`)
         .then((response) => {
             if (response.status !== 200) {
                 console.log(response);

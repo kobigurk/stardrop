@@ -8,7 +8,7 @@ function PhaseName({ index, currentIndex, children }) {
     </div>
 }
 
-function PhaseHeader({ headerIndex }) {
+export default function PhaseHeader({ headerIndex }) {
     return (
         <div className={'header'}>
             <PhaseName index={0} currentIndex={headerIndex}>
@@ -20,5 +20,3 @@ function PhaseHeader({ headerIndex }) {
         </div >
     )
 }
-
-export default PhaseHeader
