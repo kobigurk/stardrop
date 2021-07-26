@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { callGenerateKeys } from "./API.js";
-import { get_var } from "./App";
-import { get_pub_key } from "./API";
-import { get_priv_key } from "./API";
+import { useState } from "react"
+import { callGenerateKeys } from './API.js'
+import { get_var } from './App'
+import { get_pub_key } from './API'
+import { get_priv_key } from './API'
 
-const axios = require("axios");
+const axios = require('axios');
 let commit_token;
 let privKey;
 let pubKey;
@@ -21,33 +21,28 @@ export function get_voting_token() {
 const GenerateKeys = (props) => {
   return (
     <div>
-      <button
-        className={"btn-grad2"}
-        onClick={() => {
-          callGenerateKeys();
-          props.setAreKeysGenerated(true);
-        }}
-      >
-        Generate Keys
-      </button>
+      <button className={'btn-grad2'} onClick={() => {
+        callGenerateKeys();
+        props.setAreKeysGenerated(true);
+      }}>Generate Keys</button>
     </div>
-  );
-};
+  )
+}
 
 function callEndCommitPhase() {
   axios({
-    method: "post",
-    url: "http://172.17.0.3:5000/api/end_commit_phase",
+    method: 'post',
+    url: 'http://192.168.106.112:5000/api/end_commit_phase',
     data: {
-      message: "vitalik<3",
-    },
+      message: "vitalik<3"
+    }
   })
     .then((response) => {
       console.log(response);
     })
     .catch((error) => {
       console.log("catch ERROR");
-    });
+    })
 }
 
 function callCommit() {
@@ -57,24 +52,24 @@ function callCommit() {
     return 300;
   }
   axios({
-    method: "post",
-    url: "http://172.17.0.2:4242/api/commit",
+    method: 'post',
+    url: 'http://192.168.106.112:4242/api/commit',
     data: {
       commit_token: commit_token,
-      private_key: privKey,
-    },
+      private_key: privKey
+    }
+  }).then((response) => {
+    console.log(response);
+    if (response.status !== 200)
+      console.log("error")
   })
-    .then((response) => {
-      console.log(response);
-      if (response.status !== 200) console.log("error");
-    })
     .catch((error) => {
-      console.log("error");
-    });
+      console.log("error")
+    })
 }
 
 const CommitToken = () => {
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
 
   function generateCommitToken() {
     const { rawSignature, pohAddress } = get_var();
@@ -84,54 +79,46 @@ const CommitToken = () => {
       return 300;
     }
     axios({
-      method: "post",
-      url: "http://172.17.0.2:4242/api/generate_commit_token",
+      method: 'post',
+      url: 'http://192.168.106.112:4242/api/generate_commit_token',
       data: {
         poh_address: pohAddress,
         signature: rawSignature,
-        public_key: pubKey,
-      },
-    })
-      .then((response) => {
-        console.log(response.data[0].commit_token);
-        commit_token = response.data[0].commit_token;
-        voting_token = response.data[0].voting_token;
+        public_key: pubKey
+      }
+    }).then((response) => {
+      console.log(response.data[0].commit_token);
+      commit_token = response.data[0].commit_token;
+      voting_token = response.data[0].voting_token;
 
-        console.log(voting_token);
-        if (response.status !== 200) setErrorMessage("ERROR");
-      })
+      console.log(voting_token)
+      if (response.status !== 200)
+        setErrorMessage("ERROR");
+    })
       .catch((error) => {
         setErrorMessage("catch ERROR");
-      });
+      })
   }
 
   return (
     <div>
-      <button className={"btn-grad2"} onClick={generateCommitToken}>
-        Generate commit token
-      </button>
-      <button className={"btn-grad2"} onClick={callCommit}>
-        COMMIT
-      </button>
-      <button className={"btn-grad2"} onClick={callEndCommitPhase}>
-        End Commit Phase
-      </button>
-    </div>
-  );
-};
-
-export default function CommitInterface(props) {
-  let { isConnected } = props;
-  const [areKeysGenerated, setAreKeysGenerated] = useState(false);
-  return (
-    <div>
-      {!isConnected ? (
-        <h1>Please connect your web3 wallet</h1>
-      ) : areKeysGenerated ? (
-        <CommitToken />
-      ) : (
-        <GenerateKeys setAreKeysGenerated={setAreKeysGenerated} />
-      )}
+      <button className={'btn-grad2'} onClick={generateCommitToken}>Generate commit token</button>
+      <button className={'btn-grad2'} onClick={callCommit}>COMMIT</button>
+      <button className={'btn-grad2'} onClick={callEndCommitPhase}>End Commit Phase</button>
     </div>
   );
 }
+
+export default function CommitInterface(props) {
+  let { isConnected } = props;
+  const [areKeysGenerated, setAreKeysGenerated] = useState(false)
+  return (
+    <div>
+      {!isConnected ? <h1>Please connect your web3 wallet</h1> :
+        areKeysGenerated ?
+          <CommitToken /> :
+          <GenerateKeys setAreKeysGenerated={setAreKeysGenerated} />
+      }
+    </div>
+  )
+};
