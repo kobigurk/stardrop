@@ -23,6 +23,7 @@ COMMIT_PHASE = 2
 ENDING_COMMIT_PHASE = 3
 SERVER_KEY_REVEAL = 4
 VOTING_PHASE = 5
+END_VOTING_PHASE = 6
 
 VOTING_PHASE_LENGTH = 45
 COMMIT_PHASE_LENGTH = 25
@@ -36,10 +37,11 @@ serv_pub_key = None
 serv_priv_key = None
 state = None
 question = random.choice(QUESTIONS)
-num_yes = None
-num_no = None
+total_yes = None
+total_no = None
 started_time = datetime.datetime.utcnow().timestamp()
-previous_results = {'num_yes': num_yes, 'num_no': num_no, 'question': None}
+previous_results = {'total_yes': total_yes,
+                    'total_no': total_no, 'question': None}
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -227,26 +229,24 @@ def generate_human_list():
 
 @ app.route('/api/get_state', methods=['GET'])
 def get_state():
-    current_time = datetime.datetime.utcnow().timestamp()
-
-    if current_time <= started_time + 10:
-        current_time = started_time
 
     if state == COMMIT_PHASE:
-        delta = COMMIT_PHASE_LENGTH + 1
+        time_of_callback = started_time + COMMIT_PHASE_LENGTH + 1
     elif state == VOTING_PHASE:
-        delta = VOTING_PHASE_LENGTH + 1
+        time_of_callback = started_time + VOTING_PHASE_LENGTH + 1
     else:
-        delta = 5
-
-    time_of_callback = current_time + delta
+        current_time = datetime.datetime.utcnow().timestamp()
+        if current_time <= started_time + 10:
+            time_of_callback = started_time + 5
+        else:
+            time_of_callback = current_time + 5
 
     return jsonify([{'phase': state, 'time_of_callback': time_of_callback, 'previous_results': previous_results, 'question': question}])
 
 
 def update_results():
-    global num_yes
-    global num_no
+    global total_yes
+    global total_no
 
     if INTERACT_WITH_STARKNET:
         print("-- GET RESULT --\n")
@@ -254,7 +254,9 @@ def update_results():
                               '--abi', 'contract/contract_abi.json', '--network', 'alpha', '--function', 'get_result'], False)
         if res.returncode != 0:
             return "Error executing starknet call: exited with {}".format(res.returncode), 201
-        (int(num_yes), int(num_no)) = res.stdout.decode('utf-8').split(' ')
+        (total_yes, total_no) = res.stdout.decode('utf-8').split(' ')
+        total_yes = int(total_yes)
+        total_no = int(total_no)
 
 
 result = generate_human_list()
@@ -308,11 +310,12 @@ while (42):
     print("-- Voting Phase --")
     time.sleep(VOTING_PHASE_LENGTH)
 
+    state = END_VOTING_PHASE
     end_voting_phase()
     update_results()
 
     previous_results.update(
-        {'num_no': num_no, 'num_yes': num_yes, 'question': question})
+        {'total_no': total_no, 'total_yes': total_yes, 'question': question})
     question = random.choice(QUESTIONS)
 
     state = DEPLOYING_CONTRACT
