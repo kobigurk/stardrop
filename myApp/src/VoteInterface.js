@@ -7,7 +7,6 @@ let pubKey;
 let voting_token;
 
 function callEndVotingPhase(resultat) {
-  // const commitToken = get_commit_token();
   pubKey = get_pub_key();
   axios({
     method: 'post',
