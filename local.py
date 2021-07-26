@@ -11,9 +11,6 @@ from flask_cors import CORS
 from shared import LIVE_DEMO, CHECK_POH, print_output, launch_command, SERV_URL, get_contract_address
 import subprocess
 
-SERV_URL = "http://192.168.106.112:5000"
-
-
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -65,21 +62,22 @@ def generate_commit_token():
     signature = data['signature']
     public_key = data['public_key']
 
-    # Check that this the user is actually the owner of the POH address by verifying the signed message 'eip42'
-    sig_is_valid = verify_sig(signature, 'eip42', poh_address)
-    if not sig_is_valid:
-        return "Error: invalid signature", 204
-
     # check that user is actually in the POH and has not already generated a commit token
     if CHECK_POH and db.try_vote(poh_address) == False:
         return "Error: already voted or not in POH", 205
 
     (voting_token, blinded_request, blinded_factor) = blind(int(public_key))
 
-    req = {'blinded_request': blinded_request}
+    req = {'blinded_request': blinded_request,
+           'poh_address': poh_address, 'signature': signature}
     res = requests.post(
         SERV_URL + '/api/sign_blinded_request', req)
+
+    if res.status_code != 200:
+        return "Error: server failed to sign request", 206
+
     res_json = res.json()
+    # check json response
     blinded_token = int(res_json['blinded_token'])
     c = int(res_json['c'])
     r = int(res_json['r'])

@@ -102,13 +102,35 @@ def home():
     return "<h1>Wassu wassu wassu wassu wassu wassu wassuuuuuuuuupppppp!!!</h1>"
 
 
+def verify_sig(signature: str, message: str, poh_address: str) -> bool:
+    # Utility function that calls a node script to verify if the `signature` is indeed `message` signed by `poh_address`.
+    # Used to basically verify that the user is indeed the owner of poh_address.
+
+    print("-- VERIFY SIG --\n")
+    verif_process = launch_command(
+        ['node', 'signGestion/get_signer_address.js', signature, message, poh_address], False)
+    return verif_process.returncode == 0
+
+
 @ app.route('/api/sign_blinded_request', methods=['POST'])
 def sign_blinded_request():
-    # Dunno why get_json() doesn't work when called from `local.py`
     data = request.form
     if 'blinded_request' not in data:
         return 'Error: no blinded request provided', 201
+    if 'poh_address' not in data:
+        return 'Error: no POH address provided', 202
+    if 'signature' not in data:
+        return 'Error: no signature provided', 203
+
     blinded_request = int(data['blinded_request'])
+    signature = data['signature']
+    poh_address = data['poh_address']
+
+    # Check that this the user is actually the owner of the POH address by verifying the signed message 'eip42'
+    sig_is_valid = verify_sig(signature, 'eip42', poh_address)
+    if not sig_is_valid:
+        return "Error: invalid signature", 204
+
     (blinded_token, c, r) = sign_token(serv_priv_key, blinded_request)
     return ({'blinded_token': blinded_token, 'c': c, 'r': r})
 
