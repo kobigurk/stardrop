@@ -5,7 +5,6 @@ import { get_pub_key } from './API'
 import { get_priv_key } from './API'
 
 const axios = require('axios');
-let areKeysGenerated = false;
 let commit_token;
 let privKey;
 let pubKey;
@@ -19,7 +18,6 @@ export function get_voting_token() {
   return voting_token;
 }
 
-
 const GenerateKeys = (props) => {
   return (
     <div>
@@ -29,7 +27,6 @@ const GenerateKeys = (props) => {
       }}>Generate Keys</button>
     </div>
   )
-
 }
 
 function callEndCommitPhase() {
@@ -63,7 +60,7 @@ function callCommit() {
     }
   }).then((response) => {
     console.log(response);
-    if (response.status != 200)
+    if (response.status !== 200)
       console.log("error")
   })
     .catch((error) => {
@@ -72,7 +69,6 @@ function callCommit() {
 }
 
 const CommitToken = () => {
-  const [inputValue, setInputValue] = useState('default value');
   const [errorMessage, setErrorMessage] = useState('');
 
   function generateCommitToken() {
@@ -96,17 +92,12 @@ const CommitToken = () => {
       voting_token = response.data[0].voting_token;
 
       console.log(voting_token)
-      if (response.status != 200)
+      if (response.status !== 200)
         setErrorMessage("ERROR");
     })
       .catch((error) => {
         setErrorMessage("catch ERROR");
       })
-  }
-
-  function saveValue(event) {
-    console.log(event.target.value);
-    setInputValue(event.target.value);
   }
 
   return (
@@ -119,9 +110,8 @@ const CommitToken = () => {
 }
 
 export default function CommitInterface(props) {
-  let { isConnected, setIsConnected } = props;
+  let { isConnected } = props;
   const [areKeysGenerated, setAreKeysGenerated] = useState(false)
-  // console.log("FFF:", myState.getIsConnected());
   return (
     <div>
       {!isConnected ? <h1>Please connect your web3 wallet</h1> :

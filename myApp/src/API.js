@@ -1,8 +1,6 @@
-export let pubKey, privKey;
-//export let isConnected = false;
-
-
 const axios = require('axios');
+
+export let pubKey, privKey;
 
 export function get_pub_key() {
     return pubKey;
@@ -15,7 +13,7 @@ export function get_priv_key() {
 export function callGenerateKeys() {
     axios.get('http://192.168.106.112:4242/api/generate_keys')
         .then((response) => {
-            if (response.status != 200)
+            if (response.status !== 200)
                 return;
             console.log(response)
             privKey = response.data[0].private_key;

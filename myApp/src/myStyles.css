@@ -1,6 +1,3 @@
-.primary {
-}
-
 .font-xl {
   font-size: 72px;
 }
@@ -13,6 +10,7 @@
     #ff6e7f 100%
   );
 }
+
 .btn-grad {
   margin: 10px;
   padding: 15px 45px;
