@@ -12,7 +12,7 @@ COMPILE_CONTRACT = True
 CHECK_POH = False
 LOGGING = True
 
-SERV_URL = "http://192.168.106.112:5000"
+SERV_URL = "http://192.168.0.44:5000"
 
 
 def print_output(subproc):
