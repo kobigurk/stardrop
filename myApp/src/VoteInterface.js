@@ -69,8 +69,8 @@ function callVote(resultat) {
 
 function ToggleGroup() {
   return <div>
-    <button className={'btn-grad2'} onClick={() => callVote('Yes')}>YES</button>
-    <button className={'btn-grad2'} onClick={() => callVote('No')}>NO</button>
+    <button className={'btn-grad'} onClick={() => callVote('Yes')}>YES</button>
+    <button className={'btn-grad'} onClick={() => callVote('No')}>NO</button>
     <button onClick={callEndVotingPhase}>END VOTING PHASE</button>
     <button onClick={callResultat}>CALL RESULTAT</button>
   </div>

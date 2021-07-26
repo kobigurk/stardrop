@@ -21,7 +21,7 @@ export function get_voting_token() {
 const GenerateKeys = (props) => {
   return (
     <div>
-      <button className={'btn-grad2'} onClick={() => {
+      <button className={'btn-grad'} onClick={() => {
         callGenerateKeys();
         props.setAreKeysGenerated(true);
       }}>Generate Keys</button>
@@ -102,9 +102,9 @@ const CommitToken = () => {
 
   return (
     <div>
-      <button className={'btn-grad2'} onClick={generateCommitToken}>Generate commit token</button>
-      <button className={'btn-grad2'} onClick={callCommit}>COMMIT</button>
-      <button className={'btn-grad2'} onClick={callEndCommitPhase}>End Commit Phase</button>
+      <button className={'btn-grad'} onClick={generateCommitToken}>Generate commit token</button>
+      <button className={'btn-grad'} onClick={callCommit}>COMMIT</button>
+      <button className={'btn-grad'} onClick={callEndCommitPhase}>End Commit Phase</button>
     </div>
   );
 }
