@@ -1,24 +1,11 @@
 import React from 'react'
 import CommitInterface from './CommitInterface';
-import SendInterface from './SendInterface';
 import VoteInterface from './VoteInterface';
 import './myStyles.css';
 
-const styles = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    backgroundColor: 'blue',
-    maxWidth: "400px",
-    width: "50%",
-    height: "50%",
-    borderRadius: "20px",
-}
-
 function Container(props) {
     let { headerIndex, setHeaderIndex } = props;
-    let { isConnected, setIsConnected } = props;
+    let { isConnected } = props;
     let which;
 
     const nextHeader = () => {
@@ -30,8 +17,8 @@ function Container(props) {
         setHeaderIndex(index);
     }
 
-    if (headerIndex == 0)
-        which = <CommitInterface isConnected={isConnected} setIsConnected={setIsConnected} />
+    if (headerIndex === 0)
+        which = <CommitInterface isConnected={isConnected} />
     else
         which = <VoteInterface />
     return (
