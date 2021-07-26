@@ -2,6 +2,7 @@ import PhaseHeader from './PhaseHeader'
 import Container from './Container'
 import ConnectButton from './ConnectButton'
 import { useState } from 'react'
+import { getCurrentState } from './API'
 
 const ethers = require('ethers')
 
@@ -26,6 +27,10 @@ async function sign_message(callBack) {
 function App() {
   const [headerIndex, setHeaderIndex] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
+  const [phaseInfo, setPhaseInfo] = useState(null);
+
+  console.log('LOADING APP');
+  if (phaseInfo == null) setPhaseInfo(getCurrentState());
 
   return (
     <div>

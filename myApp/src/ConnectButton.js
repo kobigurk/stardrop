@@ -9,7 +9,7 @@ export default function ConnectButton({ sign_message, isConnected, setIsConnecte
 	if (pohAddress) walletAddress = pohAddress.slice(0, 7) + '...' + pohAddress.slice(-4, -1)
 
 	return (
-		<button className={`connect-button ${isConnected ? 'disabled' : ''}`} onClick={() => {
+		<button className={`connect-button ${isConnected ? 'disabled non-capitalize' : ''}`} onClick={() => {
 			sign_message(() => { setIsConnected(true) });
 		}}>
 			{isConnected

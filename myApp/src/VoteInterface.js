@@ -1,7 +1,9 @@
 import './myStyles.scss';
+import './VoteInterface.scss';
 import { get_pub_key } from './API'
 import { get_voting_token } from './CommitInterface'
 import { LOCAL_SERVER, STARK_SERVER } from './constants';
+import { useState } from 'react';
 const axios = require('axios');
 let pubKey;
 let voting_token;
@@ -68,12 +70,23 @@ function callVote(resultat) {
     })
 }
 
+function ChoiceButton({ value, vote, setVote }) {
+  let style = 'btn-grad';
+  if (value === vote) style += ' selected-vote';
+  return (
+    <button
+      className={style}
+      onClick={() => setVote(value)}>
+      {value}
+    </button>);
+}
+
 function ToggleGroup() {
+  const [vote, setVote] = useState(null);
   return <div>
-    <button className={'btn-grad'} onClick={() => callVote('Yes')}>YES</button>
-    <button className={'btn-grad'} onClick={() => callVote('No')}>NO</button>
-    <button onClick={callEndVotingPhase}>END VOTING PHASE</button>
-    <button onClick={callResultat}>CALL RESULTAT</button>
+    <ChoiceButton value={'Yes'} vote={vote} setVote={setVote} />
+    <ChoiceButton value={'No'} vote={vote} setVote={setVote} />
+    <button onClick={() => callVote(vote)}>Send vote</button>
   </div>
 }
 

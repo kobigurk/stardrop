@@ -1,7 +1,9 @@
 import React from 'react'
 import CommitInterface from './CommitInterface';
 import VoteInterface from './VoteInterface';
+import { phases } from './PhaseHeader';
 import './myStyles.scss';
+import { getCurrentState } from './API';
 
 function Container({ headerIndex, setHeaderIndex, isConnected }) {
     let currentInterface;
@@ -9,10 +11,11 @@ function Container({ headerIndex, setHeaderIndex, isConnected }) {
     const nextHeader = () => {
         let index = headerIndex;
         index++;
-        if (index > 1)
+        if (index > phases.length - 1)
             index = 0;
         console.log(index);
         setHeaderIndex(index);
+        getCurrentState();
     }
 
     if (headerIndex === 0)

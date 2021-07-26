@@ -27,3 +27,12 @@ export function callGenerateKeys() {
         })
         .catch((err) => { console.log("ERRRRRRR"); });
 }
+
+export function getCurrentState() {
+    console.log(new Date());
+    axios.get(`${STARK_SERVER}/api/get_state`)
+        .then((response) => {
+            console.log(response);
+        })
+    //TODO
+}
