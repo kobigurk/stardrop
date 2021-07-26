@@ -1,5 +1,6 @@
 import PhaseHeader from './PhaseHeader'
 import Container from './Container'
+import ConnectButton from './ConnectButton'
 import { useState } from 'react'
 
 const ethers = require('ethers')
@@ -16,7 +17,7 @@ async function sign_message(callBack) {
   await provider.send('eth_requestAccounts', []);
   const signer = provider.getSigner();
   pohAddress = await signer.getAddress();
-  const network = await provider.getNetwork();
+  // const _network = await provider.getNetwork();
   rawSignature = await signer.signMessage("eip42");
   console.log(rawSignature, pohAddress)
   callBack();
@@ -28,13 +29,9 @@ function App() {
 
   return (
     <div>
+      <ConnectButton sign_message={sign_message} isConnected={isConnected} setIsConnected={setIsConnected} />
       <PhaseHeader headerIndex={headerIndex} />
       <Container headerIndex={headerIndex} setHeaderIndex={setHeaderIndex} isConnected={isConnected} />
-      <button className={'connect-button'} onClick={() => {
-        sign_message(() => { setIsConnected(true) });
-      }}>
-        CONNECT
-      </button>
     </div>
   );
 }

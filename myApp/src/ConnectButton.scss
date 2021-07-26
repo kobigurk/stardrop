@@ -1,0 +1,34 @@
+.connect-button {
+  background-image: linear-gradient(
+    to right,
+    #cc95c0 0%,
+    #dbd4b4 51%,
+    #cc95c0 100%
+  );
+  font-family: "Trebuchet MS";
+  position: absolute;
+  top: 5px;
+  right: 10px;
+	min-width: 12rem;
+  padding: 15px 35px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  box-shadow: 0 0 20px #eee;
+  border-radius: 10px;
+  &.disabled {
+    pointer-events:none;
+    opacity: 0.5;
+  }
+  &:hover {
+    background-position: right center;
+    color: #fff;
+    text-decoration: none;
+  }
+}
+
+.non-capitalize {
+  text-transform: none;
+}

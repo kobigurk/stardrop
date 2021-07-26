@@ -3,9 +3,9 @@ import CommitInterface from './CommitInterface';
 import VoteInterface from './VoteInterface';
 import './myStyles.css';
 
-function Container(props) {
-    let { headerIndex, setHeaderIndex } = props;
-    let { isConnected } = props;
+function Container({ headerIndex, setHeaderIndex, isConnected }) {
+    // let { headerIndex, setHeaderIndex } = props;
+    // let { isConnected } = props;
     let which;
 
     const nextHeader = () => {

@@ -1,8 +1,7 @@
 import React from 'react'
 import './myStyles.css'
 
-function PhaseHeader(props) {
-    let { headerIndex } = props;
+function PhaseHeader({ headerIndex }) {
     return (
         <div className={'header'}>
             <div className={headerIndex === 0 ? 'selected-header' : ''}>Commit</div>

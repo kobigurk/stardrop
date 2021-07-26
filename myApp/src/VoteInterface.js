@@ -1,6 +1,5 @@
 import './myStyles.css';
 import { get_pub_key } from './API'
-import { get_commit_token } from './CommitInterface'
 import { get_voting_token } from './CommitInterface'
 const axios = require('axios');
 let pubKey;
@@ -43,7 +42,6 @@ function callResultat(resultat) {
 }
 
 function callVote(resultat) {
-  const commitToken = get_commit_token();
   pubKey = get_pub_key();
   voting_token = get_voting_token();
   console.log(pubKey)

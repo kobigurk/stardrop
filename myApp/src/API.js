@@ -11,10 +11,13 @@ export function get_priv_key() {
 }
 
 export function callGenerateKeys() {
+    console.log('callGenerateKeys just clicked');
     axios.get('http://172.17.0.03:4242/api/generate_keys')
         .then((response) => {
-            if (response.status !== 200)
+            if (response.status !== 200) {
+                console.log(response);
                 return;
+            }
             console.log(response)
             privKey = response.data[0].private_key;
             pubKey = response.data[0].public_key;
