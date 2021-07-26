@@ -10,7 +10,7 @@ function callEndVotingPhase(resultat) {
   pubKey = get_pub_key();
   axios({
     method: 'post',
-    url: 'http://192.168.106.112:5000/api/end_voting_phase',
+    url: 'http://172.17.0.03:5000/api/end_voting_phase',
     data: {
       message: "vitalik<3"
     }
@@ -27,7 +27,7 @@ function callEndVotingPhase(resultat) {
 function callResultat(resultat) {
   axios({
     method: 'get',
-    url: 'http://192.168.106.112:4242/api/get_result'
+    url: 'http://172.17.0.03:4242/api/get_result'
   }).then((response) => {
     console.log(response);
     console.log(response.num_yes)
@@ -53,7 +53,7 @@ function callVote(resultat) {
   }
   axios({
     method: 'post',
-    url: 'http://192.168.106.112:5000/api/vote',
+    url: 'http://172.17.0.03:5000/api/vote',
     data: {
       vote: resultat,
       voting_token: voting_token,

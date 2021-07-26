@@ -11,7 +11,7 @@ export function get_priv_key() {
 }
 
 export function callGenerateKeys() {
-    axios.get('http://192.168.106.112:4242/api/generate_keys')
+    axios.get('http://172.17.0.03:4242/api/generate_keys')
         .then((response) => {
             if (response.status !== 200)
                 return;
