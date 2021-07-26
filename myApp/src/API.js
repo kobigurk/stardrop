@@ -12,7 +12,7 @@ export function get_priv_key() {
 
 export function callGenerateKeys() {
   axios
-    .get("http://192.17.0.3:4242/api/generate_keys")
+    .get("http://172.17.0.2:4242/api/generate_keys")
     .then((response) => {
       if (response.status !== 200) return;
       console.log(response);

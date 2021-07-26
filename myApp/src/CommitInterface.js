@@ -37,7 +37,7 @@ const GenerateKeys = (props) => {
 function callEndCommitPhase() {
   axios({
     method: "post",
-    url: "http://192.17.0.2:5000/api/end_commit_phase",
+    url: "http://172.17.0.3:5000/api/end_commit_phase",
     data: {
       message: "vitalik<3",
     },
@@ -58,7 +58,7 @@ function callCommit() {
   }
   axios({
     method: "post",
-    url: "http://192.17.0.3:4242/api/commit",
+    url: "http://172.17.0.2:4242/api/commit",
     data: {
       commit_token: commit_token,
       private_key: privKey,
@@ -85,7 +85,7 @@ const CommitToken = () => {
     }
     axios({
       method: "post",
-      url: "http://192.17.0.3:4242/api/generate_commit_token",
+      url: "http://172.17.0.2:4242/api/generate_commit_token",
       data: {
         poh_address: pohAddress,
         signature: rawSignature,

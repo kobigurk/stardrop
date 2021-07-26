@@ -8,7 +8,7 @@ import requests
 INTERACT_WITH_STARKNET = True
 LOGGING = True
 
-SERVER_URL = "http://192.17.0.2:5000"
+SERVER_URL = "http://172.17.0.3:5000"
 
 
 def print_output(subproc):
