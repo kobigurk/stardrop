@@ -52,5 +52,6 @@ def launch_command(args, should_wait_until_included):
         if tx_id == -1:
             return subproc
         if wait_until_included(tx_id) == False:
-            return False
+            subproc.returncode += 1
+            return subproc
     return subproc
