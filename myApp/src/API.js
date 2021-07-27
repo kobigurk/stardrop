@@ -11,7 +11,7 @@ export function get_priv_key() {
     return privKey;
 }
 
-export function callGenerateKeys() {
+export function callGenerateKeys(callBack) {
     console.log('callGenerateKeys just clicked');
     axios.get(`${LOCAL_SERVER}/api/generate_keys`)
         .then((response) => {
@@ -24,16 +24,27 @@ export function callGenerateKeys() {
             pubKey = response.data[0].public_key;
             console.log('call generate pubkey', pubKey);
             console.log('call generate privkeys', privKey);
+            callBack()
         })
         .catch((err) => { console.log("ERRRRRRR"); });
 }
 
-export function getCurrentState() {
-    console.log(new Date());
-    axios.get(`${STARK_SERVER}/api/get_state`)
+export async function getCurrentState(prevValue, callBack) {
+    console.log('call getCurrentState')
+    // console.log(new Date());
+    await axios.get(`${STARK_SERVER}/api/get_state`)
         .then((response) => {
-            console.log(response.data[0]);
+            let { phase, previous_results, question, delay_to_callback } = response.data[0];
+            console.log('TEST', phase, previous_results, question, delay_to_callback)
+            // console.log('Time to wait:', timeToWait);
+            if (prevValue !== phase) {
+                console.log('USING CALLBACK')
+                callBack(phase);
+            }
+            return [phase, delay_to_callback];
         })
-    return (null);
-    //TODO
+        .catch((res) => {
+            console.log('ERROR in getCurrentState')
+        })
+    // return [-1, 1000];
 }
