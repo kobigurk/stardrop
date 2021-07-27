@@ -7,6 +7,7 @@ WORKDIR ./appFront
 
 ADD ./package.json .
 ADD ./package-lock.json .
+ADD ./yarn.lock .
 
 RUN mkdir public
 ADD ./public ./public/
