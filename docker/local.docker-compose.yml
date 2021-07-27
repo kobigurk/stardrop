@@ -1,6 +1,8 @@
 version: "2"
 services:
   front:
+    volumes:
+      - ../myApp:/appFront
     build: ../myApp/
     ports:
       - "3000:3000"
@@ -9,6 +11,8 @@ services:
       REACT_APP_SERVER: http://localhost:5000
 
   local:
+    volumes:
+      - ../local:/local
     build: ../local/
     ports:
       - "4242:4242"
@@ -18,6 +22,8 @@ services:
       SERVER: http://server:5000
 
   server:
+    volumes:
+      - ../server:/server
     build: ../server/
     ports:
       - "5000:5000"
