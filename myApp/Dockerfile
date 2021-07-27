@@ -5,4 +5,4 @@ WORKDIR ./appFront
 
 EXPOSE 3000
 
-CMD yarn && yarn start
+CMD yarn install --frozen-lockfile  && yarn start
