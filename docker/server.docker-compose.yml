@@ -30,7 +30,7 @@ services:
 
 
   server:
-    build: ../local/
+    build: ../server/
     expose:
         - 5000
     labels:
