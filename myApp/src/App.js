@@ -27,7 +27,6 @@ async function sign_message(callBack) {
 function App() {
   const [headerIndex, setHeaderIndex] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
-  // const [phaseInfo, setPhaseInfo] = useState(null);
   let phaseInfo = getCurrentState();
 
   console.log('LOADING APP');

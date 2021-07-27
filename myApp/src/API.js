@@ -32,7 +32,7 @@ export function getCurrentState() {
     console.log(new Date());
     axios.get(`${STARK_SERVER}/api/get_state`)
         .then((response) => {
-            console.log(response);
+            console.log(response.data[0]);
         })
     return (null);
     //TODO
