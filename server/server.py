@@ -231,9 +231,13 @@ def generate_human_list():
 def get_state():
 
     if state == COMMIT_PHASE:
-        delay_to_callback = COMMIT_PHASE_LENGTH + 1
+        current_time = datetime.datetime.utcnow().timestamp()
+        end_time = started_time + COMMIT_PHASE_LENGTH + 1
+        delay_to_callback = end_time - current_time
     elif state == VOTING_PHASE:
-        delay_to_callback = VOTING_PHASE_LENGTH + 1
+        current_time = datetime.datetime.utcnow().timestamp()
+        end_time = started_time + COMMIT_PHASE_LENGTH + 1
+        delay_to_callback = end_time - current_time
     else:
         delay_to_callback = 5
 
