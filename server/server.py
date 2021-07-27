@@ -96,7 +96,7 @@ def initialize():
 @ app.route('/', methods=['GET'])
 # Easter egg
 def home():
-    return "<h1>This is the voting server. It signs your commit_token, and then submits its key to smart-contract once the commit phase is done.h1>"
+    return "<h1>This is the voting server. It signs your commit_token, and then submits its key to smart-contract once the commit phase is done.</h1>"
 
 
 def verify_sig(signature: str, message: str, poh_address: str) -> bool:
