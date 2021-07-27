@@ -8,7 +8,7 @@ import requests
 INTERACT_WITH_STARKNET = True
 LOGGING = True
 
-SERVER_URL = "http://172.17.0.3:5000"
+SERVER_URL = "http://192.168.0.44:5000"
 
 
 def print_output(subproc):
@@ -62,5 +62,6 @@ def launch_command(args, should_wait_until_included):
         #     if wait_until_included(tx_id, 'PENDING') == False:
             # return False
         if wait_until_included(tx_id, 'PENDING') == False:
-            return False
+            subproc.returncode = 1
+            return subproc
     return subproc
