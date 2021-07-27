@@ -1,8 +1,12 @@
 import App from './App';
-import React from 'react';
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 
+console.log("LOADING INDEX");
+
 ReactDOM.render(
-    <App />,
+    <StrictMode>
+        <App />
+    </StrictMode>,
     document.getElementById('root')
 )

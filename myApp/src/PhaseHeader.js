@@ -1,14 +1,24 @@
 import React from 'react'
-import './myStyles.css'
+import './PhaseHeader.scss'
 
-function PhaseHeader(props) {
-    let { headerIndex } = props;
+export const phases = ['Deploy SC', 'Init SC', 'Commit Phase', 'End Commit', 'Server Key Reveal', 'Voting Phase', 'End Voting'];
+
+function PhaseName({ index, currentIndex, children }) {
+    return <div
+        className={currentIndex === index ? 'selected-header' : ''}>
+        {children}
+    </div>
+}
+
+export default function PhaseHeader({ headerIndex }) {
     return (
         <div className={'header'}>
-            <div className={headerIndex === 0 ? 'selected-header' : ''}>Commit</div>
-            <div className={headerIndex === 1 ? 'selected-header' : ''}>Vote</div>
+            {phases.map((children, index) => <React.Fragment key={'phase-header' + index}>
+                <PhaseName index={index} currentIndex={headerIndex}>
+                    {children}
+                </PhaseName>
+                {(index < phases.length - 1) && '>'}
+            </React.Fragment>)}
         </div >
     )
 }
-
-export default PhaseHeader

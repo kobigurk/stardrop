@@ -1,7 +1,9 @@
-import './myStyles.css';
+import './myStyles.scss';
+import './VoteInterface.scss';
 import { get_pub_key } from './API'
-import { get_commit_token } from './CommitInterface'
 import { get_voting_token } from './CommitInterface'
+import { LOCAL_SERVER, STARK_SERVER } from './constants';
+import { useState } from 'react';
 const axios = require('axios');
 let pubKey;
 let voting_token;
@@ -10,7 +12,7 @@ function callEndVotingPhase(resultat) {
   pubKey = get_pub_key();
   axios({
     method: 'post',
-    url: 'http://172.17.0.03:5000/api/end_voting_phase',
+    url: `${STARK_SERVER}/api/end_voting_phase`,
     data: {
       message: "vitalik<3"
     }
@@ -27,7 +29,7 @@ function callEndVotingPhase(resultat) {
 function callResultat(resultat) {
   axios({
     method: 'get',
-    url: 'http://172.17.0.03:4242/api/get_result'
+    url: `${LOCAL_SERVER}/api/get_result`
   }).then((response) => {
     console.log(response);
     console.log(response.num_yes)
@@ -43,7 +45,6 @@ function callResultat(resultat) {
 }
 
 function callVote(resultat) {
-  const commitToken = get_commit_token();
   pubKey = get_pub_key();
   voting_token = get_voting_token();
   console.log(pubKey)
@@ -53,7 +54,7 @@ function callVote(resultat) {
   }
   axios({
     method: 'post',
-    url: 'http://172.17.0.03:5000/api/vote',
+    url: `${STARK_SERVER}/api/vote`,
     data: {
       vote: resultat,
       voting_token: voting_token,
@@ -69,12 +70,23 @@ function callVote(resultat) {
     })
 }
 
+function ChoiceButton({ value, vote, setVote }) {
+  let style = 'btn-grad';
+  if (value === vote) style += ' selected-vote';
+  return (
+    <button
+      className={style}
+      onClick={() => setVote(value)}>
+      {value}
+    </button>);
+}
+
 function ToggleGroup() {
+  const [vote, setVote] = useState(null);
   return <div>
-    <button className={'btn-grad2'} onClick={() => callVote('Yes')}>YES</button>
-    <button className={'btn-grad2'} onClick={() => callVote('No')}>NO</button>
-    <button onClick={callEndVotingPhase}>END VOTING PHASE</button>
-    <button onClick={callResultat}>CALL RESULTAT</button>
+    <ChoiceButton value={'Yes'} vote={vote} setVote={setVote} />
+    <ChoiceButton value={'No'} vote={vote} setVote={setVote} />
+    <button onClick={() => callVote(vote)}>Send vote</button>
   </div>
 }
 
