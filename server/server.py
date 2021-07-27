@@ -182,6 +182,7 @@ def end_voting_phase():
 
 @ app.route('/api/vote', methods=['POST'])
 def vote():
+    # This function should be in `local.py` and local should ask the server to send priv key.
     data = request.get_json()
     print(data)
     if 'public_key' not in data:
