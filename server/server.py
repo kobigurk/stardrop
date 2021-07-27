@@ -231,17 +231,13 @@ def generate_human_list():
 def get_state():
 
     if state == COMMIT_PHASE:
-        time_of_callback = started_time + COMMIT_PHASE_LENGTH + 1
+        delay_to_callback = COMMIT_PHASE_LENGTH + 1
     elif state == VOTING_PHASE:
-        time_of_callback = started_time + VOTING_PHASE_LENGTH + 1
+        delay_to_callback = VOTING_PHASE_LENGTH + 1
     else:
-        current_time = datetime.datetime.utcnow().timestamp()
-        if current_time <= started_time + 10:
-            time_of_callback = started_time + 5
-        else:
-            time_of_callback = current_time + 5
+        delay_to_callback = 5
 
-    return jsonify([{'phase': state, 'time_of_callback': time_of_callback, 'previous_results': previous_results, 'question': question}])
+    return jsonify([{'phase': state, 'delay_to_callback': delay_to_callback, 'previous_results': previous_results, 'question': question}])
 
 
 def update_results():
