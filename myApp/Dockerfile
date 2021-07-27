@@ -6,6 +6,7 @@ RUN mkdir ./appFront
 WORKDIR ./appFront
 
 ADD ./package.json .
+ADD ./package-lock.json .
 
 RUN mkdir public
 ADD ./public ./public/
@@ -13,7 +14,7 @@ ADD ./public ./public/
 RUN mkdir src
 ADD ./src ./src
 
-RUN npm install
+RUN npm ci
 
 EXPOSE 3000
 
