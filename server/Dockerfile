@@ -7,9 +7,9 @@ RUN npm install ethers axios fs
 RUN pip3 install ecdsa fastecdsa sympy contextvars flask flask_cors 
 
 WORKDIR /server
-ADD  src/cairo-lang-0.3.0.zip /server/src
+ADD src/cairo-lang-0.3.0.zip /server
 
-RUN pip3 install src/cairo-lang-0.3.0.zip
+RUN pip3 install cairo-lang-0.3.0.zip
 
 EXPOSE 5000
 
