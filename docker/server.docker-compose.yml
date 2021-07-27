@@ -3,7 +3,7 @@ version: "2"
 services:
 
   front:
-    build: ./myApp/
+    build: ../myApp/
     expose:
       - 3000
     labels:
@@ -16,7 +16,7 @@ services:
       traefik.http.routers.private-voting-app.tls.certresolver: httpchallenge
 
   local:
-    build: ./local/
+    build: ../local/
     expose:
       - 4242
     labels:
@@ -30,7 +30,7 @@ services:
 
 
   server:
-    build: ./local/
+    build: ../local/
     expose:
         - 5000
     labels:
