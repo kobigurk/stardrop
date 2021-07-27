@@ -14,6 +14,9 @@ services:
       traefik.http.routers.private-voting-app.entrypoints: https
       traefik.http.routers.private-voting-app.tls: true
       traefik.http.routers.private-voting-app.tls.certresolver: httpchallenge
+    environment:
+      REACT_APP_LOCAL_SERVER: https://local.private-voting.pscott.me
+      REACT_APP_SERVER: https://server.private-voting.pscott.me
 
   local:
     build: ../local/
@@ -27,7 +30,8 @@ services:
       traefik.http.routers.private-voting-local.entrypoints: https
       traefik.http.routers.private-voting-local.tls: true
       traefik.http.routers.private-voting-local.tls.certresolver: httpchallenge
-
+    environment:
+      SERVER: https://server.private-voting.pscott.me
 
   server:
     build: ../server/
@@ -41,4 +45,3 @@ services:
       traefik.http.routers.private-voting-server.entrypoints: https
       traefik.http.routers.private-voting-server.tls: true
       traefik.http.routers.private-voting-server.tls.certresolver: httpchallenge
-

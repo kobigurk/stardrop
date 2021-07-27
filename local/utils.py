@@ -1,3 +1,4 @@
+import os
 from re import sub
 import subprocess
 from sys import stdout
@@ -8,8 +9,8 @@ import requests
 INTERACT_WITH_STARKNET = True
 LOGGING = True
 
-SERVER_URL = "http://192.168.0.44:5000"
-
+# SERVER_URL = "http://192.168.0.44:5000"
+SERVER_URL = os.environ.get('SERVER')
 
 def print_output(subproc):
     print(subproc)
