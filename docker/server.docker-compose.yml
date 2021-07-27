@@ -1,7 +1,6 @@
 version: "2"
 
 services:
-
   front:
     build: ../myApp/
     expose:
@@ -10,7 +9,7 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik_default
       traefik.http.routers.private-voting-app.rule: Host(`private-voting.pscott.me`)
-      traefik.http.routers.private-voting-app.port: 3000
+      traefik.http.services.private-voting-app.loadbalancer.server.port: 3000
       traefik.http.routers.private-voting-app.entrypoints: https
       traefik.http.routers.private-voting-app.tls: true
       traefik.http.routers.private-voting-app.tls.certresolver: httpchallenge
@@ -26,7 +25,7 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik_default
       traefik.http.routers.private-voting-local.rule: Host(`local.private-voting.pscott.me`)
-      traefik.http.routers.private-voting-local.port: 4242
+      traefik.http.services.private-voting-app.loadbalancer.server.port: 4242
       traefik.http.routers.private-voting-local.entrypoints: https
       traefik.http.routers.private-voting-local.tls: true
       traefik.http.routers.private-voting-local.tls.certresolver: httpchallenge
@@ -36,12 +35,12 @@ services:
   server:
     build: ../server/
     expose:
-        - 5000
+      - 5000
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_default
       traefik.http.routers.private-voting-server.rule: Host(`server.private-voting.pscott.me`)
-      traefik.http.routers.private-voting-server.port: 5000
+      traefik.http.services.private-voting-app.loadbalancer.server.port: 5000
       traefik.http.routers.private-voting-server.entrypoints: https
       traefik.http.routers.private-voting-server.tls: true
       traefik.http.routers.private-voting-server.tls.certresolver: httpchallenge
