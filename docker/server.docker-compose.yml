@@ -7,6 +7,8 @@ networks:
 
 services:
   front:
+    volumes:
+      - ../myApp:/appFront
     build: ../myApp/
     expose:
       - 3000
@@ -24,6 +26,8 @@ services:
 
   local:
     build: ../local/
+    volumes:
+      - ../local:/local
     expose:
       - 4242
     labels:
@@ -39,6 +43,8 @@ services:
 
   server:
     build: ../server/
+    volumes:
+      - ../server:/server
     expose:
       - 5000
     labels:

@@ -6,8 +6,8 @@ RUN apt-get install -y libgmp-dev nodejs npm
 RUN npm install ethers axios fs
 RUN pip3 install ecdsa fastecdsa sympy contextvars flask flask_cors 
 
-ADD  . /server
 WORKDIR /server
+ADD  src/cairo-lang-0.3.0.zip /server/src
 
 RUN pip3 install src/cairo-lang-0.3.0.zip
 
