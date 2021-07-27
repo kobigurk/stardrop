@@ -88,7 +88,7 @@ export default function CommitInterface({ state }) {
   return (
     <div>
       {state.question}
-      <CommitToVoteButton />
+      {state.phase === 2 && <CommitToVoteButton />}
     </div>
   )
 };

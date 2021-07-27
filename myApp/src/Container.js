@@ -29,7 +29,7 @@ function Container({ headerIndex, setHeaderIndex, isConnected, state }) {
             currentInterface = <CommitInterface headerIndex={headerIndex} state={state} />
             break;
         case 5: case 6:
-            currentInterface = <VoteInterface headerIndex={headerIndex} />
+            currentInterface = <VoteInterface headerIndex={headerIndex} state={state} />
             break;
         default:
             currentInterface = <div>ERROR</div>
