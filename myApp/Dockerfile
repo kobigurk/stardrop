@@ -14,7 +14,7 @@ ADD ./public ./public/
 RUN mkdir src
 ADD ./src ./src
 
-RUN npm ci
+RUN yarn
 
 EXPOSE 3000
 

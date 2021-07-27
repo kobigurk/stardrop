@@ -1,6 +1,5 @@
 version: "2"
 services:
-
   front:
     build: ../myApp/
     ports:
@@ -13,10 +12,12 @@ services:
     build: ../local/
     ports:
       - "4242:4242"
+    links:
+      - "server"
     environment:
-      SERVER: http://localhost:5000
+      SERVER: http://server:5000
 
   server:
     build: ../server/
     ports:
-        - "5000:5000"
+      - "5000:5000"
