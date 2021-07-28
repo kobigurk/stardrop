@@ -4,59 +4,19 @@ import { get_pub_key } from './API'
 import { get_voting_token } from './CommitInterface'
 import { LOCAL_SERVER, STARK_SERVER } from './constants';
 import { useState } from 'react';
+import Timer from './Timer';
 const axios = require('axios');
-let pubKey;
-let voting_token;
 
-function callEndVotingPhase(resultat) {
-  pubKey = get_pub_key();
-  axios({
-    method: 'post',
-    url: `${STARK_SERVER}/api/end_voting_phase`,
-    data: {
-      message: "vitalik<3"
-    }
-  }).then((response) => {
-    console.log(response);
-    if (response.status !== 200)
-      console.log("ERROR");
-  })
-    .catch((error) => {
-      console.log("catch ERROR");
-    })
-}
-
-function callResultat(resultat) {
-  axios({
-    method: 'get',
-    url: `${LOCAL_SERVER}/api/get_result`
-  }).then((response) => {
-    console.log(response);
-    console.log(response.num_yes)
-    console.log(response.num_no)
-    if (response.status !== 200)
-      console.log("ERROR");
-    // setErrorMessage("ERROR");
-  })
-    .catch((error) => {
-      // setErrorMessage("catch ERROR");
-      console.log("catch ERROR");
-    })
-}
-
-function callVote(resultat) {
-  pubKey = get_pub_key();
-  voting_token = get_voting_token();
-  console.log(pubKey)
-  if (!resultat || !voting_token || !pubKey) {
-    console.log("pb variable vide")
+function callVote(result, pubKey, voting_token) {
+  if (!result) {
+    console.log("empty result")
     return 300;
   }
   axios({
     method: 'post',
     url: `${STARK_SERVER}/api/vote`,
     data: {
-      vote: resultat,
+      vote: result,
       voting_token: voting_token,
       public_key: pubKey
     }
@@ -82,19 +42,29 @@ function ChoiceButton({ value, vote, setVote }) {
 }
 
 function ToggleGroup() {
+  let voting_token = get_voting_token();
+  let pubKey = get_pub_key();
   const [vote, setVote] = useState(null);
+
+  if (!voting_token || !pubKey) {
+    return <div>You did not commit during commit period. You need to wait for the next round to participate.</div>
+  }
+
   return <div>
     <ChoiceButton value={'Yes'} vote={vote} setVote={setVote} />
     <ChoiceButton value={'No'} vote={vote} setVote={setVote} />
-    <button onClick={() => callVote(vote)}>Send vote</button>
+    <button className={`${vote === null ? 'rekt' : 'btn-grad'} `} onClick={() => callVote(vote, pubKey, voting_token)}>
+      {vote === null ? 'You voted!' : 'Send vote'}
+      </button>
   </div>
 }
 
-function VoteInterface() {
+function VoteInterface({ state }) {
   return (
     <div className="App">
       <header className="App-header">
-        SHOULD CARLOS MATOS PRESIDE THE ETHEREUM FOUNDATION ?
+        {state.question}
+        <Timer delayToCallback={25}/>
         <ToggleGroup />
       </header>
     </div>

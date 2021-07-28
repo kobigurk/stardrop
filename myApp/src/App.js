@@ -31,10 +31,11 @@ function App() {
   const [headerIndex, setHeaderIndex] = useState(0);
   const [isConnected, setIsConnected] = useState(true);//false
   // const [phaseIndex, setPhaseIndex] = useState(-1);
-  const [timeToNextCall, setTimeToNextCall] = useState(0)
+  const [delayToCallback, setTimeToNextCall] = useState(0)
   const [watcher, setWatcher] = useState(0)
   const [state, setState] = useState({})
   console.log('call APP');
+  console.log("Delay to callback", delayToCallback)
 
   useEffect(() => {
     let timer;
@@ -42,14 +43,18 @@ function App() {
     axios.get(`${STARK_SERVER}/api/get_state`)
       .then((response) => {
         let { phase, previous_results, question, delay_to_callback } = response.data[0];
+
+        // Ensure we are dealing with ints and not floats
+        delay_to_callback = Math.floor(delay_to_callback)
+
         setState(response.data[0]);
         console.log('RESPONSE:', phase, previous_results, question, delay_to_callback);
         setHeaderIndex(phase);
         setTimeToNextCall(delay_to_callback);
         timer = setTimeout(() => {
-          console.log(`PENZOPENZOPENZO This will run after ${timeToNextCall} Msecond!, ${headerIndex}`);
+          console.log(`PENZOPENZOPENZO This will run after ${delayToCallback} Msecond!, ${headerIndex}`);
           setWatcher(watcher + 1);//A LA PLACELOOP
-        }, timeToNextCall * 1000);
+        }, delayToCallback * 1000);
       })
       .catch((res) => {
         console.log('ERROR in getCurrentState:', res);
@@ -70,6 +75,7 @@ function App() {
         setHeaderIndex={setHeaderIndex}
         isConnected={isConnected}
         state={state}
+        delayToCallback={delayToCallback}
       />
       <DebugButton headerIndex={headerIndex} setHeaderIndex={setHeaderIndex} />
     </div>

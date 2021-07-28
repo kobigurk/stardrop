@@ -1,9 +1,11 @@
-import { useState } from "react"
 import { callGenerateKeys } from './API.js'
 import { get_var } from './App'
 import { get_pub_key } from './API'
 import { get_priv_key } from './API'
-import { STARK_SERVER, LOCAL_SERVER } from "./constants.js"
+import { LOCAL_SERVER } from "./constants.js"
+import { useState } from 'react'
+import Timer from './Timer';
+import "./ConnectButton.scss"
 
 const axios = require('axios');
 let commit_token;
@@ -69,8 +71,9 @@ function generateCommitToken(callBack) {
     })
 }
 
-function initCommitToVote() {
+function initCommitToVote(setHasCommitted) {
   console.log('GETTING TABOUILLED');
+  setHasCommitted(true);
   callGenerateKeys(
     () => {
       generateCommitToken(
@@ -80,14 +83,19 @@ function initCommitToVote() {
     });
 }
 
-function CommitToVoteButton({ }) {
-  return <button className={'btn-grad'} onClick={initCommitToVote}>Commit to next vote</button>
+function CommitToVoteButton() {
+  const [hasCommitted, setHasCommitted] = useState(false);
+
+  return <button className={`${hasCommitted ? 'rekt' : 'btn-grad'} `} onClick={() => initCommitToVote(setHasCommitted)}>
+    {hasCommitted ? 'Committed to next vote!' : 'Commit to next vote'}
+    </button>
 }
 
 export default function CommitInterface({ state }) {
   return (
     <div>
       {state.question}
+      <Timer delayToCallback={25}/>
       <CommitToVoteButton />
     </div>
   )
