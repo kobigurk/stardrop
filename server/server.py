@@ -242,7 +242,7 @@ def get_state():
     else:
         delay_to_callback = 5
 
-    return jsonify([{'phase': state, 'delay_to_callback': delay_to_callback, 'previous_results': previous_results, 'question': question}])
+    return jsonify([{'phase': state, 'delay_to_callback': int(delay_to_callback), 'previous_results': previous_results, 'question': question}])
 
 
 def update_results():
