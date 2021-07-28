@@ -90,11 +90,11 @@ function ToggleGroup() {
   </div>
 }
 
-function VoteInterface() {
+function VoteInterface({ state }) {
   return (
     <div className="App">
       <header className="App-header">
-        SHOULD CARLOS MATOS PRESIDE THE ETHEREUM FOUNDATION ?
+        {state && state.question && <p>{state.question}</p>}
         <ToggleGroup />
       </header>
     </div>
