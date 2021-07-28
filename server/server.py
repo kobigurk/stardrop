@@ -25,8 +25,8 @@ SERVER_KEY_REVEAL = 4
 VOTING_PHASE = 5
 END_VOTING_PHASE = 6
 
-VOTING_PHASE_LENGTH = 45
-COMMIT_PHASE_LENGTH = 25
+VOTING_PHASE_LENGTH = 100
+COMMIT_PHASE_LENGTH = 60
 
 QUESTIONS = ['Should Carlos Matos be elected President of the United States?', 'Will you vote Yes?', 'Will you vote No?',
              'Is Dogecoin going to flip Ethereum?', 'Is Ethereum going to flip Bitcoin?', 'Are you Satoshi Nakamoto?']
