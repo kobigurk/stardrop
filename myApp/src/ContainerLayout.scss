@@ -1,0 +1,28 @@
+.container-layout {
+	display: flex;
+	flex-direction: column;
+
+	& > .title {
+		// background-color: green;
+		text-align: start;
+		padding: 0px 0px 0px 20px;
+		font-size: x-large;
+	}
+
+	& > .question {
+		background-color: red;
+		font-size: large;
+		padding: 50px 0px;
+	}
+	
+	& > .deux {
+		background-color: green;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+		& > div {
+			background-color: cornflowerblue;
+		padding: 50px 0px;
+		}
+	}
+}

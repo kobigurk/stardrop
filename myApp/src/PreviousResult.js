@@ -1,4 +1,5 @@
 import React from 'react'
+import './ContainerLayout.scss'
 
 export default function PreviousResult({ state }) {
 	let question = 'RIEN';
@@ -8,10 +9,13 @@ export default function PreviousResult({ state }) {
 	if (state && state.previous_results && state.previous_results.total_no) total_no = state.previous_results.total_no;
 	if (state && state.previous_results && state.previous_results.total_yes) total_yes = state.previous_results.total_yes;
 	return (
-		<div>
-			<p>previous question: {question}</p>
-			<p>yes: {total_yes}</p>
-			<p>no: {total_no}</p>
+		<div className={'container-layout'}>
+			<div className={'title'}>Previous vote</div>
+			<div className={'question'}>{question}</div>
+			<div className={'deux'}>
+				<div>yes: {total_yes}</div>
+				<div>no: {total_no}</div>
+			</div>
 		</div>
 	)
 }

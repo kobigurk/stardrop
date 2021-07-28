@@ -1,4 +1,4 @@
-.connect-button {
+.debug-button {
   background-image: linear-gradient(
     to right,
     #cc95c0 0%,
@@ -6,13 +6,9 @@
     #cc95c0 100%
   );
   font-family: "Trebuchet MS";
-
-  // align-self: flex-end;
-  margin-left: auto;
-  // position: absolute;
-  // top: 10px;
-  // right: 10px;
-
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
 	min-width: 12rem;
   padding: 15px 35px;
   text-align: center;

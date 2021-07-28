@@ -2,24 +2,13 @@ import React from 'react'
 import PreviousResult from './PreviousResult';
 import CommitInterface from './CommitInterface';
 import VoteInterface from './VoteInterface';
-import { phases } from './PhaseHeader';
+import PeriodInfo from './PeriodInfo';
 import './myStyles.scss';
 
 function Container({ headerIndex, setHeaderIndex, isConnected, state }) {
     console.log('call Container')
     console.log("inside container state:", state);
     let currentInterface;
-
-    //For debuging purposes
-    const nextHeader = () => {
-        console.log('calling nextHeader()');
-        let index = headerIndex;
-        index++;
-        if (index > phases.length - 1)
-            index = 0;
-        console.log(index);
-        setHeaderIndex(index);
-    }
 
     switch (headerIndex) {
         case 0: case 1:
@@ -36,11 +25,14 @@ function Container({ headerIndex, setHeaderIndex, isConnected, state }) {
     }
 
     if (!isConnected)
-        return <div className={'container'}>Please connect your web3 wallet</div>
+        return <div className={'container'}>
+            Please connect your web3 wallet
+            <PeriodInfo index={headerIndex} />
+        </div>
     else
         return <div className={'container'}>
-            {/* <button onClick={nextHeader}>Next header</button> */}
             {currentInterface}
+            <PeriodInfo index={headerIndex} />
         </div>
 };
 

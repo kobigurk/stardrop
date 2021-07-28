@@ -1,3 +1,6 @@
+$container-width: 500px;
+$container-height: 400px;
+
 .btn-grad {
   background-image: linear-gradient(
     to right,
@@ -26,20 +29,70 @@
   position: absolute;
   top: 50%;
   left: 50%;
+  // margin: 0 auto 0;
   transform: translate(-50%, -50%);
   background: #e0fbfc;
   box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 50%;
-  height: 50%;
+  // max-width: 400px;
+  // width: 50%;
+  // height: 50%;
+
+  width: $container-width;
+  max-width: 80vw;
+  height: $container-height;
+
+  // margin-top: -($container-height/2); /* HALF OF THE HEIGHT */
+  // margin-left: -($container-width/2); /* HALF OF THE WIDTH */
+  // margin-left: -(min($container-width/2, 40%));
+
   border-radius: 20px;
+  // margin: 0px;
+  padding: 10px;
 }
 
+.phase-connect-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  // justify-content: center;
+  align-content:stretch;
+  margin:0;
+  padding:0;
+  width: 100vw;
+}
+
+html {
+  position: fixed;
+}
+
+html,
 body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+}
+
+body{
+  // position: fixed;
   font-family: "Trebuchet MS";
+
   display: flex;
   justify-content: center;
   text-align: center;
+
+  // background: red;
+
+  // box-shadow:inset 0px 0px 0px 10px black;
+
   background-color: #8ec5fc;
-  background-image: linear-gradient(62deg, #8ec5fc 0%, #e0c3fc 100%);
+  background: linear-gradient(to right, #8ec5fc 0%, #e0c3fc 100%);
 }
+
+// @media screen and (max-width: 500px) {
+//   $container-width: 100px;
+//   $container-height: 100px;
+//   // .container {
+//   //   width: 100vw;
+//   //   height: 20px;
+//   // }
+// }
