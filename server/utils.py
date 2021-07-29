@@ -6,8 +6,8 @@ import json
 import requests
 
 # whether to actually call and deploy starknet
-INTERACT_WITH_STARKNET = False
-DEPLOY_CONTRACT = False
+INTERACT_WITH_STARKNET = True
+DEPLOY_CONTRACT = True
 COMPILE_CONTRACT = False
 CHECK_POH = False
 LOGGING = True

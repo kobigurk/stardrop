@@ -6,7 +6,7 @@ from time import sleep
 import json
 import requests
 
-INTERACT_WITH_STARKNET = False
+INTERACT_WITH_STARKNET = True
 LOGGING = True
 
 SERVER_URL = os.environ.get('SERVER')
