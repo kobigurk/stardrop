@@ -3,21 +3,20 @@ import './PhaseHeader.scss'
 
 export const phases = ['Deploy SC', 'Init SC', 'Commit Phase', 'End Commit', 'Server Key Reveal', 'Voting Phase', 'End Voting'];
 
-function PhaseName({ index, currentIndex, children }) {
-    return <div
-        className={currentIndex === index ? 'selected-header' : ''}>
-        {children}
-    </div>
-}
+// function PhaseName({ index, currentIndex, children }) {
+//     return <div>
+//         {children}
+//     </div>
+// }
 
 export default function PhaseHeader({ headerIndex }) {
     return (
         <div className={'header'}>
-            {phases.map((children, index) => <React.Fragment key={'phase-header' + index}>
-                <PhaseName index={index} currentIndex={headerIndex}>
-                    {children}
-                </PhaseName>
-                {(index < phases.length - 1) && '>'}
+            {phases.map((phaseName, index) => <React.Fragment key={'phase-header' + index}>
+                <div className={headerIndex === index ? 'selected-header' : ''}>
+                    {phaseName}
+                </div>
+                {(index < phases.length - 1) && '·'}
             </React.Fragment>)}
         </div >
     )

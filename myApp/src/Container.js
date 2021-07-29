@@ -26,7 +26,7 @@ function Container({ headerIndex, setHeaderIndex, isConnected, state }) {
 
     if (!isConnected)
         return <div className={'container'}>
-            Please connect your web3 wallet
+            <div>Please connect your web3 wallet</div>
             <PeriodInfo index={headerIndex} />
         </div>
     else

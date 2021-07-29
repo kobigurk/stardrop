@@ -26,37 +26,28 @@ $container-height: 400px;
 }
 
 .container {
+  background: #e0fbfc;
+  // background: green;
   position: absolute;
   top: 50%;
   left: 50%;
-  // margin: 0 auto 0;
   transform: translate(-50%, -50%);
-  background: #e0fbfc;
   box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.2);
-  // max-width: 400px;
-  // width: 50%;
-  // height: 50%;
-
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
   width: $container-width;
   max-width: 80vw;
   height: $container-height;
-
-  // margin-top: -($container-height/2); /* HALF OF THE HEIGHT */
-  // margin-left: -($container-width/2); /* HALF OF THE WIDTH */
-  // margin-left: -(min($container-width/2, 40%));
-
   border-radius: 20px;
-  // margin: 0px;
   padding: 10px;
 }
 
 .phase-connect-wrapper {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   flex-wrap: wrap;
-  // justify-content: center;
-  align-content:stretch;
-  margin:0;
-  padding:0;
   width: 100vw;
 }
 

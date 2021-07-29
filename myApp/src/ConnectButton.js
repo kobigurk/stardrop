@@ -1,6 +1,6 @@
 import React from 'react'
 import { get_var } from "./App"
-import "./ConnectButton.scss"
+import "./PhaseHeader.scss"
 
 export default function ConnectButton({ sign_message, isConnected, setIsConnected }) {
 	let { pohAddress } = get_var();

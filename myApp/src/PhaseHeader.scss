@@ -1,20 +1,21 @@
+$max-header-width: 800px;
+$side_padding: 10px;
+
 .header {
   background: #e0fbfc;
   box-shadow: 0px 0px 20px 5px rgba(0, 0, 0, 0.2);
-	padding: 4px 10px;
-  border-radius: 40px;
-
-  justify-self: center;
-  // align-self: center;
-
-  display: flex;
-	flex-direction: row;
+	padding: 4px $side_padding;
+  // border-radius: 16px;
   justify-content: space-evenly;
   align-items: center;
-  max-width: 800px;
+  width: 100vw;
+  display: flex;
+  flex-wrap: wrap;
+
 	// these rule apply to each children
 	& > * {
-		margin: 0px 15px;
+		padding: 2px 3px;
+    flex: 0 0 auto;
 	}
 }
 
@@ -25,6 +26,49 @@
 
 .selected-header {
   background-color: #8ec5fc;
+  border-radius: 3px;
+}
+
+.connect-button {
+  background-image: linear-gradient(
+    to right,
+    #cc95c0 0%,
+    #dbd4b4 51%,
+    #cc95c0 100%
+  );
+  font-family: "Trebuchet MS";
+
+  flex: 0 1 auto;
+
+  width: 100px;
+  margin: 0px $side_padding*2 0px 0px;
+
+  // margin-left: auto;
+  align-self: flex-end;
+  justify-self: flex-end;
+
+	min-width: 12rem;
+  padding: 15px 35px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  box-shadow: 0 0 20px #eee;
   border-radius: 10px;
-  padding: 5px;
+  &.disabled {
+    pointer-events:none;
+    opacity: 0.5;
+    background: initial;
+    background-color: rgba($color: #000000, $alpha: 0);
+  }
+  &:hover {
+    background-position: right center;
+    color: #fff;
+    text-decoration: none;
+  }
+}
+
+.non-capitalize {
+  text-transform: none;
 }

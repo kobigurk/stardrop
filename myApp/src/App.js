@@ -29,7 +29,7 @@ async function sign_message(callBack) {
 
 function App() {
   const [headerIndex, setHeaderIndex] = useState(0);
-  const [isConnected, setIsConnected] = useState(true);//false
+  const [isConnected, setIsConnected] = useState(false);//false
   // const [phaseIndex, setPhaseIndex] = useState(-1);
   const [timeToNextCall, setTimeToNextCall] = useState(0)
   const [watcher, setWatcher] = useState(0)
@@ -60,7 +60,7 @@ function App() {
   // if (phaseInfo === null) setPhaseInfo(getCurrentState());
 
   return (
-    <div>
+    <>
       <div className={'phase-connect-wrapper'}>
         <PhaseHeader headerIndex={headerIndex} />
         <ConnectButton sign_message={sign_message} isConnected={isConnected} setIsConnected={setIsConnected} />
@@ -72,7 +72,7 @@ function App() {
         state={state}
       />
       <DebugButton headerIndex={headerIndex} setHeaderIndex={setHeaderIndex} />
-    </div>
+    </>
   );
 }
 

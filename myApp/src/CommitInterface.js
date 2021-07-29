@@ -84,11 +84,11 @@ function CommitToVoteButton({ }) {
   return <button className={'btn-grad'} onClick={initCommitToVote}>Commit to next vote</button>
 }
 
-export default function CommitInterface({ state }) {
+export default function CommitInterface({ headerIndex, state }) {
   return (
-    <div>
-      {state.question}
-      <CommitToVoteButton />
+    <div className={'container-layout'}>
+      <div className={'question'}>{state.question}</div>
+      {headerIndex === 2 && <CommitToVoteButton />}
     </div>
   )
 };

@@ -81,22 +81,22 @@ function ChoiceButton({ value, vote, setVote }) {
     </button>);
 }
 
-function ToggleGroup() {
+function VoteInterface({ headerIndex }) {
   const [vote, setVote] = useState(null);
-  return <div>
-    <ChoiceButton value={'Yes'} vote={vote} setVote={setVote} />
-    <ChoiceButton value={'No'} vote={vote} setVote={setVote} />
-    <button onClick={() => callVote(vote)}>Send vote</button>
-  </div>
-}
-
-function VoteInterface() {
   return (
-    <div className="App">
-      <header className="App-header">
-        SHOULD CARLOS MATOS PRESIDE THE ETHEREUM FOUNDATION ?
-        <ToggleGroup />
-      </header>
+    <div className="container-layout">
+      {/* <header className="App-header"> */}
+      <div className={'title'}>SHOULD CARLOS MATOS PRESIDE THE ETHEREUM FOUNDATION ?</div>
+      {headerIndex === 5 &&
+        <>
+          <div className={'deux'}>
+            <ChoiceButton value={'Yes'} vote={vote} setVote={setVote} />
+            <ChoiceButton value={'No'} vote={vote} setVote={setVote} />
+          </div>
+          <button className={'btn-grad'} onClick={() => callVote(vote)}>Send vote</button>
+        </>
+      }
+      {/* </header> */}
     </div>
   );
 }

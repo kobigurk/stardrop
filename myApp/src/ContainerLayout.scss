@@ -3,26 +3,34 @@
 	flex-direction: column;
 
 	& > .title {
-		// background-color: green;
-		text-align: start;
-		padding: 0px 0px 0px 20px;
+		// background-color: orange;
+		// text-align: start;
+		text-align: center;
+		padding: 20px 0px;
 		font-size: x-large;
+		
 	}
 
 	& > .question {
-		background-color: red;
+		// background-color: red;
 		font-size: large;
 		padding: 50px 0px;
 	}
 	
 	& > .deux {
-		background-color: green;
+		// background-color: green;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-around;
 		& > div {
-			background-color: cornflowerblue;
-		padding: 50px 0px;
+			// background-color: cornflowerblue;
+			// padding: 50px 0px;
+		}
+		& > button {
+			// border: 4px black solid;
+			// background: none;
+			width: 100%;
+			// height: 100%;
 		}
 	}
 }
