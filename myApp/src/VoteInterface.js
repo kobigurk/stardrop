@@ -48,17 +48,20 @@ function VoteInterface({ headerIndex, state }) {
   const [vote, setVote] = useState(null);
   const [voted, setVoted] = useState(false);
 
-  if (!voting_token || !pubKey) {
-    return <div>You did not register during the registration period. You need to wait for the next round to participate.</div>
-  }
-
   if (headerIndex === 6) {
     reset_tokens();
-    return <div>Current round has ended. A new round will start soon!</div>
+    return <div>Current round has ended. A new round will start in a couple of seconds! No need to refresh, the app will refresh on its own :)</div>
+  }
+
+  if (!voting_token || !pubKey) {
+    return <div className={"container-layout"}>
+      You did not register during the registration period. You need to wait for the next round to participate.
+      {headerIndex === 5 && <Timer className={'timer'} delayToCallback={state.delay_to_callback} />}
+    </div>
   }
 
   return (
-    <div className="container-layout">
+    <div className={"container-layout"}>
       <div className={'title'}>{state.question}</div>
       {headerIndex === 5 &&
         <>
