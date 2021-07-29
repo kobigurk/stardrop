@@ -68,7 +68,6 @@ def generate_commit_token():
     poh_address = data['poh_address']
     signature = data['signature']
     public_key = data['public_key']
-    force_commit = data['force_commit']
 
     # `voting token` will be the token sent when casting a vote.
     # `blinded_request` is the message we will ask the server to sign.
