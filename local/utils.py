@@ -59,8 +59,8 @@ def launch_command(args, should_wait_until_included):
                 tx_id = int(line[len("Transaction ID: "):])
         # tx_id not found
         if tx_id == -1:
-            return subproc
+            return (tx_id, subproc)
         if wait_until_included(tx_id, 'PENDING') == False:
             subproc.returncode = 1
-            return subproc
+            return (tx_id, subproc)
     return (tx_id, subproc)

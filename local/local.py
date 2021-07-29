@@ -111,7 +111,7 @@ def commit_to_token():
 
     if INTERACT_WITH_STARKNET:
         print("-- COMMIT --\n")
-        (tx_id, res) = launch_command(['starknet',  'invoke', '--address', contract_addr,
+        (_tx_id, res) = launch_command(['starknet',  'invoke', '--address', contract_addr,
                                        '--abi', 'contract/contract_abi.json', '--network', 'alpha', '--function', 'commit', '--inputs', str(public_key), str(commit_token), str(r), str(s)], True)
         print_output(res)
         if res.returncode != 0:
