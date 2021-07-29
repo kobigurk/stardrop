@@ -96,13 +96,14 @@ function CommitToVoteButton() {
 export default function CommitInterface({ headerIndex, state }) {
   return (
     <div className={'container-layout'}>
-      <div className={'question'}>The question will be: {state.question}</div>
-      {headerIndex === 2 &&
+      <div className={'question'}><p>The question will be:</p>
+      <p>{state.question}</p></div>
+      {headerIndex === 2 ?
         <><CommitToVoteButton />
           <Timer className={'timer'} delayToCallback={state.delay_to_callback} />
-        </>
+        </>:
+      <div className={"timer"}>Waiting for next block...</div>
       }
-      <div className={"Timer"}>Waiting for next block...</div>
     </div>
   )
 };
