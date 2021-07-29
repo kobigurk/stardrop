@@ -22,20 +22,23 @@ def print_output(subproc):
 
 
 def wait_until_included(tx_id):
-    # 60 * 5s = 300 sec.
-    for i in range(60):
-        subproc = subprocess.run(
-            ['starknet', 'tx_status', '--network', 'alpha', '--id', str(tx_id)], stdout=subprocess.PIPE)
-        json_res = json.loads(subproc.stdout)
-        print(json.dumps(json_res, indent=4, sort_keys=True))
-        if "tx_failure_reason" in json_res:
-            print("\n---TX FAILED---\n")
-            return False
-        elif json_res['tx_status'] == 'PENDING' or json_res['tx_status'] == 'ACCEPTED_ON_CHAIN':
-            return True
-        print("Waiting for tx {}... time elapsed: {}s".format(tx_id, i * 5))
-        sleep(5)
-    return False
+    if INTERACT_WITH_STARKNET:
+        # 60 * 5s = 300 sec.
+        for i in range(60):
+            subproc = subprocess.run(
+                ['starknet', 'tx_status', '--network', 'alpha', '--id', str(tx_id)], stdout=subprocess.PIPE)
+            json_res = json.loads(subproc.stdout)
+            print(json.dumps(json_res, indent=4, sort_keys=True))
+            if "tx_failure_reason" in json_res:
+                print("\n---TX FAILED---\n")
+                return False
+            elif json_res['tx_status'] == 'PENDING' or json_res['tx_status'] == 'ACCEPTED_ON_CHAIN':
+                return True
+            print("Waiting for tx {}... time elapsed: {}s".format(tx_id, i * 5))
+            sleep(5)
+        return False
+    else:
+        return True
 
 
 def launch_command(args, last_tx_id):
@@ -58,13 +61,8 @@ def launch_command(args, last_tx_id):
             args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print_output(subproc)
         lines = subproc.stdout.decode('utf-8').split('\n')
-        tx_id = -1
         for line in lines:
             if "Transaction ID: " in line:
                 tx_id = int(line[len("Transaction ID: "):])
-        # tx_id not found
-        if tx_id == -1:
-            subproc.returncode += 1
-            return (tx_id, subproc)
 
     return (tx_id, subproc)

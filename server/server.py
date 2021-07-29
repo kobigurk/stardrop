@@ -107,7 +107,7 @@ def verify_sig(signature: str, message: str, poh_address: str) -> bool:
 
     print("-- VERIFY SIG --\n")
     (tx_id, verif_process) = launch_command(
-        ['node', 'signGestion/get_signer_address.js', signature, message, poh_address], --1)
+        ['node', 'signGestion/get_signer_address.js', signature, message, poh_address], -1)
     return verif_process.returncode == 0
 
 
