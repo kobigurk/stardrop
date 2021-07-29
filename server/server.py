@@ -9,7 +9,7 @@ from end_commitment_phase import end_commitment_phase
 from end_vote_phase import end_vote_phase
 from submit_key import sign_private_key
 from generate_keypair import generate_keypair
-from utils import CHECK_POH, COMPILE_CONTRACT, DEPLOY_CONTRACT, INTERACT_WITH_STARKNET, launch_command, print_output
+from utils import CHECK_POH, COMPILE_CONTRACT, DEPLOY_CONTRACT, INTERACT_WITH_STARKNET, launch_command, print_output, wait_until_included
 import threading
 import time
 import datetime
@@ -32,8 +32,8 @@ else:
     VOTING_PHASE_LENGTH = 15
     COMMIT_PHASE_LENGTH = 15
 
-QUESTIONS = ['Should Carlos Matos be elected President of the United States?', 'Will you vote Yes?', 'Will you vote No?',
-             'Is Dogecoin going to flip Ethereum?', 'Is Ethereum going to flip Bitcoin?', 'Are you Satoshi Nakamoto?']
+QUESTIONS = ['Should Carlos Matos be elected President of the United States?', 'Is Starknet the best L2?',
+             'Is Dogecoin going to flip Ethereum?', 'Is Ethereum going to flip Bitcoin?', 'Are you Satoshi Nakamoto?', 'Will you come to EthCC[5]?']
 
 # Address of the smart-contract. `None` in the beginning, set by `deploy_contract()`
 contract_addr = None
@@ -55,8 +55,8 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 def compile_contract():
     if COMPILE_CONTRACT:
         print("Compiling...")
-        res = launch_command(['starknet-compile', 'contract/contract.cairo',
-                              '--output=contract/contract_compiled.json', '--abi=contract/contract_abi.json'], False)
+        (tx_id, res) = launch_command(['starknet-compile', 'contract/contract.cairo',
+                                       '--output=contract/contract_compiled.json', '--abi=contract/contract_abi.json'], -1)
         print_output(res)
         if res.returncode != 0:
             return "Failed to compile: returned {}".format(res.returncode)
@@ -66,10 +66,11 @@ def compile_contract():
 
 def deploy_contract():
     global contract_addr
+    tx_id = -1
     if INTERACT_WITH_STARKNET and DEPLOY_CONTRACT:
         print("-- DEPLOY --\n")
-        res = launch_command(['starknet', 'deploy', '--contract',
-                              'contract/contract_compiled.json', '--network', 'alpha'], True)
+        (tx_id, res) = launch_command(['starknet', 'deploy', '--contract',
+                                       'contract/contract_compiled.json', '--network', 'alpha'], -1)
         if res.returncode != 0:
             return "Error while deploying: {}".format(res.returncode)
         out = res.stdout.decode('utf-8')
@@ -82,23 +83,24 @@ def deploy_contract():
         print('NEW CONTRACT ADDR', contract_addr)
     else:
         time.sleep(8)
-    return "OK"
+    return (tx_id, "OK")
 
 
-def initialize():
+def initialize(deployment_tx_id):
+    tx_id = -1
     if INTERACT_WITH_STARKNET:
         print('contract addr', contract_addr)
         print('serv pub key', str(serv_pub_key))
         print("-- INITIALIZE --\n")
 
-        res = launch_command(['starknet',  'invoke', '--address', contract_addr,
-                              '--abi', 'contract/contract_abi.json', '--function', 'initialize', '--network', 'alpha', '--inputs', str(serv_pub_key)], True)
+        (tx_id, res) = launch_command(['starknet',  'invoke', '--address', contract_addr,
+                                       '--abi', 'contract/contract_abi.json', '--function', 'initialize', '--network', 'alpha', '--inputs', str(serv_pub_key)], deployment_tx_id)
 
         if res.returncode != 0:
             return "Error executing initalize: exited with {}".format(res.returncode)
     else:
         time.sleep(8)
-    return "OK"
+    return (tx_id, "OK")
 
 
 @ app.route('/', methods=['GET'])
@@ -112,13 +114,16 @@ def verify_sig(signature: str, message: str, poh_address: str) -> bool:
     # Used to basically verify that the user is indeed the owner of poh_address.
 
     print("-- VERIFY SIG --\n")
-    verif_process = launch_command(
-        ['node', 'signGestion/get_signer_address.js', signature, message, poh_address], False)
+    (tx_id, verif_process) = launch_command(
+        ['node', 'signGestion/get_signer_address.js', signature, message, poh_address], -1)
     return verif_process.returncode == 0
 
 
 @ app.route('/api/sign_blinded_request', methods=['POST'])
 def sign_blinded_request():
+    if state != COMMIT_PHASE:
+        return 'Error: not in commitment phase', 201
+
     data = request.form
     if 'blinded_request' not in data:
         return 'Error: no blinded request provided', 201
@@ -160,52 +165,61 @@ def get_contract_address():
     return ({'contract_address': contract_addr})
 
 
-def key_submission():
+def key_submission(last_tx_id):
     print("-- Submitting Key --")
 
     # Have the server sign its own private key.
     (r, s) = sign_private_key(serv_priv_key)
 
+    tx_id = -1
     if INTERACT_WITH_STARKNET:
-        res = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                              'contract/contract_abi.json', '--function', '--network', 'alpha', 'submit_key', '--inputs', str(serv_priv_key), str(r), str(s)], True)
+        (tx_id, res) = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
+                                       'contract/contract_abi.json', '--function', '--network', 'alpha', 'submit_key', '--inputs', str(serv_priv_key), str(r), str(s)], last_tx_id)
         if res.returncode != 0:
             return 'Error: submit key unsuccessful', 204
     else:
         time.sleep(8)
-    return "Key submission OK"
+    return (tx_id, "Key submission OK")
 
 
 def end_commit_phase():
+    if state != ENDING_COMMIT_PHASE:
+        return 'Error: not in commitment phase'
+
     print("-- Ending Commit Phase --")
     (r, s) = end_commitment_phase(serv_priv_key)
 
+    tx_id = -1
     if (INTERACT_WITH_STARKNET):
-        res = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                              'contract/contract_abi.json', '--function', 'end_commitment_phase', '--network', 'alpha', '--inputs', str(r), str(s)], True)
+        (tx_id, res) = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
+                                       'contract/contract_abi.json', '--function', 'end_commitment_phase', '--network', 'alpha', '--inputs', str(r), str(s)], -1)
         if (res.returncode != 0):
-            return 'Error: end_commit_phase unsuccessful', 203
+            return (-1, 'Error: end_commit_phase unsuccessful')
     else:
         time.sleep(8)
-    return "OK"
+    return (tx_id, "OK")
 
 
 def end_voting_phase():
+    if state != END_VOTING_PHASE:
+        return 'Error: not in voting phase', 201
     print("-- End Voting Phase --")
     (r, s) = end_vote_phase(serv_priv_key)
 
     if INTERACT_WITH_STARKNET:
-        res = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                             'contract/contract_abi.json', '--function', 'end_voting_phase', '--network', 'alpha', '--inputs', str(r), str(s)], True)
+        (tx_id, res) = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
+                                       'contract/contract_abi.json', '--function', 'end_voting_phase', '--network', 'alpha', '--inputs', str(r), str(s)], -1)
         if (res.returncode != 0):
             return 'Error: end voting phase unsuccessful', 203
     else:
         time.sleep(8)
-    return "End voting phase OK"
+    return (tx_id, "End voting phase OK")
 
 
 @ app.route('/api/vote', methods=['POST'])
 def vote():
+    if state != VOTING_PHASE:
+        return 'Error: not in voting phase', 201
     # This function should be in `local.py` and local should ask the server to send priv key.
     data = request.get_json()
     print(data)
@@ -232,9 +246,11 @@ def vote():
     if INTERACT_WITH_STARKNET:
         arguments = ['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract/contract_abi.json',
                      '--function', 'cast_vote', '--network', 'alpha', '--inputs', str(public_key), str(vote), str(hint_token_y), *serv_priv_key_decomposition]
-        res = launch_command(arguments, True)
+        (vote_tx_id, res) = launch_command(arguments, -1)
         if (res.returncode != 0):
             return 'Vote unsuccessful', 205
+        if wait_until_included(vote_tx_id) == False:
+            return "Error: Vote unsuccessful", 206
     else:
         time.sleep(8)
     return "Vote OK"
@@ -265,20 +281,28 @@ def get_state():
         current_time = datetime.datetime.utcnow().timestamp()
         end_time = started_time + COMMIT_PHASE_LENGTH + 1
         delay_to_callback = end_time - current_time
+    elif state == DEPLOYING_CONTRACT or state == ENDING_COMMIT_PHASE:
+        delay_to_callback = 12
     else:
-        delay_to_callback = 5
+        delay_to_callback = 6
 
-    return jsonify([{'phase': state, 'delay_to_callback': delay_to_callback, 'previous_results': previous_results, 'question': question}])
+    # make sure it's minimum 5
+    delay_to_callback = max(5, int(delay_to_callback))
+
+    return jsonify([{'phase': state, 'delay_to_callback': int(delay_to_callback), 'previous_results': previous_results, 'question': question}])
 
 
 def update_results():
     global total_yes
     global total_no
 
+    if state != END_VOTING_PHASE:
+        return 'Error: voting phase not ended', 203
+
     if INTERACT_WITH_STARKNET:
         print("-- GET RESULT --\n")
-        res = launch_command(['starknet',  'call', '--address', contract_addr,
-                              '--abi', 'contract/contract_abi.json', '--network', 'alpha', '--function', 'get_result'], False)
+        (tx_id, res) = launch_command(['starknet',  'call', '--address', contract_addr,
+                                       '--abi', 'contract/contract_abi.json', '--network', 'alpha', '--function', 'get_result'], -1)
         if res.returncode != 0:
             return "Error executing starknet call: exited with {}".format(res.returncode), 201
         (total_yes, total_no) = res.stdout.decode('utf-8').split(' ')
@@ -310,17 +334,18 @@ while (42):
 
     state = DEPLOYING_CONTRACT
     started_time = datetime.datetime.utcnow().timestamp()
-    result = deploy_contract()
+    (deploy_tx_id, result) = deploy_contract()
     if result != "OK":
         print(result)
         exit(1)
 
     state = INITIALIZING_CONTRACT
     started_time = datetime.datetime.utcnow().timestamp()
-    msg = initialize()
+    (init_tx_id, msg) = initialize(deploy_tx_id)
     if msg != "OK":
         print(msg)
         exit(1)
+    wait_until_included(init_tx_id)
 
     state = COMMIT_PHASE
     started_time = datetime.datetime.utcnow().timestamp()
@@ -329,11 +354,12 @@ while (42):
 
     state = ENDING_COMMIT_PHASE
     started_time = datetime.datetime.utcnow().timestamp()
-    end_commit_phase()
+    (end_commit_tx_id, _res) = end_commit_phase()
 
     state = SERVER_KEY_REVEAL
     started_time = datetime.datetime.utcnow().timestamp()
-    key_submission()
+    (key_submission_tx_id, _res) = key_submission(end_commit_tx_id)
+    wait_until_included(key_submission_tx_id)
 
     state = VOTING_PHASE
     started_time = datetime.datetime.utcnow().timestamp()
@@ -341,7 +367,9 @@ while (42):
     time.sleep(VOTING_PHASE_LENGTH)
 
     state = END_VOTING_PHASE
-    end_voting_phase()
+    (tx_id, res) = end_voting_phase()
+    wait_until_included(tx_id)
+
     update_results()
 
     previous_results.update(

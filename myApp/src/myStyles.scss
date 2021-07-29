@@ -1,3 +1,6 @@
+$container-width: 500px;
+$container-height: 400px;
+
 .btn-grad {
   background-image: linear-gradient(
     to right,
@@ -20,26 +23,100 @@
     color: #fff;
     text-decoration: none;
   }
+
+  &.rekt {
+    background: initial;
+    pointer-events: none;
+    background-color: rgba($color: #000000, $alpha: 0);
+    // background-color: red;
+  }
 }
 
 .container {
+  background: #e0fbfc;
+  // background: green;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #e0fbfc;
   box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 50%;
-  height: 50%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  width: $container-width;
+  max-width: 80vw;
+  min-height: $container-height;
   border-radius: 20px;
+  padding: 10px;
+  // & > .container-layout {
+  //   height: 100%;
+  // }
 }
 
-body {
+.phase-connect-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100vw;
+}
+
+.rekt {
   font-family: "Trebuchet MS";
+  pointer-events: none;
+  background-color: rgba($color: #000000, $alpha: 0);
+  // background-image: linear-gradient(
+  //   to right,
+  //   #c3acbe 0%,
+  //   #d9d9d8 51%,
+  //   #cbbbc8 100%
+  // );
+
+  min-width: 12rem;
+  // max-width: 80%;
+  padding: 15px 35px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: grey;
+  box-shadow: 0 0 20px #eee;
+  border-radius: 10px;
+}
+
+html {
+  position: fixed;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+}
+
+body{
+  // position: fixed;
+  font-family: "Trebuchet MS";
+
   display: flex;
   justify-content: center;
   text-align: center;
+
+  // background: red;
+
+  // box-shadow:inset 0px 0px 0px 10px black;
+
   background-color: #8ec5fc;
-  background-image: linear-gradient(62deg, #8ec5fc 0%, #e0c3fc 100%);
+  background: linear-gradient(to right, #8ec5fc 0%, #e0c3fc 100%);
 }
+
+// @media screen and (max-width: 500px) {
+//   $container-width: 100px;
+//   $container-height: 100px;
+//   // .container {
+//   //   width: 100vw;
+//   //   height: 20px;
+//   // }
+// }

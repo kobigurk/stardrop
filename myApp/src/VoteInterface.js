@@ -1,62 +1,23 @@
+import { useState } from 'react';
+import Timer from './Timer';
 import './myStyles.scss';
 import './VoteInterface.scss';
 import { get_pub_key } from './API'
-import { get_voting_token } from './CommitInterface'
+import { get_voting_token, reset_tokens } from './CommitInterface'
 import { LOCAL_SERVER, STARK_SERVER } from './constants';
-import { useState } from 'react';
 const axios = require('axios');
-let pubKey;
-let voting_token;
 
-function callEndVotingPhase(resultat) {
-  pubKey = get_pub_key();
-  axios({
-    method: 'post',
-    url: `${STARK_SERVER}/api/end_voting_phase`,
-    data: {
-      message: "vitalik<3"
-    }
-  }).then((response) => {
-    console.log(response);
-    if (response.status !== 200)
-      console.log("ERROR");
-  })
-    .catch((error) => {
-      console.log("catch ERROR");
-    })
-}
-
-function callResultat(resultat) {
-  axios({
-    method: 'get',
-    url: `${LOCAL_SERVER}/api/get_result`
-  }).then((response) => {
-    console.log(response);
-    console.log(response.num_yes)
-    console.log(response.num_no)
-    if (response.status !== 200)
-      console.log("ERROR");
-    // setErrorMessage("ERROR");
-  })
-    .catch((error) => {
-      // setErrorMessage("catch ERROR");
-      console.log("catch ERROR");
-    })
-}
-
-function callVote(resultat) {
-  pubKey = get_pub_key();
-  voting_token = get_voting_token();
-  console.log(pubKey)
-  if (!resultat || !voting_token || !pubKey) {
-    console.log("pb variable vide")
+function callVote(result, pubKey, voting_token, setVoted) {
+  if (!result) {
+    console.log("empty result")
     return 300;
   }
+  setVoted(true);
   axios({
     method: 'post',
     url: `${STARK_SERVER}/api/vote`,
     data: {
-      vote: resultat,
+      vote: result,
       voting_token: voting_token,
       public_key: pubKey
     }
@@ -81,22 +42,39 @@ function ChoiceButton({ value, vote, setVote }) {
     </button>);
 }
 
-function ToggleGroup() {
+function VoteInterface({ headerIndex, state }) {
+  let voting_token = get_voting_token();
+  let pubKey = get_pub_key();
   const [vote, setVote] = useState(null);
-  return <div>
-    <ChoiceButton value={'Yes'} vote={vote} setVote={setVote} />
-    <ChoiceButton value={'No'} vote={vote} setVote={setVote} />
-    <button onClick={() => callVote(vote)}>Send vote</button>
-  </div>
-}
+  const [voted, setVoted] = useState(false);
 
-function VoteInterface({ state }) {
+  // console.log(`HEY HEY HEY voting_token: ${voting_token}, pubKey:${pubKey}`);
+  console.log(`VoteInterface: state:`, state);
+
+  if (!voting_token || !pubKey) {
+    return <div>You did not register during the registration period. You need to wait for the next round to participate.</div>
+  }
+
+  if (headerIndex === 6) {
+    reset_tokens();
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        {state && state.question && <p>{state.question}</p>}
-        <ToggleGroup />
-      </header>
+    <div className="container-layout">
+      <div className={'title'}>{state.question}</div>
+      {headerIndex === 5 &&
+        <>
+          <div className={'deux'}>
+            <ChoiceButton value={'Yes'} vote={vote} setVote={setVote} />
+            <ChoiceButton value={'No'} vote={vote} setVote={setVote} />
+          </div>
+          {/* <button className={'btn-grad'} onClick={() => callVote(vote)}>Send vote</button> */}
+          {vote && <button className={`${voted ? 'btn-grad rekt' : 'btn-grad'} `} onClick={() => callVote(vote, pubKey, voting_token, setVoted)}>
+            {voted === true ? 'Vote registered' : 'Send vote'}
+          </button>}
+          <Timer className={'timer'} delayToCallback={state.delay_to_callback} />
+        </>
+      }
     </div>
   );
 }

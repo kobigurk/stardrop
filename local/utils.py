@@ -12,6 +12,7 @@ LOGGING = True
 # SERVER_URL = "http://192.168.0.44:5000"
 SERVER_URL = os.environ.get('SERVER')
 
+
 def print_output(subproc):
     print(subproc)
     if subproc.stdout:
@@ -58,11 +59,8 @@ def launch_command(args, should_wait_until_included):
                 tx_id = int(line[len("Transaction ID: "):])
         # tx_id not found
         if tx_id == -1:
-            return subproc
-        # if args[1] == 'deploy':
-        #     if wait_until_included(tx_id, 'PENDING') == False:
-            # return False
+            return (tx_id, subproc)
         if wait_until_included(tx_id, 'PENDING') == False:
             subproc.returncode = 1
-            return subproc
-    return subproc
+            return (tx_id, subproc)
+    return (tx_id, subproc)

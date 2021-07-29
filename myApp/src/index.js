@@ -7,6 +7,6 @@ console.log("LOADING INDEX");
 ReactDOM.render(
     <StrictMode>
         <App />
-    </StrictMode>,
-    document.getElementById('root')
+    </StrictMode>
+    , document.getElementById('root')
 )

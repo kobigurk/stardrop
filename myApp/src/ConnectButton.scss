@@ -6,10 +6,14 @@
     #cc95c0 100%
   );
   font-family: "Trebuchet MS";
-  position: absolute;
-  top: 50px;
-  right: 10px;
-	min-width: 12rem;
+
+  // align-self: flex-end;
+  margin-left: auto;
+  // position: absolute;
+  // top: 10px;
+  // right: 10px;
+
+  min-width: 12rem;
   padding: 15px 35px;
   text-align: center;
   text-transform: uppercase;
@@ -19,7 +23,7 @@
   box-shadow: 0 0 20px #eee;
   border-radius: 10px;
   &.disabled {
-    pointer-events:none;
+    pointer-events: none;
     opacity: 0.5;
   }
   &:hover {
@@ -32,3 +36,26 @@
 .non-capitalize {
   text-transform: none;
 }
+
+// .rekt {
+//   font-family: "Trebuchet MS";
+//   pointer-events: none;
+//   background-color: rgba($color: #000000, $alpha: 0);
+//   // background-image: linear-gradient(
+//   //   to right,
+//   //   #c3acbe 0%,
+//   //   #d9d9d8 51%,
+//   //   #cbbbc8 100%
+//   // );
+
+//   min-width: 12rem;
+//   // max-width: 80%;
+//   padding: 15px 35px;
+//   text-align: center;
+//   text-transform: uppercase;
+//   transition: 0.5s;
+//   background-size: 200% auto;
+//   color: grey;
+//   box-shadow: 0 0 20px #eee;
+//   border-radius: 10px;
+// }
