@@ -25,8 +25,8 @@ SERVER_KEY_REVEAL = 4
 VOTING_PHASE = 5
 END_VOTING_PHASE = 6
 
-VOTING_PHASE_LENGTH = 5
-COMMIT_PHASE_LENGTH = 5
+VOTING_PHASE_LENGTH = 120
+COMMIT_PHASE_LENGTH = 90
 
 QUESTIONS = ['Should Carlos Matos be elected President of the United States?', 'Is Starknet the best L2?', 'Are you human?',
              'Is Dogecoin going to flip Ethereum?', 'Is Ethereum going to flip Bitcoin?', 'Are you Satoshi Nakamoto?']
@@ -106,7 +106,7 @@ def verify_sig(signature: str, message: str, poh_address: str) -> bool:
     # Used to basically verify that the user is indeed the owner of poh_address.
 
     print("-- VERIFY SIG --\n")
-    verif_process = launch_command(
+    (tx_id, verif_process) = launch_command(
         ['node', 'signGestion/get_signer_address.js', signature, message, poh_address], --1)
     return verif_process.returncode == 0
 
