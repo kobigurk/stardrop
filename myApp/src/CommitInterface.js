@@ -21,6 +21,11 @@ export function get_voting_token() {
   return voting_token;
 }
 
+export function reset_tokens() {
+  voting_token = null;
+  commit_token = null;
+}
+
 function callCommit() {
   privKey = get_priv_key();
   console.log("commit = ", commit_token);

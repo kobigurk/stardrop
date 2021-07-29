@@ -3,7 +3,7 @@ import Timer from './Timer';
 import './myStyles.scss';
 import './VoteInterface.scss';
 import { get_pub_key } from './API'
-import { get_voting_token } from './CommitInterface'
+import { get_voting_token, reset_tokens } from './CommitInterface'
 import { LOCAL_SERVER, STARK_SERVER } from './constants';
 const axios = require('axios');
 
@@ -56,7 +56,7 @@ function VoteInterface({ headerIndex, state }) {
   }
 
   if (headerIndex === 6) {
-    // setVoted(false);
+    reset_tokens();
   }
 
   return (
