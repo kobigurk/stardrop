@@ -13,7 +13,7 @@ export default function Timer({ delayToCallback }) {
 
 	return (
 		<div className={'timer'}>
-			{timeLeft > 0 ? `Period end in approximately ${timeLeft} seconds...`
+			{timeLeft > 0 ? `Period ends in approximately ${timeLeft} seconds...`
 				: 'Period should end soon...'
 			}
 		</div>
