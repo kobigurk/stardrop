@@ -2,13 +2,13 @@ import React from 'react'
 import './PeriodInfo.scss';
 
 const INFOS = [
-	'Deploying smart contract on Starknet.',
-	'Initializing smart contract.',
+	'The server is deploying the smart contract on Starknet.',
+	'The server sent the initialization transaction to the smart contract. The server is waiting for the transaction to be confirmed by Starknet.',
 	'Users can now register to the next voting round.',
-	'Ending the registration period. The smart contract will longer accept new registration tokens.',
-	'The server reveals its private key by sending it to the smart contract.',
-	'Users who registered during the registration period can now cast their votes.',
-	'Ending the voting period. Results will be computed after this step.'
+	'The smart contract is ending the registration period. It will no longer accept new registrations.',
+	'The server sent its private key to the smart contract. The server is waiting for the transaction to be confirmed by Starknet',
+	'Users who registered during the registration period can now cast their votes!',
+	'The smart contract is ending the voting period. Results will be computed after this transaction gets confirmed.'
 ]
 
 export default function PeriodInfo({ index }) {

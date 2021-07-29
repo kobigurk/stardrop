@@ -28,8 +28,8 @@ END_VOTING_PHASE = 6
 VOTING_PHASE_LENGTH = 120
 COMMIT_PHASE_LENGTH = 90
 
-QUESTIONS = ['Should Carlos Matos be elected President of the United States?', 'Is Starknet the best L2?', 'Are you human?',
-             'Is Dogecoin going to flip Ethereum?', 'Is Ethereum going to flip Bitcoin?', 'Are you Satoshi Nakamoto?']
+QUESTIONS = ['Should Carlos Matos be elected President of the United States?', 'Is Starknet the best L2?',
+             'Is Dogecoin going to flip Ethereum?', 'Is Ethereum going to flip Bitcoin?', 'Are you Satoshi Nakamoto?', 'Will you come to EthCC[5]?']
 
 # Address of the smart-contract. `None` in the beginning, set by `deploy_contract()`
 contract_addr = None
