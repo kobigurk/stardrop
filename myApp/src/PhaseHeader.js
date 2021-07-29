@@ -1,7 +1,7 @@
 import React from 'react'
 import './PhaseHeader.scss'
 
-export const phases = ['Deploy Contract', 'Init Contract', 'Commit Period', 'End Commit', 'Server Key Reveal', 'Voting Period', 'End Voting'];
+export const phases = ['Deploy Contract', 'Init Contract', 'Registration Period', 'End Registration', 'Server Key Reveal', 'Voting Period', 'End Voting'];
 
 function PhaseName({ index, currentIndex, children }) {
     return <div

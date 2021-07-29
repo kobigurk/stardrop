@@ -38,11 +38,25 @@ def wait_until_included(tx_id):
     return False
 
 
-def launch_command(args, should_wait_until_included):
-    subproc = subprocess.run(
-        args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    print_output(subproc)
-    if should_wait_until_included:
+def launch_command(args, last_tx_id):
+    tx_id = -1
+    if last_tx_id != -1:
+        while tx_id < last_tx_id:
+            subproc = subprocess.run(
+                args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            print_output(subproc)
+            lines = subproc.stdout.decode('utf-8').split('\n')
+            for line in lines:
+                if "Transaction ID: " in line:
+                    tx_id = int(line[len("Transaction ID: "):])
+            # tx_id not found
+            if tx_id == -1:
+                subproc.returncode += 1
+                return (tx_id, subproc)
+    else:
+        subproc = subprocess.run(
+            args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print_output(subproc)
         lines = subproc.stdout.decode('utf-8').split('\n')
         tx_id = -1
         for line in lines:
@@ -50,8 +64,7 @@ def launch_command(args, should_wait_until_included):
                 tx_id = int(line[len("Transaction ID: "):])
         # tx_id not found
         if tx_id == -1:
-            return subproc
-        if wait_until_included(tx_id) == False:
             subproc.returncode += 1
-            return subproc
-    return subproc
+            return (tx_id, subproc)
+
+    return (tx_id, subproc)

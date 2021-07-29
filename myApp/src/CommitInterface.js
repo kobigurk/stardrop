@@ -87,7 +87,7 @@ function CommitToVoteButton() {
   const [hasCommitted, setHasCommitted] = useState(false);
 
   return <button className={`${hasCommitted ? 'rekt' : 'btn-grad'} `} onClick={() => initCommitToVote(setHasCommitted)}>
-    {hasCommitted ? 'Committed to next vote!' : 'Commit to next vote'}
+    {hasCommitted ? 'Registered to next vote!' : 'Register to next vote'}
     </button>
 }
 
