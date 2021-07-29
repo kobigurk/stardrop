@@ -131,16 +131,12 @@ def sign_blinded_request():
         return 'Error: no POH address provided', 202
     if 'signature' not in data:
         return 'Error: no signature provided', 203
-    # if 'force_commit' not in data:
-        # return 'Error: no force_commit provided', 204
+    if 'force_commit' not in data:
+        return 'Error: no force_commit provided', 204
 
     blinded_request = int(data['blinded_request'])
     signature = data['signature']
     poh_address = data['poh_address']
-    if 'force_commit' in data:
-        force_commit = data['force_commit']
-    else:
-        force_commit = "Yes"
 
     # Check that user is in the POH list
     if CHECK_POH and force_commit != "Yes" and not db.try_vote(poh_address):
@@ -206,6 +202,7 @@ def end_voting_phase():
     print("-- End Voting Phase --")
     (r, s) = end_vote_phase(serv_priv_key)
 
+    tx_id = -1
     if INTERACT_WITH_STARKNET:
         (tx_id, res) = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
                                        'contract/contract_abi.json', '--function', 'end_voting_phase', '--network', 'alpha', '--inputs', str(r), str(s)], -1)

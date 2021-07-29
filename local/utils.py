@@ -6,10 +6,9 @@ from time import sleep
 import json
 import requests
 
-INTERACT_WITH_STARKNET = True
+INTERACT_WITH_STARKNET = False
 LOGGING = True
 
-# SERVER_URL = "http://192.168.0.44:5000"
 SERVER_URL = os.environ.get('SERVER')
 
 

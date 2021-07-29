@@ -59,8 +59,11 @@ def generate_commit_token():
         return "Error: no signature provided", 202
     if 'public_key' not in data:
         return "Error: no public key provided", 203
-    if 'force_commit' not in data:
-        return "Error: no force commit", 204
+
+    if 'force_commit' in data:
+        force_commit = data['force_commit']
+    else:
+        force_commit = "Yes"
 
     poh_address = data['poh_address']
     signature = data['signature']
