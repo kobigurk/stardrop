@@ -50,7 +50,7 @@ function VoteInterface({ headerIndex, state }) {
 
   if (headerIndex === 6) {
     reset_tokens();
-    return <div>Current round has ended. A new round will start in a couple of seconds! No need to refresh, the app will refresh on its own :)</div>
+    return <div>Current round has ended. Results will be once the transaction gets confirmed. A new round will start in a couple of seconds! No need to refresh, the app will refresh on its own :)</div>
   }
 
   if (!voting_token || !pubKey) {
