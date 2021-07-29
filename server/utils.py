@@ -41,6 +41,16 @@ def wait_until_included(tx_id):
         return True
 
 
+def check_transaction_output(tx_id):
+    if INTERACT_WITH_STARKNET:
+        subproc = subprocess.run(
+            ['starknet', 'tx_status', '--network', 'alpha', '--id', str(tx_id)], stdout=subprocess.PIPE)
+        json_res = json.loads(subproc.stdout)
+        print(json.dumps(json_res, indent=4, sort_keys=True))
+    else:
+        return True
+
+
 def launch_command(args, last_tx_id):
     tx_id = -1
     if last_tx_id != -1:
