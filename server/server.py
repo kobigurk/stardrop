@@ -225,9 +225,11 @@ def vote():
     if INTERACT_WITH_STARKNET:
         arguments = ['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract/contract_abi.json',
                      '--function', 'cast_vote', '--network', 'alpha', '--inputs', str(public_key), str(vote), str(hint_token_y), *serv_priv_key_decomposition]
-        (_tx_id, res) = launch_command(arguments, -1)
+        (vote_tx_id, res) = launch_command(arguments, -1)
         if (res.returncode != 0):
             return 'Vote unsuccessful', 205
+        if wait_until_included(vote_tx_id) == False:
+            return "Error: Vote unsuccessful", 206
     return "Vote OK"
 
 
