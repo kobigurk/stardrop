@@ -52,7 +52,7 @@ function App() {
         setHeaderIndex(phase);
         setTimeToNextCall(delay_to_callback);
         timer = setTimeout(() => {
-          console.log(`PENZOPENZOPENZO This will run after ${delayToCallback} Msecond!, ${headerIndex}`);
+          console.log(`This will run after ${delayToCallback} second!`);
           setWatcher(watcher + 1);//A LA PLACELOOP
         }, delayToCallback * 1000);
       })
@@ -60,7 +60,7 @@ function App() {
         console.log('ERROR in getCurrentState:', res);
       })
     return (() => { clearTimeout(timer) });
-  }, [watcher])
+  }, [watcher, delayToCallback])
 
   // if (phaseInfo === null) setPhaseInfo(getCurrentState());
 

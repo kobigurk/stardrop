@@ -24,17 +24,17 @@ function Container({ headerIndex, setHeaderIndex, isConnected, state, delayToCal
             currentInterface = <div>ERROR</div>
     }
 
-    if (!isConnected)
-        return <div className={'container'}>
-            <div>Please connect your web3 wallet</div>
-            <PeriodInfo index={headerIndex} />
-        </div>
-    else
-        return <div className={'container'}>
-            {currentInterface}
-            <PeriodInfo index={headerIndex} />
-            {/* <Timer delayToCallback={delayToCallback} /> */}
-        </div>
+    // if (!isConnected)
+    //     return <div className={'container'}>
+    //         <div>Please connect your web3 wallet</div>
+    //         <PeriodInfo index={headerIndex} />
+    //     </div>
+    // else
+    return <div className={'container'}>
+        {isConnected ? currentInterface : <div>Please connect your web3 wallet</div>}
+        <PeriodInfo index={headerIndex} />
+        {/* <Timer delayToCallback={delayToCallback} /> */}
+    </div>
 };
 
 export default Container

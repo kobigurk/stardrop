@@ -23,6 +23,13 @@ $container-height: 400px;
     color: #fff;
     text-decoration: none;
   }
+
+  &.rekt {
+    background: initial;
+    pointer-events: none;
+    background-color: rgba($color: #000000, $alpha: 0);
+    // background-color: red;
+  }
 }
 
 .container {
@@ -38,9 +45,12 @@ $container-height: 400px;
   flex-direction: column;
   width: $container-width;
   max-width: 80vw;
-  height: $container-height;
+  min-height: $container-height;
   border-radius: 20px;
   padding: 10px;
+  // & > .container-layout {
+  //   height: 100%;
+  // }
 }
 
 .phase-connect-wrapper {
@@ -49,6 +59,29 @@ $container-height: 400px;
   align-items: center;
   flex-wrap: wrap;
   width: 100vw;
+}
+
+.rekt {
+  font-family: "Trebuchet MS";
+  pointer-events: none;
+  background-color: rgba($color: #000000, $alpha: 0);
+  // background-image: linear-gradient(
+  //   to right,
+  //   #c3acbe 0%,
+  //   #d9d9d8 51%,
+  //   #cbbbc8 100%
+  // );
+
+  min-width: 12rem;
+  // max-width: 80%;
+  padding: 15px 35px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: grey;
+  box-shadow: 0 0 20px #eee;
+  border-radius: 10px;
 }
 
 html {

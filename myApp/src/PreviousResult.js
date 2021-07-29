@@ -16,6 +16,7 @@ export default function PreviousResult({ state }) {
 				<div>yes: {total_yes}</div>
 				<div>no: {total_no}</div>
 			</div>
+			<div></div>
 		</div>
 	)
 }
