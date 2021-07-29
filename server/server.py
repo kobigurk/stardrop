@@ -260,7 +260,7 @@ def get_state():
         delay_to_callback = 5
 
     # make sure it's minimum 5
-    delay_to_callback = min(5, int(delay_to_callback))
+    delay_to_callback = max(5, int(delay_to_callback))
 
     return jsonify([{'phase': state, 'delay_to_callback': int(delay_to_callback), 'previous_results': previous_results, 'question': question}])
 
