@@ -88,15 +88,15 @@ function CommitToVoteButton() {
 
   return <button className={`${hasCommitted ? 'rekt' : 'btn-grad'} `} onClick={() => initCommitToVote(setHasCommitted)}>
     {hasCommitted ? 'Registered to next vote!' : 'Register to next vote'}
-    </button>
+  </button>
 }
 
-export default function CommitInterface({ state }) {
+export default function CommitInterface({ headerIndex, state }) {
   return (
-    <div>
-      {state.question}
-      <Timer delayToCallback={25}/>
-      <CommitToVoteButton />
+    <div className={'container-layout'}>
+      <div className={'question'}>{state.question}</div>
+      {headerIndex === 2 && <CommitToVoteButton />}
+      <Timer delayToCallback={25} />
     </div>
   )
 };

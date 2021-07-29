@@ -41,32 +41,33 @@ function ChoiceButton({ value, vote, setVote }) {
     </button>);
 }
 
-function ToggleGroup() {
+function VoteInterface({ headerIndex, state }) {
   let voting_token = get_voting_token();
   let pubKey = get_pub_key();
   const [vote, setVote] = useState(null);
 
   if (!voting_token || !pubKey) {
-    return <div>You did not commit during commit period. You need to wait for the next round to participate.</div>
+    return <div>You did not register during the registration period. You need to wait for the next round to participate.</div>
   }
 
-  return <div>
-    <ChoiceButton value={'Yes'} vote={vote} setVote={setVote} />
-    <ChoiceButton value={'No'} vote={vote} setVote={setVote} />
-    <button className={`${vote === null ? 'rekt' : 'btn-grad'} `} onClick={() => callVote(vote, pubKey, voting_token)}>
-      {vote === null ? 'You voted!' : 'Send vote'}
-      </button>
-  </div>
-}
-
-function VoteInterface({ state }) {
   return (
-    <div className="App">
-      <header className="App-header">
-        {state.question}
-        <Timer delayToCallback={25}/>
-        <ToggleGroup />
-      </header>
+    <div className="container-layout">
+      {/* <header className="App-header"> */}
+      <div className={'title'}>{state.question}</div>
+      {headerIndex === 5 &&
+        <>
+          <div className={'deux'}>
+            <ChoiceButton value={'Yes'} vote={vote} setVote={setVote} />
+            <ChoiceButton value={'No'} vote={vote} setVote={setVote} />
+          </div>
+          <button className={'btn-grad'} onClick={() => callVote(vote)}>Send vote</button>
+          <button className={`${vote === null ? 'rekt' : 'btn-grad'} `} onClick={() => callVote(vote, pubKey, voting_token)}>
+            {vote === null ? 'You voted!' : 'Send vote'}
+          </button>
+        </>
+      }
+      <Timer delayToCallback={25} />
+      {/* </header> */}
     </div>
   );
 }

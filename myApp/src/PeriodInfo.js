@@ -14,6 +14,7 @@ const INFOS = [
 export default function PeriodInfo({ index }) {
 	return (
 		<div className={'period-info'}>
+			<p>What's happening ?</p>
 			{INFOS[index]}
 		</div>
 	)
