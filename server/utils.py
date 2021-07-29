@@ -29,7 +29,7 @@ def wait_until_included(tx_id):
                 ['starknet', 'tx_status', '--network', 'alpha', '--id', str(tx_id)], stdout=subprocess.PIPE)
             json_res = json.loads(subproc.stdout)
             print(json.dumps(json_res, indent=4, sort_keys=True))
-            if "tx_failure_reason" in json_res:
+            if "tx_failure_reason" in json_res or json_res['tx_status'] == 'REJECTED':
                 print("\n---TX FAILED---\n")
                 return False
             elif json_res['tx_status'] == 'PENDING' or json_res['tx_status'] == 'ACCEPTED_ON_CHAIN':
