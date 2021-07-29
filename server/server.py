@@ -41,11 +41,11 @@ serv_pub_key = None
 serv_priv_key = None
 state = None
 question = random.choice(QUESTIONS)
-total_yes = None
-total_no = None
+total_yes = 2
+total_no = 2
 started_time = datetime.datetime.utcnow().timestamp()
 previous_results = {'total_yes': total_yes,
-                    'total_no': total_no, 'question': None}
+                    'total_no': total_no, 'question': "Are you human?"}
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
