@@ -126,16 +126,19 @@ def sign_blinded_request():
         return 'Error: no POH address provided', 202
     if 'signature' not in data:
         return 'Error: no signature provided', 203
-    if 'force_commit' not in data:
-        return 'Error: no force_commit provided', 204
+    # if 'force_commit' not in data:
+        # return 'Error: no force_commit provided', 204
 
     blinded_request = int(data['blinded_request'])
     signature = data['signature']
     poh_address = data['poh_address']
-    force_commit = data['force_commit']
+    if 'force_commit' in data:
+        force_commit = data['force_commit']
+    else:
+        force_commit = "Yes"
 
     # Check that user is in the POH list
-    if force_commit != "Yes" and not db.try_vote(poh_address):
+    if CHECK_POH and force_commit != "Yes" and not db.try_vote(poh_address):
         return "Error: user not in poh_address", 205
 
     # Check that this the user is actually the owner of the POH address by verifying the signed message 'eip42'
