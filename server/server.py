@@ -334,7 +334,9 @@ while (42):
     time.sleep(VOTING_PHASE_LENGTH)
 
     state = END_VOTING_PHASE
-    end_voting_phase()
+    (tx_id, res) = end_voting_phase()
+    wait_until_included(tx_id)
+
     update_results()
 
     previous_results.update(
