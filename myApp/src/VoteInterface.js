@@ -50,8 +50,8 @@ function VoteInterface({ headerIndex, state }) {
 
   if (headerIndex === 6) {
     reset_tokens();
-    return <div>Current round has ended. Results will be once the transaction gets confirmed. A new round will start in a couple of seconds! No need to refresh, the app will refresh on its own :)
-      <Timer className={'timer'}>Waiting for next block...</Timer>
+    return <div className={'container-layout'}>Current round has ended. Results will be once the transaction gets confirmed. A new round will start in a couple of seconds! No need to refresh, the app will refresh on its own :)
+      <div className={'timer'}>Waiting for next block...</div>
     </div>
   }
 
