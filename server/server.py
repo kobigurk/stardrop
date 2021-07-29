@@ -306,8 +306,8 @@ def update_results():
         total_yes = int(total_yes)
         total_no = int(total_no)
     else:
-        total_yes = random.randint()
-        total_no = random.randint()
+        total_yes = random.randint(0, 20)
+        total_no = random.randint(0, 20)
 
 
 result = generate_human_list()
