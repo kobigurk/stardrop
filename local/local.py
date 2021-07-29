@@ -7,7 +7,7 @@ import requests
 import flask
 from flask_cors import CORS
 from utils import INTERACT_WITH_STARKNET, print_output, launch_command, SERVER_URL, get_contract_address
-import subprocess
+import time
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -59,10 +59,13 @@ def generate_commit_token():
         return "Error: no signature provided", 202
     if 'public_key' not in data:
         return "Error: no public key provided", 203
+    if 'force_commit' not in data:
+        return "Error: no force commit", 204
 
     poh_address = data['poh_address']
     signature = data['signature']
     public_key = data['public_key']
+    force_commit = data['force_commit']
 
     # `voting token` will be the token sent when casting a vote.
     # `blinded_request` is the message we will ask the server to sign.
@@ -71,7 +74,7 @@ def generate_commit_token():
 
     # Ask the server to sign the blinded request.
     req = {'blinded_request': blinded_request,
-           'poh_address': poh_address, 'signature': signature}
+           'poh_address': poh_address, 'signature': signature, 'force_commit': force_commit}
     res = requests.post(
         SERVER_URL + '/api/sign_blinded_request', req)
 
@@ -117,6 +120,8 @@ def commit_to_token():
         if res.returncode != 0:
             print(res.stderr.decode('utf-8'))
             return "Error executing starknet call: exited with {}".format(res.returncode), 204
+    else:
+        time.sleep(8)
     return "OK"
 
 

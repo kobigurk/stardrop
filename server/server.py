@@ -25,8 +25,12 @@ SERVER_KEY_REVEAL = 4
 VOTING_PHASE = 5
 END_VOTING_PHASE = 6
 
-VOTING_PHASE_LENGTH = 60
-COMMIT_PHASE_LENGTH = 60
+if INTERACT_WITH_STARKNET:
+    VOTING_PHASE_LENGTH = 45
+    COMMIT_PHASE_LENGTH = 25
+else:
+    VOTING_PHASE_LENGTH = 15
+    COMMIT_PHASE_LENGTH = 15
 
 QUESTIONS = ['Should Carlos Matos be elected President of the United States?', 'Is Starknet the best L2?',
              'Is Dogecoin going to flip Ethereum?', 'Is Ethereum going to flip Bitcoin?', 'Are you Satoshi Nakamoto?', 'Will you come to EthCC[5]?']
@@ -77,6 +81,8 @@ def deploy_contract():
         contract_addr = out.split('\n')[1][18:18+66]
 
         print('NEW CONTRACT ADDR', contract_addr)
+    else:
+        time.sleep(8)
     return (tx_id, "OK")
 
 
@@ -92,6 +98,8 @@ def initialize(deployment_tx_id):
 
         if res.returncode != 0:
             return "Error executing initalize: exited with {}".format(res.returncode)
+    else:
+        time.sleep(8)
     return (tx_id, "OK")
 
 
@@ -123,15 +131,25 @@ def sign_blinded_request():
         return 'Error: no POH address provided', 202
     if 'signature' not in data:
         return 'Error: no signature provided', 203
+    # if 'force_commit' not in data:
+        # return 'Error: no force_commit provided', 204
 
     blinded_request = int(data['blinded_request'])
     signature = data['signature']
     poh_address = data['poh_address']
+    if 'force_commit' in data:
+        force_commit = data['force_commit']
+    else:
+        force_commit = "Yes"
+
+    # Check that user is in the POH list
+    if CHECK_POH and force_commit != "Yes" and not db.try_vote(poh_address):
+        return "Error: user not in poh_address", 205
 
     # Check that this the user is actually the owner of the POH address by verifying the signed message 'eip42'
     sig_is_valid = verify_sig(signature, 'eip42', poh_address)
     if not sig_is_valid:
-        return "Error: invalid signature", 204
+        return "Error: invalid signature", 206
 
     (blinded_token, c, r) = sign_token(serv_priv_key, blinded_request)
     return ({'blinded_token': blinded_token, 'c': c, 'r': r})
@@ -159,6 +177,8 @@ def key_submission(last_tx_id):
                                        'contract/contract_abi.json', '--function', '--network', 'alpha', 'submit_key', '--inputs', str(serv_priv_key), str(r), str(s)], last_tx_id)
         if res.returncode != 0:
             return 'Error: submit key unsuccessful', 204
+    else:
+        time.sleep(8)
     return (tx_id, "Key submission OK")
 
 
@@ -174,10 +194,9 @@ def end_commit_phase():
         (tx_id, res) = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
                                        'contract/contract_abi.json', '--function', 'end_commitment_phase', '--network', 'alpha', '--inputs', str(r), str(s)], -1)
         if (res.returncode != 0):
-            print("THERE")
             return (-1, 'Error: end_commit_phase unsuccessful')
-    print("HERE")
-    print(tx_id)
+    else:
+        time.sleep(8)
     return (tx_id, "OK")
 
 
@@ -192,6 +211,8 @@ def end_voting_phase():
                                        'contract/contract_abi.json', '--function', 'end_voting_phase', '--network', 'alpha', '--inputs', str(r), str(s)], -1)
         if (res.returncode != 0):
             return 'Error: end voting phase unsuccessful', 203
+    else:
+        time.sleep(8)
     return (tx_id, "End voting phase OK")
 
 
@@ -230,6 +251,8 @@ def vote():
             return 'Vote unsuccessful', 205
         if wait_until_included(vote_tx_id) == False:
             return "Error: Vote unsuccessful", 206
+    else:
+        time.sleep(8)
     return "Vote OK"
 
 
@@ -285,6 +308,9 @@ def update_results():
         (total_yes, total_no) = res.stdout.decode('utf-8').split(' ')
         total_yes = int(total_yes)
         total_no = int(total_no)
+    else:
+        total_yes = random.randint()
+        total_no = random.randint()
 
 
 result = generate_human_list()
