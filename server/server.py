@@ -36,7 +36,7 @@ QUESTIONS = ['Should Carlos Matos be elected President of the United States?', '
              'Is Dogecoin going to flip Ethereum?', 'Is Ethereum going to flip Bitcoin?', 'Are you Satoshi Nakamoto?', 'Will you come to EthCC[5]?']
 
 # Address of the smart-contract. Random one in the beginning, set by `deploy_contract()`
-contract_addr = "0x06d2068d884dbd847f5cec9a028114e4f18babfd870e2d80e6f3a6c451031093"
+contract_addr = "0x6d2068d884dbd847f5cec9a028114e4f18babfd870e2d80e6f3a6c451031093"
 serv_pub_key = None
 serv_priv_key = None
 state = None
@@ -79,6 +79,8 @@ def deploy_contract():
         print(out.split('\n'))
         print(out.split('\n')[1])
         contract_addr = out.split('\n')[1][18:18+66]
+        if contract_addr[2] == '0':
+            contract_addr = contract_addr[:2] + contract_addr[3:]
 
         print('NEW CONTRACT ADDR', contract_addr)
     else:
