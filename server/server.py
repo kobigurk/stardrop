@@ -258,8 +258,10 @@ def get_state():
         current_time = datetime.datetime.utcnow().timestamp()
         end_time = started_time + COMMIT_PHASE_LENGTH + 1
         delay_to_callback = end_time - current_time
+    elif state == DEPLOYING_CONTRACT or state == ENDING_COMMIT_PHASE:
+        delay_to_callback = 12
     else:
-        delay_to_callback = 5
+        delay_to_callback = 6
 
     # make sure it's minimum 5
     delay_to_callback = max(5, int(delay_to_callback))
