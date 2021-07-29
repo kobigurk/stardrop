@@ -77,7 +77,7 @@ function App() {
         state={state}
         delayToCallback={delayToCallback}
       />
-      <DebugButton headerIndex={headerIndex} setHeaderIndex={setHeaderIndex} />
+      {/* <DebugButton headerIndex={headerIndex} setHeaderIndex={setHeaderIndex} /> */}
     </>
   );
 }
