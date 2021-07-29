@@ -13,8 +13,8 @@ export default function PreviousResult({ state }) {
 			<div className={'title'}>Previous vote:</div>
 			<div className={'question'}>{question}</div>
 			<div className={'deux'}>
-				<div>yes: {total_yes}</div>
-				<div>no: {total_no}</div>
+				<div>Yes: {total_yes}</div>
+				<div>No: {total_no}</div>
 			</div>
 			<div></div>
 		</div>
