@@ -25,8 +25,8 @@ SERVER_KEY_REVEAL = 4
 VOTING_PHASE = 5
 END_VOTING_PHASE = 6
 
-VOTING_PHASE_LENGTH = 120
-COMMIT_PHASE_LENGTH = 90
+VOTING_PHASE_LENGTH = 60
+COMMIT_PHASE_LENGTH = 60
 
 QUESTIONS = ['Should Carlos Matos be elected President of the United States?', 'Is Starknet the best L2?',
              'Is Dogecoin going to flip Ethereum?', 'Is Ethereum going to flip Bitcoin?', 'Are you Satoshi Nakamoto?', 'Will you come to EthCC[5]?']
