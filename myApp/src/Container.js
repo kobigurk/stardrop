@@ -5,9 +5,9 @@ import VoteInterface from './VoteInterface';
 import PeriodInfo from './PeriodInfo';
 import './myStyles.scss';
 
-function Container({ headerIndex, setHeaderIndex, isConnected, state }) {
+function Container({ headerIndex, setHeaderIndex, isConnected, state, delayToCallback, question }) {
     console.log('call Container')
-    console.log("inside container state:", state);
+    // console.log("inside container state:", state);
     let currentInterface;
 
     switch (headerIndex) {
@@ -18,7 +18,7 @@ function Container({ headerIndex, setHeaderIndex, isConnected, state }) {
             currentInterface = <CommitInterface headerIndex={headerIndex} state={state} />
             break;
         case 5: case 6:
-            currentInterface = <VoteInterface headerIndex={headerIndex} />
+            currentInterface = <VoteInterface headerIndex={headerIndex} state={state} />
             break;
         default:
             currentInterface = <div>ERROR</div>
@@ -33,6 +33,7 @@ function Container({ headerIndex, setHeaderIndex, isConnected, state }) {
         return <div className={'container'}>
             {currentInterface}
             <PeriodInfo index={headerIndex} />
+            {/* <Timer delayToCallback={delayToCallback} /> */}
         </div>
 };
 
