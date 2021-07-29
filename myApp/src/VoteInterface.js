@@ -54,6 +54,7 @@ function VoteInterface({ headerIndex, state }) {
 
   if (headerIndex === 6) {
     reset_tokens();
+    return <div>Current round has ended. A new round will start soon!</div>
   }
 
   return (
