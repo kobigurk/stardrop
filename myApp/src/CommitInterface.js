@@ -66,13 +66,10 @@ function generateCommitToken(callBack) {
     commit_token = response.data[0].commit_token;
     voting_token = response.data[0].voting_token;
 
-    console.log(voting_token)
     callBack()
-    // if (response.status !== 200)
-    //   setErrorMessage("ERROR");
   })
     .catch((error) => {
-      // setErrorMessage("catch ERROR");
+      console.log("pscott error", error);
     })
 }
 

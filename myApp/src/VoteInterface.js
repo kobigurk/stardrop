@@ -48,9 +48,6 @@ function VoteInterface({ headerIndex, state }) {
   const [vote, setVote] = useState(null);
   const [voted, setVoted] = useState(false);
 
-  // console.log(`HEY HEY HEY voting_token: ${voting_token}, pubKey:${pubKey}`);
-  console.log(`VoteInterface: state:`, state);
-
   if (!voting_token || !pubKey) {
     return <div>You did not register during the registration period. You need to wait for the next round to participate.</div>
   }
