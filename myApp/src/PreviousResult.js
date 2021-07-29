@@ -16,7 +16,7 @@ export default function PreviousResult({ state }) {
 				<div>Yes: {total_yes}</div>
 				<div>No: {total_no}</div>
 			</div>
-			<div></div>
+			<a className={'timer'} href={"https://voyager.online/contract/" + state.previous_results.contract_address}>See it on the block explorer!</a>
 		</div>
 	)
 }

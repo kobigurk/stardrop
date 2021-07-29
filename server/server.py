@@ -35,8 +35,8 @@ else:
 QUESTIONS = ['Should Carlos Matos be elected President of the United States?', 'Is Starknet the best L2?',
              'Is Dogecoin going to flip Ethereum?', 'Is Ethereum going to flip Bitcoin?', 'Are you Satoshi Nakamoto?', 'Will you come to EthCC[5]?']
 
-# Address of the smart-contract. `None` in the beginning, set by `deploy_contract()`
-contract_addr = None
+# Address of the smart-contract. Random one in the beginning, set by `deploy_contract()`
+contract_addr = "0x06d2068d884dbd847f5cec9a028114e4f18babfd870e2d80e6f3a6c451031093"
 serv_pub_key = None
 serv_priv_key = None
 state = None
@@ -45,7 +45,7 @@ total_yes = 2
 total_no = 2
 started_time = datetime.datetime.utcnow().timestamp()
 previous_results = {'total_yes': total_yes,
-                    'total_no': total_no, 'question': "Are you human?"}
+                    'total_no': total_no, 'question': "Are you human?", 'contract_address': contract_addr}
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -370,7 +370,7 @@ while (42):
     update_results()
 
     previous_results.update(
-        {'total_no': total_no, 'total_yes': total_yes, 'question': question})
+        {'total_no': total_no, 'total_yes': total_yes, 'question': question, 'contract_address': contract_addr})
     question = random.choice(QUESTIONS)
 
     state = DEPLOYING_CONTRACT
