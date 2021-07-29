@@ -17,6 +17,11 @@ export function get_var() {
 }
 
 async function sign_message(callBack) {
+  if (window.ethereum == null) {
+    callBack("Metamask not found");
+    return;
+  }
+
   const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
   await provider.send('eth_requestAccounts', []);
   const signer = provider.getSigner();
@@ -24,7 +29,7 @@ async function sign_message(callBack) {
   // const _network = await provider.getNetwork();
   rawSignature = await signer.signMessage("eip42");
   console.log(rawSignature, pohAddress)
-  callBack();
+  callBack(true);
 };
 
 function App() {

@@ -10,6 +10,9 @@ function Container({ headerIndex, setHeaderIndex, isConnected, state, delayToCal
     // console.log("inside container state:", state);
     let currentInterface;
 
+    if (isConnected === "Metamask not found") {
+        return <div>Metamask not found. If you are on mobile, please use Metamask's browser :)</div>
+    }
     switch (headerIndex) {
         case 0: case 1:
             currentInterface = <PreviousResult state={state} />

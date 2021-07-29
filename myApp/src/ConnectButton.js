@@ -12,7 +12,7 @@ export default function ConnectButton({ sign_message, isConnected, setIsConnecte
 		<button
 			className={`connect-button ${isConnected ? 'disabled non-capitalize' : ''}`}
 			onClick={() => {
-				sign_message(() => { setIsConnected(true) });
+				sign_message(setIsConnected);
 			}}>
 			{isConnected
 				? walletAddress
