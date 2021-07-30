@@ -78,7 +78,7 @@ def compile_contract():
         print_output(res)
         if res.returncode != 0:
             logging.critical("Failed to compile: returned {}".format(res.returncode))
-            return 0
+            return "Check route.log"
         logging.info("Compilation done.")
     return "OK"
 
@@ -91,7 +91,7 @@ def deploy_contract():
                               'contract/contract_compiled.json', '--network', 'alpha'], True)
         if res.returncode != 0:
             logging.critical("Error while deploying: {}".format(res.returncode))
-            return 0
+            return "Check route.log"
         out = res.stdout.decode('utf-8')
 
         # Dirty hack to extract contract address from process output.
@@ -116,7 +116,7 @@ def initialize():
 
         if res.returncode != 0:
             logging.critical("Error executing initalize: exited with {}".format(res.returncode))
-            return 0
+            return "Check route.log"
     else:
         time.sleep(8)
     logging.info("Initialize finished")
