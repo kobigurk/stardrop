@@ -7,5 +7,5 @@ from starkware.crypto.signature.math_utils import (
 def end_commitment_phase(private_key):
     (r, s) = sign(msg_hash=1, priv_key=private_key)
 
-    print(f'Signature: {(r, s)}')
+    #print(f'Signature: {(r, s)}')
     return (r, s)

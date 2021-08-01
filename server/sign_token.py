@@ -23,6 +23,6 @@ def sign_token(private_key, blinded_request):
     r = (v - c*private_key) % EC_ORDER
 
     print(f'Blinded request: {blinded_request}')
-    print(f'Blinded token: {blinded_token}')
-    print(f'Proof: {[c, r]}')
+    #print(f'Blinded token: {blinded_token}')
+    #print(f'Proof: {[c, r]}')
     return (blinded_token,  c, r)
