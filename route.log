@@ -1,7 +1,0 @@
-INFO 2021-07-30 16:59:59,214 "Starting Server "
-INFO 2021-07-30 16:59:59,233 "Server keypair succesfully created: private: 220948735616443400368726900100767572463, public: 64409270957162388631051445215369689017017510812137976647971150542763693597 "
-INFO 2021-07-30 16:59:59,233 "-- DEPLOY -- "
-WARNING 2021-07-30 16:59:59,239 " * Running on all addresses.
-   WARNING: This is a development server. Do not use it in a production deployment. "
-INFO 2021-07-30 16:59:59,239 " * Running on http://192.168.43.193:5000/ (Press CTRL+C to quit) "
-CRITICAL 2021-07-30 17:00:00,454 "Error while deploying: 3 "
