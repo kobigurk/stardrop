@@ -7,8 +7,6 @@ async function main() {
     console.log(rawSignature, message, address_suppose_tobe)
     let provider;
 
-  // window.ethereum.enable().then((provider = new ethers.providers.Web3Provider(window.ethereum)));
-
   provider = ethers.providers.getDefaultProvider(
     'goerli',
     '2DWV9SDT3WK71GRR1YYWJRF1XIAPY1NKG6'
