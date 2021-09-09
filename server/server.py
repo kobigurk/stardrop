@@ -50,7 +50,8 @@ QUESTIONS = ['Should Carlos Matos be elected President of the United States?', '
 
 # Address of the smart-contract. `None` in the beginning, set by `deploy_contract()`
 print("Logging file == " + logging.__file__)
-logging.basicConfig(filename = "./route.log", level = logging.INFO, format = LOG_FORMAT, filemode = 'w')
+logging.basicConfig(filename="./route.log", level=logging.INFO,
+                    format=LOG_FORMAT, filemode='w')
 logger = logging.getLogger()
 logging.info("Starting Server")
 contract_addr = None
@@ -73,11 +74,12 @@ def compile_contract():
     if COMPILE_CONTRACT:
         logging.info("Compiling...")
         (_, res) = launch_command(['starknet-compile', 'contract/contract.cairo',
-                              '--output=contract/contract_compiled.json', '--abi=contract/contract_abi.json'], False)
+                                   '--output=contract/contract_compiled.json', '--abi=contract/contract_abi.json'], False)
         logging.debug(res)
         print_output(res)
         if res.returncode != 0:
-            logging.critical("Failed to compile: returned {}".format(res.returncode))
+            logging.critical(
+                "Failed to compile: returned {}".format(res.returncode))
             return "Check route.log"
         logging.info("Compilation done.")
     return "OK"
@@ -88,9 +90,10 @@ def deploy_contract():
     if INTERACT_WITH_STARKNET and DEPLOY_CONTRACT:
         logging.info("-- DEPLOY --")
         (_, res) = launch_command(['starknet', 'deploy', '--contract',
-                              'contract/contract_compiled.json', '--network', 'alpha'], True)
+                                   'contract/contract_compiled.json', '--network', 'alpha'], True)
         if res.returncode != 0:
-            logging.critical("Error while deploying: {}".format(res.returncode))
+            logging.critical(
+                "Error while deploying: {}", res.stdout)
             return "Check route.log"
         out = res.stdout.decode('utf-8')
 
@@ -99,7 +102,7 @@ def deploy_contract():
         logging.debug(out.split('\n')[1])
         contract_addr = out.split('\n')[1][18:18+66]
 
-        logging.info('NEW CONTRACT ADDR', contract_addr)
+        logging.info("NEW CONTRACT ADDR {}".format(contract_addr))
     else:
         time.sleep(8)
     return "OK"
@@ -107,15 +110,16 @@ def deploy_contract():
 
 def initialize():
     if INTERACT_WITH_STARKNET:
-        logging.info('Contract addr', contract_addr)
-        logging.info('Serv public_key', str(serv_pub_key))
+        logging.info('Contract addr'.format(contract_addr))
+        logging.info('Serv public_key'.format(str(serv_pub_key)))
         logging.info("-- INITIALIZE --\n")
 
         (_, res) = launch_command(['starknet',  'invoke', '--address', contract_addr,
-                              '--abi', 'contract/contract_abi.json', '--function', 'initialize', '--network', 'alpha', '--inputs', str(serv_pub_key)], True)
+                                   '--abi', 'contract/contract_abi.json', '--function', 'initialize', '--network', 'alpha', '--inputs', str(serv_pub_key)], True)
 
         if res.returncode != 0:
-            logging.critical("Error executing initalize: exited with {}".format(res.returncode))
+            logging.critical(
+                "Error executing initalize: exited with {}".format(res.returncode))
             return "Check route.log"
     else:
         time.sleep(8)
@@ -189,9 +193,10 @@ def key_submission():
     logging.debug(f'Signature: {(r, s)}')
     if INTERACT_WITH_STARKNET:
         (_, res) = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                              'contract/contract_abi.json', '--function', '--network', 'alpha', 'submit_key', '--inputs', str(serv_priv_key), str(r), str(s)], True)
+                                   'contract/contract_abi.json', '--function', '--network', 'alpha', 'submit_key', '--inputs', str(serv_priv_key), str(r), str(s)], True)
         if res.returncode != 0:
-            logging.critical('Error' + KEY_SUB_ERR + ': submit key unsuccessful')
+            logging.critical(
+                'Error {}: submit key unsuccessful'.format(KEY_SUB_ERR))
             return 'Error: submit key unsuccessful', KEY_SUB_ERR
     else:
         time.sleep(8)
@@ -205,9 +210,10 @@ def end_commit_phase():
     logging.debug(f'Signature: {(r, s)}')
     if (INTERACT_WITH_STARKNET):
         (_, res) = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                              'contract/contract_abi.json', '--function', 'end_commitment_phase', '--network', 'alpha', '--inputs', str(r), str(s)], True)
+                                   'contract/contract_abi.json', '--function', 'end_commitment_phase', '--network', 'alpha', '--inputs', str(r), str(s)], True)
         if (res.returncode != 0):
-            logging.critical("Error" + END_COMMIT_ERR + ": end_commit_phase unsuccessful")
+            logging.critical(
+                "Error {}: end_commit_phase unsuccessful".format(END_COMMIT_ERR))
             return 'Error: end_commit_phase unsuccessful', END_COMMIT_ERR
     else:
         time.sleep(8)
@@ -221,9 +227,10 @@ def end_voting_phase():
     logging.debug(f'Signature: {(r, s)}')
     if INTERACT_WITH_STARKNET:
         (_, res) = launch_command(['starknet', 'invoke', '--address', contract_addr, '--abi',
-                             'contract/contract_abi.json', '--function', 'end_voting_phase', '--network', 'alpha', '--inputs', str(r), str(s)], True)
+                                   'contract/contract_abi.json', '--function', 'end_voting_phase', '--network', 'alpha', '--inputs', str(r), str(s)], True)
         if (res.returncode != 0):
-            logging.critical("Error" + END_VOTE_ERR + ": end voting phase unsuccessful")
+            logging.critical(
+                "Error {}: end voting phase unsuccessful".format(END_VOTE_ERR))
             return 'Error: end voting phase unsuccessful', END_VOTE_ERR
     else:
         time.sleep(8)
@@ -237,13 +244,15 @@ def vote():
     data = request.get_json()
     logging.debug(data)
     if 'public_key' not in data:
-        logging.error("Error" + NO_PUB_KEY_ERR + ": no public key provided")
+        logging.error(
+            "Error {}: no public key provided".format(NO_PUB_KEY_ERR))
         return "Error: no public key provided", NO_PUB_KEY_ERR
     if 'voting_token' not in data:
-        logging.error("Error" + NO_VOTE_TOKEN_ERR + ": no voting token provided")
+        logging.error(
+            "Error {}: no voting token provided".format(NO_VOTE_TOKEN_ERR))
         return "Error: no voting token provided", NO_VOTE_TOKEN_ERR
     if 'vote' not in data:
-        logging.error("Error" + NO_VOTE_ERR + ": no vote provided")
+        logging.error("Error {}: no vote provided".format(NO_VOTE_ERR))
         return "Error: no vote provided", NO_VOTE_ERR
 
     public_key = data['public_key']
@@ -255,18 +264,21 @@ def vote():
     elif vote == "No":
         vote = 0
     else:
-        logging.error("Error" + INVALID_VOTE_ERR + ": invalid vote {}".format(vote))
+        logging.error("Error {}: invalid vote {}".format(
+            INVALID_VOTE_ERR, vote))
         return "Error: invalid vote {}".format(vote), INVALID_VOTE_ERR
 
     (hint_token_y, serv_priv_key_decomposition) = generate_vote_data(
         serv_priv_key, int(voting_token))
-    logging.debug("Hint token y :" + hint_token_y + "Serv. priv. key decomposition" + serv_priv_key_decomposition + 'len =' + len(serv_priv_key_decomposition))
+    logging.debug("Hint token y :{}, Serv. priv. key decomposition: {},  len: {}".format(
+        hint_token_y, serv_priv_key_decomposition, len(serv_priv_key_decomposition)))
     if INTERACT_WITH_STARKNET:
         arguments = ['starknet', 'invoke', '--address', contract_addr, '--abi', 'contract/contract_abi.json',
                      '--function', 'cast_vote', '--network', 'alpha', '--inputs', str(public_key), str(vote), str(hint_token_y), *serv_priv_key_decomposition]
         (_, res) = launch_command(arguments, True)
         if (res.returncode != 0):
-            logging.error("Error" + UNSUCCESSFUL_VOTE_ERR + ": unsuccessful vote")
+            logging.error("Error {}: unsuccessful vote".format(
+                UNSUCCESSFUL_VOTE_ERR))
             return 'Vote unsuccessful', UNSUCCESSFUL_VOTE_ERR
     else:
         time.sleep(8)
@@ -301,6 +313,7 @@ def get_state():
         delay_to_callback = end_time - current_time
     else:
         delay_to_callback = 5
+    delay_to_callback = int(delay_to_callback)
 
     return jsonify([{'phase': state, 'delay_to_callback': delay_to_callback, 'previous_results': previous_results, 'question': question}])
 
@@ -312,9 +325,10 @@ def update_results():
     if INTERACT_WITH_STARKNET:
         logging.info("-- GET RESULT --\n")
         (_, res) = launch_command(['starknet',  'call', '--address', contract_addr,
-                              '--abi', 'contract/contract_abi.json', '--network', 'alpha', '--function', 'get_result'], False)
+                                   '--abi', 'contract/contract_abi.json', '--network', 'alpha', '--function', 'get_result'], False)
         if res.returncode != 0:
-            logging.critical("Error" + NET_CALL_ERR + ": executing starknet call: exited with {}".format(res.returncode))
+            logging.critical("Error {}: executing starknet call: exited with {}".format(
+                NET_CALL_ERR, res.returncode))
             return "Error executing starknet call: exited with {}".format(res.returncode), NET_CALL_ERR
         (total_yes, total_no) = res.stdout.decode('utf-8').split(' ')
         total_yes = int(total_yes)
@@ -326,12 +340,12 @@ def update_results():
 
 result = generate_human_list()
 if result != "OK":
-    #logging.error("Generate human list result --> result")
+    # logging.error("Generate human list result --> result")
     exit(1)
 
 result = compile_contract()
 if result != "OK":
-    #logging.error("Compiling contract result --> result")
+    logging.error("Compiling contract result --> result")
     exit(1)
 
 
