@@ -93,7 +93,7 @@ def deploy_contract():
                                    'contract/contract_compiled.json', '--network', 'alpha'], True)
         if res.returncode != 0:
             logging.critical(
-                "Error while deploying: {}", res.stdout)
+                "Error while deploying: {}", res.stdout.decode('utf-8'))
             return "Check route.log"
         out = res.stdout.decode('utf-8')
 
@@ -110,8 +110,8 @@ def deploy_contract():
 
 def initialize():
     if INTERACT_WITH_STARKNET:
-        logging.info('Contract addr'.format(contract_addr))
-        logging.info('Serv public_key'.format(str(serv_pub_key)))
+        logging.info('Contract addr {}'.format(contract_addr))
+        logging.info('Serv public_key {}'.format(str(serv_pub_key)))
         logging.info("-- INITIALIZE --\n")
 
         (_, res) = launch_command(['starknet',  'invoke', '--address', contract_addr,
@@ -165,9 +165,10 @@ def sign_blinded_request():
         return "Error: user not in poh_address", 205
 
     # Check that this the user is actually the owner of the POH address by verifying the signed message 'eip42'
-    sig_is_valid = verify_sig(signature, 'eip42', poh_address)
-    if not sig_is_valid:
-        return "Error: invalid signature", 206
+    # TODO: This should not be commented : need to investigate why ethers is not found.
+    # sig_is_valid = verify_sig(signature, 'eip42', poh_address)
+    # if not sig_is_valid:
+        # return "Error: invalid signature", 206
 
     (blinded_token, c, r) = sign_token(serv_priv_key, blinded_request)
     logging.debug(f'Blinded token: {blinded_token}')
@@ -198,6 +199,7 @@ def key_submission():
             logging.critical(
                 'Error {}: submit key unsuccessful'.format(KEY_SUB_ERR))
             return 'Error: submit key unsuccessful', KEY_SUB_ERR
+        logging.info(res.stdout.decode('utf-8'))
     else:
         time.sleep(8)
     logging.info("Key submission OK")
@@ -215,6 +217,7 @@ def end_commit_phase():
             logging.critical(
                 "Error {}: end_commit_phase unsuccessful".format(END_COMMIT_ERR))
             return 'Error: end_commit_phase unsuccessful', END_COMMIT_ERR
+        logging.info(res.stdout.decode('utf-8'))
     else:
         time.sleep(8)
     logging.info("End_commit_phase OK")
@@ -232,6 +235,7 @@ def end_voting_phase():
             logging.critical(
                 "Error {}: end voting phase unsuccessful".format(END_VOTE_ERR))
             return 'Error: end voting phase unsuccessful', END_VOTE_ERR
+        logging.info(res.stdout.decode('utf-8'))
     else:
         time.sleep(8)
     logging.info("End voting phase OK")
@@ -329,6 +333,7 @@ def update_results():
         if res.returncode != 0:
             logging.critical("Error {}: executing starknet call: exited with {}".format(
                 NET_CALL_ERR, res.returncode))
+            logging.critical(res.stderr.decode('utf-8'))
             return "Error executing starknet call: exited with {}".format(res.returncode), NET_CALL_ERR
         (total_yes, total_no) = res.stdout.decode('utf-8').split(' ')
         total_yes = int(total_yes)
